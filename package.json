@@ -1,0 +1,27 @@
+{
+  "name": "Train",
+  "version": "1.0.0",
+  "description": "a warm up project leading into our main project",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mahbod-Peyman",
+  "license": "ISC",
+  "dependencies": {
+    "argon2": "^0.28.2",
+    "cookie-parser": "^1.4.5",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "git": "^0.1.3",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.0.3",
+    "nodemailer": "^6.6.3",
+    "winston": "^3.3.3",
+    "winston-mongodb": "^5.0.7"
+  }
+}

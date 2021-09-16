@@ -1,0 +1,6 @@
+{
+    "port":3000,
+    "MongoDB_Adrress":"mongodb://127.0.0.1:27017/Train",
+    "MongoDB_log_Adrress":"mongodb://127.0.0.1:27017/Log",
+    "secretKey":"Matikan Matyan Hello World"
+}
