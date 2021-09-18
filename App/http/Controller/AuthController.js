@@ -26,7 +26,8 @@ class AuthController {
     if (user) { return res.status(400).send("کاربری با این اطلاعات وجود دارد!") }
 
         
-    const userData= {
+    const userData= 
+    {
       name:req.body.name,
       password :  await argon2.hash(req.body.password,{
         type: argon2.argon2id,
@@ -36,12 +37,14 @@ class AuthController {
       email: {address:req.body.email},
       phone: {number:req.body.phoneNumber},
       ability:req.body.ability
-        }
-      user = await new userModel(userData);
-      user = await user.save();
-      sendConfirmationEmail(user._id);
-      res.status(200).send(user.name);
     }
+    user = await new userModel(userData);
+    user = await user.save();
+    
+    sendConfirmationEmail(user._id);
+  
+    res.status(200).send({message:"عملیات با موفقیت انجام شد",_id:user._id});
+  }
 
   async  login(req, res) {
     const { error } = loginValidator(req.body);

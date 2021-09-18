@@ -5,19 +5,21 @@ require("cookie-parser");
 
 module.exports = async function (req,res,next)
 {
-   let accessToken = req.cookies.accessToken;
-   if (!accessToken)
-   {
-       const refreshToken = req.cookies.refreshToken;
+    var refreshToken= req.cookies.refreshToken;
+    var accessToken = req.cookies.accessToken;
+    var userData;
+    if (!accessToken)
+    {
+        refreshToken = req.cookies.refreshToken;
        if (!refreshToken)
        {
            return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});
        }
        try
        {
-        var userData = jwt.verify(refreshToken,config.secretKey);
+         userData = jwt.verify(refreshToken,config.secretKey);
        }
-       catch{res.status(401).send({message:"invalid credentials"})}
+       catch{return res.status(401).send({message:"invalid credentials"})}
       
     
        let user = await userModel.findOne({_id:userData._id});
@@ -31,7 +33,6 @@ module.exports = async function (req,res,next)
             {
                 _id:user._id,
                 password:user.password,
-                role:user.role,
                 active:user.active
             }
             accessToken = jwt.sign(data,config.secretKey,{expiresIn:8*60})
@@ -43,17 +44,18 @@ module.exports = async function (req,res,next)
                 //secure:true
                 }
             )
-            req.body.token=data;
+            req.user=data;
             next();
        }
 
    }
     try
-    {
-    const userData = jwt.verify(refreshToken,config.secretKey);
+     {
+    userData = jwt.verify(accessToken,config.secretKey);
     }
-    catch{res.status(401).send({message:"invalid credentials"})}
-    req.body.token=userData;
+     catch{console.log("this");return res.status(401).send({message:"invalid credentials"})}
+    req.user=userData;
+    console.log(req.body);
     next();
 
 }

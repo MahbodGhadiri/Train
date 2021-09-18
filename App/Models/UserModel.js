@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
     personalTasks:[personalTaskSchema],
     ability:{type:String,enum:["برنامه نویسی","مدیریت","گرافیک","دیگر"]},
     avatarURL:{type:String},
-    activeAcount:{type:Boolean,dafault:false}
+    activeAcount:{type:Boolean,default:false}
 })
 
 
