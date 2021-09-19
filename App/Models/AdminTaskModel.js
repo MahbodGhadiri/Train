@@ -10,7 +10,7 @@ const adminTaskSchema = new mongoose.Schema({
     failed:{type:Boolean,default:false},
     startDate:{type:Date,required:true},
     finishDate:{type:Date,required:true}
-    // edit ???
+  
 })
 
 const adminTaskModel = new mongoose.Model("tasks",adminTaskSchema);

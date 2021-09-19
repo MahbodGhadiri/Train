@@ -1,6 +1,7 @@
-const nodemailer = require ("nodemailer");
-const crypto = require("crypto");
-const userModel = require("../../Models/UserModel");
+const nodemailer = require("nodemailer");
+const  crypto  = require("crypto");
+const argon2  = require( "argon2");
+const userModel = require( "../../Models/UserModel");
 
 const transport = nodemailer.createTransport({
     service: "Gmail",
@@ -10,13 +11,12 @@ const transport = nodemailer.createTransport({
     },
   });
 
-module.exports= async function sendConfirmationEmail(userId) 
+async function sendConfirmationEmail(userId) 
 {
     
     let mailOptions = {};
   
     user= await userModel.findOne({_id:userId});
-    if(user.email.active===true){return}
     const emailVerificationToken = crypto.randomBytes(16).toString("hex");
     user.email.verificationToken = emailVerificationToken;
     await user.save();
@@ -75,3 +75,24 @@ module.exports= async function sendConfirmationEmail(userId)
       }
     });
 }
+
+async function sendNewpasswordEmail(user)
+{
+  let mailOptions = {};
+  const randomPass = crypto.randomBytes(10).toString("hex");
+  user.password = await argon2.hash(randomPass,config.argon2_options);
+  await user.save();
+
+  mailOptions =
+  {
+    from: "Train <testmailfortestpurposes>",
+    to: user.email.address,
+    subject: "Your New PASSWORD",
+    html:
+    `
+    رمز جدید شما : ${user.password}
+    حتما در اولین فرصت از داخل برنامه رمز خود را عوض کنید.
+    `// TODO HTML needed
+  }
+}
+module.exports = {sendConfirmationEmail,sendNewpasswordEmail}

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const { Schema, model } = require( "mongoose");
 
 const emailSchema = {
     address:{type:String,required:true,unique:true},
@@ -11,7 +11,7 @@ const phoneSchema = {
     active:{type:Boolean,default:false},
     verificationToken:{type:String}
 }
-const personalTaskSchema = new mongoose.Schema({
+const personalTaskSchema = new Schema({
     title:{type:String,require:true},
     task:{type:String,require:true},
     subjectTag: {type:String , required:true , enum:["گرافیک","برنامه نویسی","مدیریت","دیگر"]},
@@ -22,7 +22,7 @@ const personalTaskSchema = new mongoose.Schema({
     
 })
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
 
     name:{type:String,require:true},
     email:emailSchema,
@@ -32,12 +32,12 @@ const userSchema = new mongoose.Schema({
     personalTasks:[personalTaskSchema],
     ability:{type:String,enum:["برنامه نویسی","مدیریت","گرافیک","دیگر"]},
     avatarURL:{type:String},
-    activeAcount:{type:Boolean,default:false}
+    activeAccount:{type:Boolean,default:false}
 })
 
 
     
 
-const userModel = new mongoose.model("users",userSchema)
+const userModel = new model("users",userSchema)
 
 module.exports = userModel;
