@@ -5,6 +5,7 @@ require("cookie-parser");
 
 module.exports = async function (req,res,next)
 {
+    //TODO change how refresh tokens behave
     var refreshToken= req.cookies.refreshToken;
     var accessToken = req.cookies.accessToken;
     var userData;
@@ -50,12 +51,11 @@ module.exports = async function (req,res,next)
 
    }
     try
-     {
+    {
     userData = jwt.verify(accessToken,config.secretKey);
     }
-     catch{console.log("this");return res.status(401).send({message:"invalid credentials"})}
+    catch{return res.status(401).send({message:"invalid credentials"})}
     req.user=userData;
-    console.log(req.body);
     next();
 
 }

@@ -2,10 +2,6 @@
     "port":3000,
     "MongoDB_Adrress":"mongodb://127.0.0.1:27017/Train",
     "MongoDB_log_Adrress":"mongodb://127.0.0.1:27017/Log",
-    "secretKey":"Matikan Matyan Hello World",
-    "argon2_options":{
-        "type": "argon2.argon2id",
-        "memoryCost": 15360,
-        "timeCost": 2
-    }
+    "secretKey":"Matikan Matyan Hello World"
+    
 }

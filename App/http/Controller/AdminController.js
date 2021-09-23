@@ -3,7 +3,7 @@ const setPinValidator =require( "../Validators/PinValidators");
 
 class AdminController 
 {
-    async setPin(req,res)
+    async setPin(req,res)//check for bugs
     {
         const {error}=setPinValidator(req.body);
         if (error){return res.status(400).send({message:error.message})}
@@ -13,7 +13,7 @@ class AdminController
 
     }
 
-    async deletepin(req,res)
+    async deletepin(req,res)//check for bugs
     {
         const pinId = req.params;
         await pinModel.findOneAndDelete({_id:pinId},function (err, docs) {

@@ -17,19 +17,35 @@ const registerValidator = (data)=>
 const loginValidator = (data)=>
 {
     const schema = joi.object({
-    email: joi.string().required().min(7).max(30).email(),
+    email: joi.string().required().max(30).email(),
     password : joi.string().required().min(8).max(30)
     })
     return schema.validate(data);
 }
 
-const resetPasswordValidator = (data)=>
+
+const changePasswordValidator = (data)=>
 {
     const schema = joi.object({
-        id: joi.required(), //.objectId()
         oldPassword: joi.string().required().min(8).max(30),
         newPassword: joi.string().required().min(8).max(30)
     })
     return schema.validate(data);
 }
-module.exports={registerValidator,loginValidator,resetPasswordValidator};
+
+const forgotPasswordUsingEmailValidator = (email)=>
+{
+    const schema = joi.string().required().max(30).email();
+    return schema.validate(email);
+}
+
+const resetPasswordValidator = (data)=>
+{
+    const schema = joi.object(
+    {
+        password: joi.string().required().min(8).max(30),
+        path: joi.string().required().length(85)
+    })
+    return schema.validate(data);
+}
+module.exports={registerValidator,loginValidator,changePasswordValidator,forgotPasswordUsingEmailValidator,resetPasswordValidator};
