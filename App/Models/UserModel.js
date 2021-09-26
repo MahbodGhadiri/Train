@@ -14,12 +14,12 @@ const phoneSchema = {
     //createdAt:{type:Date,expires:"15m" ,default:Date.now}, //! use this after adding phone number validation
     verificationToken:{type:String}
 }
-const personalTaskSchema = new Schema({
+const customTaskSchema = new Schema({
     title:{type:String,require:true},
     task:{type:String,require:true},
     subjectTag: {type:String , required:true , enum:["گرافیک","برنامه نویسی","مدیریت","دیگر"]},
     done:{type:Boolean,default:false},
-    failed:{type:Boolean,default:false},
+    failed:{type:Boolean,default:false}, //TODO check code and change "failed" to "delayed"
     startDate:{type:Date,required:true},
     finishDate:{type:Date,required:true}
     
@@ -32,7 +32,7 @@ const userSchema = new Schema({
     phone:phoneSchema,
     password:{type:String,require:true},
     role:{type:String,default:"user",enum:["user","admin","super admin"]},
-    personalTasks:[personalTaskSchema],
+    personalTasks:[customTaskSchema],
     ability:{type:String,enum:["برنامه نویسی","مدیریت","گرافیک","دیگر"]},
     avatarURL:{type:String},
     activeAccount:{type:Boolean,default:false},
