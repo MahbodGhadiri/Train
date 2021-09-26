@@ -13,7 +13,7 @@ const setCustomTaskValidator=(data)=>
     {
         title: joi.string().min(3).max(30).required(),
         task: joi.string().min(10).max(100).required(),
-        subjectTag: joi.string().min(3).max(30),
+        subjectTag: joi.string().min(3).max(30).required(),
         startDate: joi.date().required(),
         finishDate: joi.date().required()
     })

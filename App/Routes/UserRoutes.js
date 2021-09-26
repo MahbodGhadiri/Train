@@ -2,32 +2,32 @@ const router = require("express").Router();
 const Auth = require( "../http/middlewares/Auth");
 const UserController =require( "../http/Controller/UserController");
 
-router.get("/profile",Auth,UserController.getProfile); //unfinished //! awaiting tests--------------------------------
+router.get("/profile",Auth,UserController.getProfile); //Done
 
 router.get("/logout",Auth,UserController.logout); //unfinished
 
-router.post("/delete-account",Auth,UserController.deleteAccount); //unfinished //! awaiting tests---------------------
+router.post("/delete-account",Auth,UserController.deleteAccount); //! awaiting tests----------------------------------
 
 router.put("/change-info",Auth,UserController.changeInfo); //unfinished
 
-router.post("/change-password",Auth,UserController.changePassword); //check for Bugs //? why post method?
+router.post("/change-password",Auth,UserController.changePassword); //Done //? why post method?
 
-router.get("/tasks",Auth,UserController.getTasks); //unfinished //! awaiting tests -----------------------------------
+router.get("/tasks",Auth,UserController.getTasks); //! awaiting tests ------------------------------------------------
 
-router.get("/tasks/done?task=",Auth,UserController.doneTask); //unfinished //! awaiting tests ------------------------
+router.get("/tasks/done?task=",Auth,UserController.doneTask); //! awaiting tests -------------------------------------
 
-router.get("/tasks/delay?task=",Auth,UserController.delayTask); //unfinished //! awaiting tests ----------------------
+router.get("/tasks/delay?task=",Auth,UserController.delayTask); //! awaiting tests -----------------------------------
 
-router.get("/custom-tasks",Auth,UserController.getCustomTasks); //unfinished //! awaiting tests-----------------------
+router.get("/custom-tasks",Auth,UserController.getCustomTasks); //Done
 
-router.post("/custom-tasks",Auth,UserController.setCustomTask); //unfinished //! awaiting tests-----------------------
+router.post("/custom-tasks",Auth,UserController.setCustomTask); //Done
 
-router.put("/custom-tasks/edit?task=",Auth,UserController.editCustomTask); //unfinished //! awaiting tests------------
+router.put("/custom-tasks/edit",Auth,UserController.editCustomTask); //Done
 
-router.get("/custom-tasks/done?task=",Auth,UserController.doneCustomTask); //unfinished  //! awaiting tests------------
+router.get("/custom-tasks/done",Auth,UserController.doneCustomTask); //Done
 
-router.delete("/custom-tasks/delete?task=",Auth,UserController.deleteCustomTask); //unfinished //! awaiting tests-----
+router.delete("/custom-tasks/delete",Auth,UserController.deleteCustomTask); //Done
 
-router.get("/pins",Auth,UserController.getPins); //looks fine, check for Bugs
+router.get("/pins",Auth,UserController.getPins); //Done
 
 module.exports = router;

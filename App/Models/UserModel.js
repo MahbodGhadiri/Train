@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 const emailSchema = {
     address:{type:String,required:true,unique:true},
     active:{type:Boolean,default:false},
-    createdAt:{type:Date,expires:"15m" ,default:Date.now},
+    createdAt:{type:Date,default:Date.now},//expires:"15m" ,
     verificationToken:{type:String}
 }
 
@@ -32,7 +32,7 @@ const userSchema = new Schema({
     phone:phoneSchema,
     password:{type:String,require:true},
     role:{type:String,default:"user",enum:["user","admin","super admin"]},
-    personalTasks:[customTaskSchema],
+    customTasks:[customTaskSchema],
     ability:{type:String,enum:["برنامه نویسی","مدیریت","گرافیک","دیگر"]},
     avatarURL:{type:String},
     activeAccount:{type:Boolean,default:false},

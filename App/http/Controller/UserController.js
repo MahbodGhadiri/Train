@@ -1,14 +1,15 @@
 const pinModel = require( "../../Models/PinModel");
 const userModel = require("../../Models/UserModel");
 const _ = require("lodash")
-const {deleteAccountValidator , setCustomTaskValidator} = require("../Validators/UserValidators")
+const {deleteAccountValidator , setCustomTaskValidator} = require("../Validators/UserValidators");
+const { date } = require("joi");
 
 class UserController
 {
-  async getProfile(req,res) //TODO Test it
+  async getProfile(req,res) //Done
   {
-    user = await userModel.findbyId(req.user._id);
-    if (!user) res.status(404).send({message:"یافت نشد"});
+    const user = await userModel.findById(req.user._id);
+    if (!user) return res.status(404).send({message:"یافت نشد"});
     res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL"]));
   }
 
@@ -40,7 +41,7 @@ class UserController
         
   }
 
-  async changePassword(req,res) //TODO check for bugs
+  async changePassword(req,res) //Done
   {
     const {error} = changePasswordValidator(req.body);
     if(error){return res.status(400).send({message:error.message})}
@@ -95,71 +96,76 @@ class UserController
     else return res.status(403).send({message:"شما اجازه این کار را ندارید"}) //TODO better messages
   }
 
-  async getCustomTasks(req,res) //TODO Test it
+  async getCustomTasks(req,res) //Done
   {
-    const tasks = await userModel
-    .aggregate(
-      [{$match : {_id:req.user._id}},
-      {$project:{_id:0 , personalTask:1}}]
-    )
-    res.status(200).send(tasks[0].personalTask).json(); //? is .json() needed?
+    const user = await userModel
+    .findById(req.user._id);
+    if (!user) return res.status(404).send("یافت نشد")
+    res.status(200).send(user.customTasks);
   }
 
-  async setCustomTask(req,res) //TODO Test it
+  async setCustomTask(req,res) //Done
   {
     const {error}=setCustomTaskValidator(req.body); 
-    if (error){ res.status(400).send({message : error.message})};
+    if (error){ return res.status(400).send({message : error.message})};
    
-    const user = await userModel.findOne({_id:req.user._id})
-    if(!user) {return res.status(404).send({message:"یافت نشد"})}
-   
-    user.personalTask.push(req.body);
-    
-    await user.save();
-   
-    res.status(200).send(user.personalTask[user.personalTask.length-1]);   
+    if(req.body.finishDate>req.body.startDate)
+    {
+      const user = await userModel.findOne({_id:req.user._id})
+      if(!user) {return res.status(404).send({message:"یافت نشد"})}
+     
+      user.customTasks.push(req.body);
+      await user.save();
+      res.status(200).send(user.customTasks[user.customTasks.length-1]);
+    }
+    else return res.status(400).send({messgae:"Invalid Date"})
   }
 
-  async editCustomTask(req,res) //TODO Test it 
+  async editCustomTask(req,res) //Done
   {
-    const {error}=setPersonalTaskValidator(req.body); 
+    const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
 
-    const user=await userModel
-    .findOneAndUpdate(
-    {"personalTask._id":req.query.task},
-    {$set : {"personalTask.$":req.body},
-    new:true}
-    )
-
-    if (!user){return res.status(404).send({message:"یافت نشد"})}
-    res.send(user.personalTask);     
+    if(req.body.finishDate>req.body.startDate)
+    {
+      const user=await userModel
+      .findOneAndUpdate(
+      {_id:req.user._id,"customTasks._id":req.query.task},
+      {$set : {"customTasks.$":req.body}},
+      {new: true}
+      )
+      if (!user){return res.status(404).send({message:"یافت نشد"})};
+      res.status(200).send(user.customTasks);  
+    }
+    else return res.status(400).send({messgae:"Invalid Date"})
   }
 
-  async doneCustomTask(req,res) //TODO Test it
+  async doneCustomTask(req,res) //Done
   {
-    const task = await userModel.findByIdAndUpdate(req.query.task,{
-      $set : {
-        "customTasks.$.done":true
-      }
-    }).exec(function(error){
+    const task = await userModel.findOneAndUpdate(
+      {_id:req.user._id,"customTasks._id":req.query.task},
+      {$set : {"customTasks.$.done":true}},
+      {new: true}
+      ).exec(function(error){
       if(error) return res.status(400).send({message:"عملیات ناموفق"})
-      return res.status(200).send({message:"باموفقیت انجام شد"})
+      else return res.status(200).send({message:"باموفقیت انجام شد"})
     })
   }
 
-  async deleteCustomTask(req,res) //TODO Test it //! Modify it to be compatible with URL
+  async deleteCustomTask(req,res) //Done
   {
     await userModel
     .updateOne(
-    {"personalTasks._id":req.query.task}, //?is query working //! code injection attack
-    {$pull: {"Tasks.$":{"_id":taskId}}}
-    ) //add callback with response
-    res.status(200).send({message:"با موفقیت انجام شد"})
+      {_id:req.user._id}, //?is query working //! code injection attack
+      {$pull: {"customTasks":{"_id":req.query.task}}}
+    ).exec(function(error){
+      if(error) return res.status(400).send({message:"عملیات ناموفق"})
+      else return res.status(200).send({message:"باموفقیت انجام شد"})
+    })
 
   }
 
-  async getPins(req,res) //looks fine, check for Bugs
+  async getPins(req,res) //Done
   {
     const pins = await pinModel.find({});
     if (!pins)
