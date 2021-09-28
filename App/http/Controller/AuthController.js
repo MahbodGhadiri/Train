@@ -10,7 +10,7 @@ const crypto = require("crypto");
 
 class AuthController {
 
-  async  register(req, res)  //Done for now
+  async  register(req, res)  //Done
   {
    
     req.body.email = req.body.email.toLocaleLowerCase();
@@ -48,7 +48,7 @@ class AuthController {
     res.status(200).send({message:" عملیات با موفقیت انجام شد . جهت فعالسازی به ایمیل خود مراجعه کنید.",_id:user._id});
   }
 
-  async  login(req, res) //Done for now
+  async  login(req, res) //Done
   {
     const { error } = loginValidator(req.body);
     if (error) { res.status(400).send({ message: error.message }) }
@@ -83,10 +83,9 @@ class AuthController {
     else{res.status(400).send({message:"رمز نامعتبر است"})};
     }
 
-  async resendActivationEmail(req,res) //TODO with get method
+  async resendActivationEmail(req,res) //Done
   {
-    
-    const user = await userModel.findById(req.body.userId);
+    const user = await userModel.findById(req.query.userId);
     if(!user)
     {
       return res.status(404).send({message:"کاربری با این اطلاعات یافت نشد"});
@@ -211,7 +210,19 @@ class AuthController {
       });
       user.password = req.body.password;
       await tokenInfo.remove();
+      await refreshTokenModel.deleteOne({_id:req.cookies.refreshToken._id});
+      res.cookie("refreshToken","",{expires: new Date(0)});
+      res.cookie("accessToken","",{expires: new Date(0)});
       await user.save();
+      const refreshToken = await user.generateRefreshToken();
+      res.cookie("refreshToken",refreshToken,
+        {
+          httpOnly:true,
+          maxAge:4*60*60*1000,
+          sameSite:"strict",
+          //secure:true
+        }
+      )
       res.status(200).send({message:"رمز با موفقیت تغییر یافت"});
     } else return res.status(400).send({ message: "Invalid Request" });
 

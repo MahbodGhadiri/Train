@@ -2,7 +2,8 @@ const pinModel = require( "../../Models/PinModel");
 const userModel = require("../../Models/UserModel");
 const _ = require("lodash")
 const {deleteAccountValidator , setCustomTaskValidator} = require("../Validators/UserValidators");
-const argon2=require("argon2")
+const argon2=require("argon2");
+const { refreshTokenModel } = require("../../Models/TokenModel");
 
 class UserController
 {
@@ -13,9 +14,13 @@ class UserController
     res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL"]));
   }
 
-  async logout(req,res) //unfinished
+  async logout(req,res) //Done
   {
-      //Expire refresh Token //? and cookies  
+    await refreshTokenModel.deleteOne({_id:req.cookies.refreshToken._id});
+    res.cookie("refreshToken","",{expires: new Date(0)});
+    res.cookie("accessToken","",{expires: new Date(0)});
+    res.status(200).send({message:"خروچ انجام شد"})
+
   }
 
   async deleteAccount(req,res) //Mostly Done
@@ -32,8 +37,10 @@ class UserController
       timeCost: 2})
       )
     {
+      await refreshTokenModel.deleteOne({_id:req.cookies.refreshToken._id});
+      res.cookie("refreshToken","",{expires: new Date(0)});
+      res.cookie("accessToken","",{expires: new Date(0)});
       user.remove().then(res.status(200).send({message:"اکانت شما با موفقیت حذف شد"}));
-      //TODO expire refresh Token
     }
   }
 
@@ -63,6 +70,24 @@ class UserController
       });
      
       await user.save();
+      const refreshToken=user.generateRefreshToken(req.cookie.refreshToken)
+      const accessToken=user.generateAccessToken();
+      res.cookie("accessToken",accessToken,
+        {
+          httpOnly:true,
+          maxAge:10*60*1000,
+          sameSite:"strict",
+          //secure:true
+        }
+      )
+      res.cookie("refreshToken",refreshToken,
+        {
+          httpOnly:true,
+          maxAge:4*60*60*1000,
+          sameSite:"strict",
+          //secure:true
+        }
+      )
       res.status(200).send({message:"رمز با موفقیت تغییر یافت"});
     }
     else{res.status(400).send({message:"رمز نامعتبر است"})}

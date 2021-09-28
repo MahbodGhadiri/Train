@@ -17,11 +17,11 @@ module.exports = async function (req,res,next)
             
             return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});
         }
-        //try
-        //{
+        try
+        {
             userData = jwt.verify(refreshToken._id,config.secretKey);
-        //}
-        //catch{return res.status(401).send({message:"invalid credentials"})}
+        }
+        catch{return res.status(401).send({message:"invalid credentials"})}
       
         let user = await userModel.findOne({_id:userData._id});
         if(!user) {return res.status(401).send({message:"لطفا وارد اکانت خود شوید"})}
@@ -33,7 +33,7 @@ module.exports = async function (req,res,next)
         res.cookie("accessToken",accessToken,
             {
                 httpOnly:true,
-                maxAge:8*60*1000,
+                maxAge:10*60*1000,
                 sameSite:"strict",
                 //secure:true
             }
@@ -41,7 +41,7 @@ module.exports = async function (req,res,next)
         res.cookie("refreshToken",refreshToken,
             {
                 httpOnly:true,
-                maxAge:8*60*1000,
+                maxAge:4*60*60*1000,
                 sameSite:"strict",
                 //secure:true
             }

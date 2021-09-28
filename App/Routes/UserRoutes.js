@@ -4,7 +4,7 @@ const UserController =require( "../http/Controller/UserController");
 
 router.get("/profile",Auth,UserController.getProfile); //Done
 
-router.get("/logout",Auth,UserController.logout); //unfinished
+router.get("/logout",Auth,UserController.logout); //Done
 
 router.post("/delete-account",Auth,UserController.deleteAccount); //Mostly Done, Check comments in controller
 

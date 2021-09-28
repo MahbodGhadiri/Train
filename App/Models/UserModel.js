@@ -8,7 +8,7 @@ const emailSchema = {
     createdAt:{type:Date,default:Date.now},//expires:"15m" ,
     verificationToken:{type:String}
 }
-
+//TODO Fix createdAt expire option
 const phoneSchema = {
     number:{type:String,required:true,unique:true},
     active:{type:Boolean,default:false},
@@ -40,9 +40,8 @@ const userSchema = new Schema({
     activatedAt:{type:Date} //! for activateUser Api, but should this data even exist?
 })
 
-//TODO refresh and access tokens 
-//! The following method is incomplete , regenration and token rotation + access Tokens are required!!
-//! as a result of changes made to this method malfunction of Auth middleware is possible!!
+//TODO expire refresh tokens in database in 4 hours
+//TODO expire old refresh tokens in database in 5 minutes
 userSchema.methods.generateRefreshToken = async function (oldRefreshToken) 
 {
     if(!oldRefreshToken)

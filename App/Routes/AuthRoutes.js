@@ -2,11 +2,11 @@ const router = require("express").Router();
 const Auth = require( "../http/middlewares/Auth");
 const AuthController = require( "../http/Controller/AuthController");
 
-router.post("/register",AuthController.register); //Done for now
+router.post("/register",AuthController.register); //Done
 
-router.post("/login",AuthController.login); //Done for now
+router.post("/login",AuthController.login); //Done
 
-router.post("/resendActivationEmail",AuthController.resendActivationEmail); //TODO with get method
+router.get("/resendActivationEmail",AuthController.resendActivationEmail); //Done
 
 router.get("/verify_email/:userId/:sendedVerificationToken",AuthController.activateEmail); //Done for now
 
