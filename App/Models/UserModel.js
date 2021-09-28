@@ -1,6 +1,7 @@
 const { Schema, model } = require( "mongoose");
-const config = require("../../config/default.json")
-const jwt = require("jsonwebtoken")
+const config = require("../../config/default.json");
+const {refreshTokenModel} = require("./TokenModel");
+const jwt = require("jsonwebtoken");
 const emailSchema = {
     address:{type:String,required:true,unique:true},
     active:{type:Boolean,default:false},
@@ -39,18 +40,68 @@ const userSchema = new Schema({
     activatedAt:{type:Date} //! for activateUser Api, but should this data even exist?
 })
 
-//TODO refresh and access tokens
-userSchema.methods.generateAuthToken = function () 
+//TODO refresh and access tokens 
+//! The following method is incomplete , regenration and token rotation + access Tokens are required!!
+//! as a result of changes made to this method malfunction of Auth middleware is possible!!
+userSchema.methods.generateRefreshToken = async function (oldRefreshToken) 
 {
-    const data = 
+    if(!oldRefreshToken)
     {
-      _id: this._id,
-      password: this.password //TODO change this
-    };
-  
-    return jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
+        const data = 
+        {
+          _id: this._id,
+        };
+      
+        let refreshToken = jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
+        refreshToken =await new refreshTokenModel({_id:refreshToken});
+        await refreshToken.save();
+        return refreshToken;
+    }
+    else
+    {
+        let oldToken = await refreshTokenModel.findOne({_id:oldRefreshToken});
+        if(!oldToken) return null;
+        if(oldToken.nextToken)
+        {
+            while(oldToken.nextToken){
+
+                const nextToken = await refreshTokenModel.findOne({_id:oldToken.nextToken});
+                await oldToken.remove();
+                oldToken=nextToken;
+            }
+            await oldToken.remove();
+            return null;
+        }
+        const data = 
+        {
+          _id: this._id,
+        };
+      
+        let refreshToken = jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
+        oldToken.nextToken=refreshToken;
+        oldToken.deleteAt= new Date(Date.now()+(5*60000));
+        oldToken.save();
+        refreshToken =await new refreshTokenModel({_id:refreshToken});
+        await refreshToken.save()
+        return refreshToken;
+    }
+   
 }
 
+userSchema.methods.generateAccessToken = async function () 
+{
+    let accessToken = jwt.sign(this.getEssentialData(), config.secretKey , {expiresIn: 10 * 60});
+    return accessToken;
+}
+
+userSchema.methods.getEssentialData = function()
+{
+    data={
+        _id:this._id,
+        role:this.role
+    }
+    return data;
+}
 
 const userModel = new model("users",userSchema)
 

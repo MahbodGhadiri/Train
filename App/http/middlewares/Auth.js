@@ -5,57 +5,58 @@ require("cookie-parser");
 
 module.exports = async function (req,res,next)
 {
-    //TODO change how refresh tokens behave
+
     var refreshToken= req.cookies.refreshToken;
     var accessToken = req.cookies.accessToken;
     var userData;
     if (!accessToken)
     {
-        refreshToken = req.cookies.refreshToken;
-       if (!refreshToken)
-       {
-           return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});
-       }
-       try
-       {
-         userData = jwt.verify(refreshToken,config.secretKey);
-       }
-       catch{return res.status(401).send({message:"invalid credentials"})}
+        
+        if ((!refreshToken)||(!refreshToken._id))
+        {
+            
+            return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});
+        }
+        //try
+        //{
+            userData = jwt.verify(refreshToken._id,config.secretKey);
+        //}
+        //catch{return res.status(401).send({message:"invalid credentials"})}
       
-    
-       let user = await userModel.findOne({_id:userData._id});
-     
-       if(!user)
-       {return res.status(401).send({message:"لطفا وارد اکانت خود شوید"})}
+        let user = await userModel.findOne({_id:userData._id});
+        if(!user) {return res.status(401).send({message:"لطفا وارد اکانت خود شوید"})}
+        refreshToken = await user.generateRefreshToken(refreshToken)
+        if (refreshToken===null) {return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});}
 
-       if(user.password===userData.password)
-       {
-            const data = 
+        accessToken = await user.generateAccessToken()
+            
+        res.cookie("accessToken",accessToken,
             {
-                _id:user._id,
-                password:user.password,
-                active:user.active
-            }
-            accessToken = jwt.sign(data,config.secretKey,{expiresIn:8*60})
-            res.cookie("accessToken",accessToken,
-                {
                 httpOnly:true,
                 maxAge:8*60*1000,
                 sameSite:"strict",
                 //secure:true
-                }
-            )
-            req.user=data;
-            next();
-       }
-
-   }
-    try
-    {
-    userData = jwt.verify(accessToken,config.secretKey);
+            }
+        )
+        res.cookie("refreshToken",refreshToken,
+            {
+                httpOnly:true,
+                maxAge:8*60*1000,
+                sameSite:"strict",
+                //secure:true
+            }
+        )
+        req.user=user.getEssentialData(); 
+        next();
     }
-    catch{return res.status(401).send({message:"invalid credentials"})}
-    req.user=userData;
-    next();
-
+    else
+    {
+        try
+        {
+            userData = jwt.verify(accessToken,config.secretKey);
+        }
+        catch{return res.status(401).send({message:"invalid credentials"})}
+        req.user=userData;
+        next();
+    }
 }

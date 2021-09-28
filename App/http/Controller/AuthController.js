@@ -1,4 +1,4 @@
-const { registerValidator, loginValidator , changePasswordValidator , forgotPasswordUsingEmailValidator , resetPasswordValidator } = require("../Validators/AuthValidators");
+const { registerValidator, loginValidator , forgotPasswordUsingEmailValidator , resetPasswordValidator } = require("../Validators/AuthValidators");
 const userModel = require("../../Models/UserModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
@@ -65,7 +65,7 @@ class AuthController {
       if(user.email.active&&user.activeAccount)
       {
         
-        const token = user.generateAuthToken();
+        const token = await user.generateRefreshToken();
         res.cookie("refreshToken",token,{
           httpOnly:true,
           maxAge:4*60*60*1000,
@@ -180,7 +180,7 @@ class AuthController {
       const user = await userModel.findById(userId);
       if(!user)
        return res.status(404).send({message:"لینک نامعتبر"});
-      const token = user.generateAuthToken();
+      const token = user.generateRefreshToken();
       res.cookie("refreshToken",token,{
         httpOnly:true,
         maxAge:4*60*60*1000,

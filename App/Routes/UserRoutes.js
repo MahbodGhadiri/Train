@@ -6,7 +6,7 @@ router.get("/profile",Auth,UserController.getProfile); //Done
 
 router.get("/logout",Auth,UserController.logout); //unfinished
 
-router.post("/delete-account",Auth,UserController.deleteAccount); //! awaiting tests----------------------------------
+router.post("/delete-account",Auth,UserController.deleteAccount); //Mostly Done, Check comments in controller
 
 router.put("/change-info",Auth,UserController.changeInfo); //unfinished
 

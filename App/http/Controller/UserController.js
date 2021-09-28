@@ -2,7 +2,7 @@ const pinModel = require( "../../Models/PinModel");
 const userModel = require("../../Models/UserModel");
 const _ = require("lodash")
 const {deleteAccountValidator , setCustomTaskValidator} = require("../Validators/UserValidators");
-const { date } = require("joi");
+const argon2=require("argon2")
 
 class UserController
 {
@@ -18,13 +18,13 @@ class UserController
       //Expire refresh Token //? and cookies  
   }
 
-  async deleteAccount(req,res) //TODO Test it
+  async deleteAccount(req,res) //Mostly Done
   {
     const {error}=deleteAccountValidator(req.body); 
-    if (error){ res.status(400).send({message : error.message})};
+    if (error){ return res.status(400).send({message : error.message})};
 
-    user = await userModel.findById(req.user._id); //TODO Callback
-    if (!user) res.status(404).send({message:"یافت نشد"})
+    const user = await userModel.findById(req.user._id); 
+    if (!user) return res.status(404).send({message:"یافت نشد"})
 
     if(await argon2.verify(user.password,req.body.password,{
       type: argon2.argon2id,
@@ -33,6 +33,7 @@ class UserController
       )
     {
       user.remove().then(res.status(200).send({message:"اکانت شما با موفقیت حذف شد"}));
+      //TODO expire refresh Token
     }
   }
 
@@ -174,9 +175,6 @@ class UserController
     }
     res.status(200).send(pins);
   }
-
-  
-
 }
 
 module.exports = new UserController;

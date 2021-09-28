@@ -8,6 +8,14 @@ const forgotPasswordTokenSchema = new Schema(
 
 })
 
-forgotPasswordModel = model("tokens",forgotPasswordTokenSchema);
+const refreshTokenSchema = new Schema({
+    _id:{type:String,required:true},
+    nextToken:{type:String},
+    deleteAt:{type:Date}
+})
 
-module.exports = forgotPasswordModel;
+forgotPasswordModel = model("tokens",forgotPasswordTokenSchema);
+refreshTokenModel = model("refreshTokens",refreshTokenSchema);
+
+
+module.exports = {forgotPasswordModel,refreshTokenModel};
