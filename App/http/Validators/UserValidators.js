@@ -19,9 +19,19 @@ const setCustomTaskValidator=(data)=>
     })
     return schema.validate(data);
 }
+const changeInfoValidator=(data)=>{
+    const schema = joi.object({
+        name: joi.string().required().min(3).max(30),
+        phoneNumber: joi.string().required().length(11).pattern(/^[0-9]+$/),
+        ability: joi.string().min(3).max(10),
+        avatarURL: joi.string().max(40)
+    })
+    return schema.validate(data);
+}
 
 module.exports=
 {
     deleteAccountValidator,
-    setCustomTaskValidator
+    setCustomTaskValidator,
+    changeInfoValidator
 };

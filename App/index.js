@@ -6,6 +6,12 @@ const mongoose = require("mongoose");
 const winston = require("winston");
 require("winston-mongodb");
 require("express-async-errors");
+const fs = require("fs");
+const http = require('http');
+const https = require('https');
+const certificate = fs.readFileSync(__dirname + '/../sslcert/certificate.crt', 'utf8');
+const privateKey  = fs.readFileSync(__dirname+'/../sslcert/privateKey.key', 'utf8');
+const credentials = {key: privateKey, cert: certificate};
 const errorHandler = require("./http/middlewares/ErrorHandler");
 const config = require('../config/default.json');
 const api = require("./Routes/api")
@@ -20,13 +26,24 @@ class application {
     }
 
     setupExpressServer(){
-        app.listen(config.port,(err)=>{
+        const httpServer = http.createServer(app);
+        const httpsServer = https.createServer(credentials, app);
+        httpServer.listen(config.httpPort,(err)=>{
             if (err){
                 console.log(err)
                 winston.error(err)
             }
             else{
-                console.log(`Listening on port ${config.port}`)
+                console.log(`http server Listening on port ${config.httpPort}`)
+            }
+        });
+        httpsServer.listen(config.httpsPort,(err)=>{
+            if (err){
+                console.log(err)
+                winston.error(err)
+            }
+            else{
+                console.log(`https server Listening on port ${config.httpsPort}`)
             }
         });
     }

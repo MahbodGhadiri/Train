@@ -1,7 +1,7 @@
 const pinModel = require( "../../Models/PinModel");
 const userModel = require("../../Models/UserModel");
 const _ = require("lodash")
-const {deleteAccountValidator , setCustomTaskValidator} = require("../Validators/UserValidators");
+const {deleteAccountValidator , setCustomTaskValidator , changeInfoValidator} = require("../Validators/UserValidators");
 const argon2=require("argon2");
 const { refreshTokenModel } = require("../../Models/TokenModel");
 
@@ -44,9 +44,18 @@ class UserController
     }
   }
 
-  async changeInfo(req,res) //unfinished
+  async changeInfo(req,res) //TODO Test it
   {
-        
+    const { error } = registerValidator(req.body);
+    if (error) { return res.status(400).send({ message: error.message }) };
+
+    user = await userModel.findOne({_id:req.user._id})
+    user.phone.number=req.body.phoneNumber;
+    user.name = req.body.name;
+    user.avatarURL = req.body.avatarURL;
+    user.ability = req.body.ability;
+    user.save()
+    res.status(200).send({message:"انجام شد"})
   }
 
   async changePassword(req,res) //Done

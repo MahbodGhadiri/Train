@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const emailSchema = {
     address:{type:String,required:true,unique:true},
     active:{type:Boolean,default:false},
-    createdAt:{type:Date,default:Date.now},//expires:"15m" ,
+    createdAt:{type:Date,default:Date.now,expires:"15m"},
     verificationToken:{type:String}
 }
 //TODO Fix createdAt expire option
@@ -40,7 +40,7 @@ const userSchema = new Schema({
     activatedAt:{type:Date} //! for activateUser Api, but should this data even exist?
 })
 
-//TODO expire refresh tokens in database in 4 hours
+
 //TODO expire old refresh tokens in database in 5 minutes
 userSchema.methods.generateRefreshToken = async function (oldRefreshToken) 
 {
@@ -78,7 +78,7 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
       
         let refreshToken = jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
         oldToken.nextToken=refreshToken;
-        oldToken.deleteAt= new Date(Date.now()+(5*60000));
+        oldToken.invalidSince=Date.now();
         oldToken.save();
         refreshToken =await new refreshTokenModel({_id:refreshToken});
         await refreshToken.save()

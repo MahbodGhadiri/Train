@@ -1,11 +1,12 @@
 const pinModel = require("../../Models/PinModel");
 const setPinValidator =require( "../Validators/PinValidators");
-
+const UserModel = require("../../Models/UserModel")
 class AdminController 
 {
-    async getUsers (req,res)//unfinished
+    async getUsers (req,res)//need more work
     {
-
+        const users = await UserModel.find({});
+        res.status(200).send(user); //! don't fucking send everything
     }
 
     async getTasks(req,res)//unfinished
@@ -53,9 +54,15 @@ class AdminController
         })
     }
 
-    async activateUser(req,res)//unfinished
+    async activateUser(req,res)//need more work
     {
-
+        user= await UserModel.findOne({_id:req.query.user})
+        if(user.email.active)
+        {
+            user.activeAccount = true;
+            await user.save();
+            //then stop expiration of user account
+        }
     }
 
     async deactivateUser(req,res)//unfinished
