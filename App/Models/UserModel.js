@@ -8,7 +8,7 @@ const emailSchema = {
     createdAt:{type:Date,default:Date.now,expires:"15m"},
     verificationToken:{type:String}
 }
-//TODO Fix createdAt expire option
+
 const phoneSchema = {
     number:{type:String,required:true,unique:true},
     active:{type:Boolean,default:false},
@@ -52,9 +52,9 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         };
       
         let refreshToken = jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
-        refreshToken =await new refreshTokenModel({_id:refreshToken});
+        refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
         await refreshToken.save();
-        return refreshToken;
+        return refreshToken; //? ._id
     }
     else
     {
@@ -80,9 +80,9 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         oldToken.nextToken=refreshToken;
         oldToken.invalidSince=Date.now();
         oldToken.save();
-        refreshToken =await new refreshTokenModel({_id:refreshToken});
+        refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
         await refreshToken.save()
-        return refreshToken;
+        return refreshToken; //? ._id
     }
    
 }

@@ -10,6 +10,7 @@ const forgotPasswordTokenSchema = new Schema(
 
 const refreshTokenSchema = new Schema({
     _id:{type:String,required:true},
+    userId:{type:String,required:true},
     nextToken:{type:String},
     timeStamp:{type:Date,default:Date.now,expires:"4h"},
     invalidSince:{type:Date,expire:"5m",required:false}

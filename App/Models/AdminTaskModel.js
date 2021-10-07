@@ -13,6 +13,6 @@ const adminTaskSchema = new mongoose.Schema({
   
 })
 
-const adminTaskModel = new mongoose.Model("tasks",adminTaskSchema);
+const adminTaskModel = new mongoose.model("tasks",adminTaskSchema);
 
 module.exports = adminTaskModel;
