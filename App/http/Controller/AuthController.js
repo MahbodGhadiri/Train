@@ -98,7 +98,7 @@ class AuthController {
     res.status(200).send({message:"ایمیل ارسال شد"})
   }
 
-  async activateEmail(req,res) //Done for now
+  async activateEmail(req,res) //Done 
   { 
     const {userId , sendedVerificationToken}=req.params;
     

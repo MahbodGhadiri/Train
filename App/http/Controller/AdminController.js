@@ -6,48 +6,41 @@ const {setTaskValidator} = require("../Validators/TaskValidators")
 
 class AdminController 
 {
-    async getUsers (req,res)//TODO test this
+    async getUsers (req,res)//Done
     {
         const users = await UserModel
         .aggregate([
             {
                 $project: 
                 {
-                    name:1,
-                    "email.address":1,
-                    "phone.number":1,
+                    "email.verficationToken":0,
                     password:0,
-                    role:1,
-                    customeTasks:0,
-                    ability:1,
-                    avatarURL:1,
-                    activeAccount:1,
-                    activatedAt:1
+                    customTasks:0,
                 }
             }
         ]);
         res.status(200).send(users); 
     }
 
-    async getTasks(req,res)//TODO test this //? am i missing something?
+    async getTasks(req,res)//Done //? am i missing something?
     {
         const tasks = await adminTaskModel.find({});
         res.status(200).send({message:"انجام شد",tasks:tasks});
     }
 
-    async setTask(req,res)//TODO test this
+    async setTask(req,res)//Done
     {
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
    
         if(req.body.finishDate>req.body.startDate)
         {
-           await new adminTaskModel(req.body).save().then(res.status(201).send()); 
+           await new adminTaskModel(req.body).save().then(res.status(201).send({message:"انجام شد"})); 
         }
         else return res.status(400).send({messgae:"Invalid Date"})
     }
 
-    async editTask(req,res)//TODO test it
+    async editTask(req,res)//Done
     {
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
@@ -60,23 +53,39 @@ class AdminController
         else return res.status(400).send({messgae:"Invalid Date"})
     }
 
-    async doneTask(req,res)//unfinished
+    async doneTask(req,res)//Done
     {
+    const task = await AdminTaskModel.findById(req.query.task)
+    .exec((err,task)=>
+    {
+    if (err) {return res.status(404).send({message:"یافت نشد"})}
+    if (task)
+    {
+        if (task.done === false)
+          {
+            task.done = true;
+            task.save().then(res.status(200).send({message:"با موفقیت انجام شد"}));
+          }
+          else return res.status(200).send({meassage:"قبلا انجام شده"});
         
     }
+    else res.status(404).send({message:"یافت نشد"})
+    }) ;
+    }
 
-    async deleteTask(req,res)//TODO test this
+    async deleteTask(req,res)//ِDone
     {
         await adminTaskModel
         .findOneAndDelete({_id:req.query.task})
-        .exec(function(error)
+        .exec(function(error,task)
         {
             if(error) return res.status(400).send({message:"عملیات ناموفق"})
-            else return res.status(200).send({message:"باموفقیت انجام شد"})
+            else if(task) {res.status(200).send({message:"باموفقیت انجام شد"})}
+            else  res.status(400).send({message:"وجود ندارد"})
         })
     }
 
-    async setPin(req,res)//TODO test this
+    async setPin(req,res)//Done
     {
         const {error}=setPinValidator(req.body);
         if (error){return res.status(400).send({message:error.message})}
@@ -86,30 +95,36 @@ class AdminController
 
     }
 
-    async deletepin(req,res)//TODO test this
+    async deletePin(req,res)//Done
     {
-        await pinModel.findOneAndDelete({_id:req.query.pin},function (err, docs) {
-            if (err)
-            {console.log(err)}
-            else{ res.status(200).send({message:"پین پاک شد"})}
+        await pinModel.findOneAndDelete({_id:req.query.pin})
+        .exec(function(error,pin)
+        {
+            if(error) return res.status(400).send({message:"عملیات ناموفق"})
+            else if(pin) {res.status(200).send({message:"باموفقیت انجام شد"})}
+            else  res.status(400).send({message:"وجود ندارد"})
         })
     }
 
-    async activateUser(req,res)//TODO test this
+    async activateUser(req,res)//Done
     {
-        user= await UserModel.findOne({_id:req.query.user});
+        const user= await UserModel.findOne({_id:req.query.user});
         if(user&&user.email.active&&!user.activeAccount)
         {
             user.activeAccount = true;
             await user.save();
             res.status(200).send({message:"انجام شد"});
         }
+        else if (user.activeAccount)
+        {
+            res.status(200).send({message:"اکانت قبلا فعال شده است"});
+        }
         else res.status(400).send({message:"کاربر وجود ندارد یا ایمیل کاربر به تایید نرسیده است"});
     }
 
-    async deactivateUser(req,res)//TODO test this
+    async deactivateUser(req,res)//Done
     {
-        user= await UserModel.findOne({_id:req.query.user});
+        const user= await UserModel.findOne({_id:req.query.user});
         if(user&&user.activeAccount)
         {
             user.activeAccount = false;
@@ -119,9 +134,9 @@ class AdminController
         else res.status(400).send({message:"کاربر وجود ندارد یا اکانت کاربر فعال نیست"});
     }
 
-    async promoteUser(req,res)//TODO test this
+    async promoteUser(req,res)//Done
     {
-        user = await UserModel.findOne({_id:req.query.user});
+        const user = await UserModel.findOne({_id:req.query.user});
         if(user&&user.activeAccount)
         {
             if(user.role==="user")
@@ -133,9 +148,9 @@ class AdminController
         }else{return res.status(404).send({message:"کاربر یافت نشد"})}
     }
 
-    async demoteUser(req,res)//TODO test this
+    async demoteUser(req,res)//Done
     {
-        user = await UserModel.findOne({_id:req.query.user});
+        const user = await UserModel.findOne({_id:req.query.user});
         if(user&&user.activeAccount)
         {
             if(user.role==="admin")

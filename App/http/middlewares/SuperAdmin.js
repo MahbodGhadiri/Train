@@ -1,10 +1,9 @@
 const UserModel=require("../../Models/UserModel")
-module.exports= function (res,req,next){
+module.exports=async function (req,res,next){
 
-    
-    if(req.body.token.role==="super admin")
+    if(req.user.role==="super admin")
     {
-        const user = UserModel.findOne(req.user._id);
+        const user = await UserModel.findOne({_id:req.user._id});
         if(!user)
         {
             return res.status(404).send({message:"یافت نشد"})

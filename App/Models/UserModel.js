@@ -20,7 +20,7 @@ const customTaskSchema = new Schema({
     task:{type:String,require:true},
     subjectTag: {type:String , required:true , enum:["گرافیک","برنامه نویسی","مدیریت","دیگر"]},
     done:{type:Boolean,default:false},
-    failed:{type:Boolean,default:false}, //TODO check code and change "failed" to "delayed"
+    delayed:{type:Boolean,default:false}, 
     startDate:{type:Date,required:true},
     finishDate:{type:Date,required:true}
     

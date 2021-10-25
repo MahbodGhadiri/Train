@@ -10,13 +10,12 @@ router.post("/delete-account",Auth,UserController.deleteAccount); //Mostly Done,
 
 router.put("/change-info",Auth,UserController.changeInfo); //unfinished
 
-router.post("/change-password",Auth,UserController.changePassword); //Done //? why post method?
+router.post("/change-password",Auth,UserController.changePassword); //Done 
 
-router.get("/tasks",Auth,UserController.getTasks); //! awaiting tests ------------------------------------------------
+router.get("/tasks",Auth,UserController.getTasks); //Done
+router.get("/tasks/done",Auth,UserController.doneTask); //Done
 
-router.get("/tasks/done?task=",Auth,UserController.doneTask); //! awaiting tests -------------------------------------
-
-router.get("/tasks/delay?task=",Auth,UserController.delayTask); //! awaiting tests -----------------------------------
+router.get("/tasks/delay",Auth,UserController.delayTask); //Done
 
 router.get("/custom-tasks",Auth,UserController.getCustomTasks); //Done
 

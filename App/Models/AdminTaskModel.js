@@ -7,7 +7,7 @@ const adminTaskSchema = new mongoose.Schema({
     executors:{type:Array,require:true},
     assignedBy:{type:String,require:true},
     done:{type:Boolean,default:false},
-    failed:{type:Boolean,default:false},
+    delayed:{type:Boolean,default:false},
     startDate:{type:Date,required:true},
     finishDate:{type:Date,required:true}
   
