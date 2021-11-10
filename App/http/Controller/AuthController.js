@@ -12,7 +12,6 @@ class AuthController {
 
   async  register(req, res)  //Done
   {
-   
     req.body.email = req.body.email.toLocaleLowerCase();
     
     const { error } = registerValidator(req.body);
@@ -27,7 +26,6 @@ class AuthController {
     )
     if (user) { return res.status(400).send("کاربری با این اطلاعات وجود دارد!") }
 
-        
     const userData= 
     {
       name:req.body.name,
@@ -51,7 +49,7 @@ class AuthController {
   async  login(req, res) //Done
   {
     const { error } = loginValidator(req.body);
-    if (error) { res.status(400).send({ message: error.message }) }
+    if (error) { return res.status(400).send({ message: error.message }) }
 
     const user = await userModel.findOne({ "email.address": req.body.email });
     if (!user) { return res.status(404).send("چنین کاربری وجود ندارد") }
@@ -69,7 +67,7 @@ class AuthController {
         res.cookie("refreshToken",token,{
           httpOnly:true,
           maxAge:4*60*60*1000,
-          sameSite:"strict",
+          sameSite:"Strict",
           //secure:true
         })
         .status(200).send({message:"ورود با موفقیت انجام شد"});

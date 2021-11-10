@@ -15,68 +15,100 @@ const credentials = {key: privateKey, cert: certificate};
 const errorHandler = require("./http/middlewares/ErrorHandler");
 const config = require('../config/default.json');
 const api = require("./Routes/api")
+const cors = require("cors")
 
-class application {
+class application 
+{
     
-    constructor(){
-    this.setupExpressServer();
-    this.setupMongoose();
-    this.setupRoutesAndMiddlewares();
-    this.setupConfigs();
+    constructor()
+    {
+        this.setupExpressServer();
+        this.setupMongoose();
+        this.setupRoutesAndMiddlewares();
+        this.setupConfigs();
     }
 
-    setupExpressServer(){
+    setupExpressServer()
+    {
         const httpServer = http.createServer(app);
         const httpsServer = https.createServer(credentials, app);
-        httpServer.listen(config.httpPort,(err)=>{
+
+        httpServer.listen(config.httpPort,(err)=>
+        {
             if (err){
                 console.log(err)
                 winston.error(err)
             }
-            else{
-                console.log(`http server Listening on port ${config.httpPort}`)
-            }
+            else console.log(`http server Listening on port ${config.httpPort}`) 
         });
-        httpsServer.listen(config.httpsPort,(err)=>{
+
+        httpsServer.listen(config.httpsPort,(err)=>
+        {
             if (err){
                 console.log(err)
                 winston.error(err)
             }
-            else{
-                console.log(`https server Listening on port ${config.httpsPort}`)
-            }
+            else console.log(`https server Listening on port ${config.httpsPort}`)    
         });
     }
 
-    setupMongoose(){
-        
-        mongoose.connect(config.MongoDB_Adrress,{useNewUrlParser:true,useUnifiedTopology:true})
+    setupMongoose()
+    {    
+        mongoose
+        .connect(config.MongoDB_Adrress,{useNewUrlParser:true,useUnifiedTopology:true})
         .then(()=>{
             console.log("Connected to DB")
         })
         .catch((err)=>{console.log(`Conection to DB failed \n`,err);})
     }
 
-     setupRoutesAndMiddlewares(){
-     app.use(express.json());
-     app.use(cookieParser())
-     app.use("/api",api);
-     app.use(errorHandler);
-     }
+     setupRoutesAndMiddlewares()
+    {
+        const corsOpts = 
+        {
+           origin: 'http://localhost:3000',
+           withCredentials: true,
+           methods: 
+           [
+             'GET',
+             'POST',
+           ],
+         
+           allowedHeaders: 
+           [
+             'Content-Type'
+           ],
+        };
 
-    setupConfigs(){
+        app.use(express.json());
+        app.use(express.urlencoded({extended:false}))
+        app.use(cookieParser())
+        app.use //? IS THIS NEEDED?
+        (
+            (req,res,next)=>{res.header('Access-Control-Allow-Credentials',true) ; next();}
+        )
+        app.use(cors(corsOpts)); 
+     
+        app.use("/api",api);
+        app.use(errorHandler);
+    }
+
+    setupConfigs()
+    {
         winston.add(new winston.transports.File({filename : "Error-log.log"}))
         winston.add(new winston.transports.MongoDB({db:config.MongoDB_log_Adrress},{useUnifiedTopology:true}))
 
-        process.on("uncaughtExeption",(err)=>{
+        process.on("uncaughtExeption",(err)=>
+        {
             console.log(err);
             winston.error(err.message);
         });
-        process.on("unhandledRejection",(err)=>{
+        process.on("unhandledRejection",(err)=>
+        {
             console.log(err);
             winston.error(err.message);
         });
-     }
+    }
 }
 
 module.exports = application;
