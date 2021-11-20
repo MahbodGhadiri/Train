@@ -1,13 +1,13 @@
 const nodemailer = require("nodemailer");
-const  crypto  = require("crypto");
+const crypto  = require("crypto");
 const argon2  = require( "argon2");
 const userModel = require( "../../Models/UserModel");
-
+const config = require("../../../config")
 const transport = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-      user: "testmailfortestpurposes",
-      pass: "oHt76%98&YF",
+      user: config.transport_mail,
+      pass: config.trasport_pass
     },
   });
 
@@ -25,7 +25,7 @@ async function sendEmail(userId,loginLink)
 
     mailOptions = 
     {
-        from: "Train <testmailfortestpurposes>",
+        from: `Train <${config.transport_mail}>`,
         to: user.email.address,
         subject: "Confirm your account",
         html: `<div>
@@ -75,7 +75,7 @@ async function sendEmail(userId,loginLink)
   {
     mailOptions = 
     {
-        from: "Train <testmailfortestpurposes>",
+        from: `Train <${config.transport_mail}>`,
         to: user.email.address,
         subject: "Reset Your Password",
         html: `<div>
