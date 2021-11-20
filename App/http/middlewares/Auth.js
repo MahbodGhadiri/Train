@@ -14,7 +14,6 @@ module.exports = async function (req,res,next)
         
         if ((!refreshToken)||(!refreshToken._id))
         {
-            
             return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});
         }
         try
@@ -46,7 +45,8 @@ module.exports = async function (req,res,next)
                 //secure:true
             }
         )
-        req.user=user.getEssentialData(); 
+        userData = jwt.verify(accessToken,config.secretKey);
+        req.user=userData
         next();
     }
     else
