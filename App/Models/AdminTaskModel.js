@@ -15,4 +15,56 @@ const adminTaskSchema = new mongoose.Schema({
 
 const adminTaskModel = new mongoose.model("tasks",adminTaskSchema);
 
-module.exports = adminTaskModel;
+class Filter
+{
+    constructor(tasks,days,subject)
+    {
+        this.tasks=tasks
+        this.days=days
+        this.subject=subject
+    }
+
+    byDays ()
+    {
+        let tasks  = this.tasks ;
+        let days = this.days ;
+        if(!tasks) return this.tasks = []
+        if(days) 
+        { 
+          let filteredTasks = []
+          for(let i = 0 ; i<tasks.length;i++)
+          {
+            if(Math.ceil((tasks[i].finishDate.getTime()-Date.now())/(24*60*60*1000))>=days)
+            {
+              filteredTasks.push(tasks[i]);
+            }
+          }
+          return this.tasks = filteredTasks;
+        }
+        else return 
+    }
+    
+    bySubject()
+    {
+      let tasks  = this.tasks ;
+      let subject = this.subject ;
+      if(!tasks) return this.tasks = []
+    
+      if (subject)
+      {
+        let filteredTasks = []
+        for(let i = 0 ; i<tasks.length;i++)
+        {
+          if(tasks[i].subjectTag==subject)
+          {
+            filteredTasks.push(tasks[i]);
+          }
+        }
+        return this.tasks = filteredTasks;
+      }
+      else return
+    }
+}
+
+
+module.exports = {adminTaskModel, Filter};

@@ -1,7 +1,7 @@
 const pinModel = require("../../Models/PinModel");
 const setPinValidator =require( "../Validators/PinValidators");
 const UserModel = require("../../Models/UserModel")
-const adminTaskModel = require("../../Models/AdminTaskModel")
+const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
 const {setTaskValidator} = require("../Validators/TaskValidators")
 
 class AdminController 
@@ -22,10 +22,17 @@ class AdminController
         res.status(200).send(users); 
     }
 
-    async getTasks(req,res)//Done //? am i missing something?
+    async getTasks(req,res)//Done //optional query parameters for filtering : days , subject 
     {
         const tasks = await adminTaskModel.find({});
-        res.status(200).send({message:"انجام شد",tasks:tasks});
+        if(req.query.days||req.query.subject)
+        {
+            const filter = new Filter(tasks,req.query.days,req.query.subject);
+            filter.byDays();
+            filter.bySubject();
+            res.status(200).send({message:"با موفقیت انجام شد","tasks":filter.tasks}).json();
+        }
+        else res.status(200).send({message:"انجام شد",tasks:tasks});
     }
 
     async setTask(req,res)//Done

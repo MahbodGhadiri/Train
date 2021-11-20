@@ -1,6 +1,6 @@
 const pinModel = require( "../../Models/PinModel");
 const userModel = require("../../Models/UserModel");
-const AdminTaskModel = require("../../Models/AdminTaskModel")
+const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
 const _ = require("lodash")
 const {deleteAccountValidator , setCustomTaskValidator , changeInfoValidator} = require("../Validators/UserValidators");
 const argon2=require("argon2");
@@ -103,16 +103,22 @@ class UserController
     else{res.status(400).send({message:"رمز نامعتبر است"})}
   }
   
-  async getTasks(req,res) //Done
+  async getTasks(req,res) //Done //optional query parameters: days , subject 
   {
-    const tasks = await AdminTaskModel.find({executors:req.user._id,done:false,delayed:false});
-    if(!tasks) return res.status(200).send({message:"فعالیتی وجود ندارد"})
-    res.status(200).send({message:"با موفقیت انجام شد","tasks":tasks}).json();
+    let tasks = await adminTaskModel.find({executors:req.user._id,done:false,delayed:false})
+    if (req.query.days||req.query.subject)
+    {
+      const filter = new Filter(tasks,req.query.days,req.query.subject)
+    filter.byDays()
+    filter.bySubject()
+    res.status(200).send({message:"با موفقیت انجام شد","tasks":filter.tasks}).json();
+    }
+    else res.status(200).send({message:"انجام شد",tasks:tasks})
   }
 
   async doneTask(req,res) //Done
   {
-    const task = await AdminTaskModel.findById(req.query.task)
+    const task = await adminTaskModel.findById(req.query.task)
     .exec((err,task)=>
     {
       if (err) {return res.status(404).send({message:"یافت نشد"})}
@@ -136,7 +142,7 @@ class UserController
 
   async delayTask(req,res) //Done
   {
-    const task = await AdminTaskModel.findById(req.query.task) ;
+    const task = await adminTaskModel.findById(req.query.task) ;
     if(task.executors.includes(req.user._id))
     {
       task.delayed = true;
