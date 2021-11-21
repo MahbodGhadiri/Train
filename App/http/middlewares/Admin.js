@@ -5,6 +5,6 @@ module.exports= async function (req,res,next)
     if (!user) {return res.status(401).send({message:"خطایی رخ داد لطفا دوباره وارد اکانت خود شوید"})}
 
     if((user.role==="admin")||(user.role==="super admin")){next()}
-    else {return res.status(403).send("شما سطح دسترسی لازم را ندارید")}
+    else {return res.status(404).send("یافت نشد")}
     
 }

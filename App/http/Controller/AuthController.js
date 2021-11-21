@@ -10,7 +10,7 @@ const crypto = require("crypto");
 
 class AuthController {
 
-  async  register(req, res)  //Done
+  async  register(req, res)
   {
     req.body.email = req.body.email.toLocaleLowerCase();
     
@@ -46,15 +46,14 @@ class AuthController {
     res.status(200).send({message:" عملیات با موفقیت انجام شد . جهت فعالسازی به ایمیل خود مراجعه کنید.",_id:user._id});
   }
 
-  async  login(req, res) //Done
+  async  login(req, res)
   {
     const { error } = loginValidator(req.body);
     if (error) { return res.status(400).send({ message: error.message }) }
 
     const user = await userModel.findOne({ "email.address": req.body.email });
-    if (!user) { return res.status(404).send("چنین کاربری وجود ندارد") }
+    if (!user) { return res.status(400).send("رمز یا نام کاربری نامعتبر است") }
 
-         
     if(await argon2.verify(user.password,req.body.password,{
       type: argon2.argon2id,
       memoryCost: 15360,
@@ -62,7 +61,6 @@ class AuthController {
     {
       if(user.email.active&&user.activeAccount)
       {
-        
         const token = await user.generateRefreshToken();
         res.cookie("refreshToken",token,{
           httpOnly:true,
@@ -78,32 +76,32 @@ class AuthController {
       }
       
     }
-    else{res.status(400).send({message:"رمز نامعتبر است"})};
+    else{res.status(400).send({message:"رمز یا نام کاربری نامعتبر است"})};
     }
 
-  async resendActivationEmail(req,res) //Done
+  async resendActivationEmail(req,res)
   {
     const user = await userModel.findById(req.query.userId);
     if(!user)
     {
-      return res.status(404).send({message:"کاربری با این اطلاعات یافت نشد"});
+      return res.status(400).send({message:"کاربر وجود ندارد یا اکانت قبلا فعال شده است"});
     }
     if(user.email.active)
     {
-      return res.status(400).send({message:"این ایمیل قبلا فعال شده است"});
+      return res.status(400).send({message:"کاربر وجود ندارد یا اکانت قبلا فعال شده است"});
     }
     sendEmail(req.body.userId);
     res.status(200).send({message:"ایمیل ارسال شد"})
   }
 
-  async activateEmail(req,res) //Done 
+  async activateEmail(req,res) //required params : userId and sendedVerficationToken(created in register API)
   { 
     const {userId , sendedVerificationToken}=req.params;
     
-    if(!userId || !sendedVerificationToken){return res.status(400).send({message:"درخواست نامعتبر است"})}
+    if(!userId || !sendedVerificationToken){return res.status(400).send({message:"لینک نامعتبر است"})}
        
     const user = await userModel.findOne({_id:userId});
-    if(!user){return res.status(404).send({message:"درخواست نامعتبر است"})}
+    if(!user){return res.status(400).send({message:"لینک نامعتبر است"})}
 
     if(user.email.verificationToken==sendedVerificationToken)
     {
@@ -115,11 +113,10 @@ class AuthController {
       .send(`<link rel="stylesheet" href="/css/styles.css"> <div align="center"><b> ایمیل شما تایید شد ، در انتظار فعال سازی اکانت شما توسط ادمین</b></div>`
       );
     }
-    else{return res.send(400).send({message:"درخواست نامعتبر است"})}
-
+    else{return res.send(400).send({message:"لینک نامعتبر است"})}
   }
 
-  async forgotPassword(req,res) //Add reset with phonenumber option
+  async forgotPassword(req,res) //TODO Add reset with phonenumber option
   {
     if(req.body.email)
     {
@@ -130,23 +127,29 @@ class AuthController {
         res.status(400).send(`an error occured , make sure you are using either your email or your phone number \n ${error} `)
       }
       const user = await userModel.findOne({"email.address":req.body.email});
+      //Check if account is activated
       if (user.activeAccount===true)
       {
+        // generate token for login 
         const verificationToken = crypto.randomBytes(16).toString("hex");
-        const loginLink = `http://localhost:3000/api/auth/forgot-password/login/${user._id}/${verificationToken}`;
+        // generate link with valid format , link must have user._id and a valid token
+        const loginLink = `${config.domain}/api/auth/forgot-password/login/${user._id}/${verificationToken}`;
+        //remove any previously existing login token from DB
+        //? may there be a bug that cause saving two Tokens in DB?
         let tokenInfo = await forgotPasswordModel.findById(user._id);
         if(tokenInfo)
         {
           await tokenInfo.remove();
         }
+        // save token to DB //? Do tokens have expiration date? if not add expiration
         const data = 
         {
           _id:user._id,
           token:verificationToken,
         }
-        console.log(data);
         tokenInfo = await new forgotPasswordModel(data);
         await tokenInfo.save();
+        // send mail to user Email , the link will redirect user to get forgotPassword/login
         sendEmail(user._id , loginLink);
         res.status(200).send({message:"به ایمیل خود مراجعه کرده و از آنجا مراحل را ادامه دهید"});
       }
@@ -156,6 +159,7 @@ class AuthController {
     else if (req.body.phoneNumber)
     {
       //TODO reset password with Phone Number!!!
+      res.status(503) //Just to avoid getting stuck
     }
     else
     {
@@ -163,12 +167,13 @@ class AuthController {
     }
   }
   
-  async forgotPasswordLogin(req, res) //need co op with frontend
+  async forgotPasswordLogin(req, res) //need co op with frontend //required params : userId & Token (created in forgotPassword Method)
   {
     const { userId, sendedVerificationToken } = req.params;
     
     if (!userId || !sendedVerificationToken)
       return res.status(400).send({ message: "لینک نامعتبر" });
+    //checking if token is valid
     const tokenInfo = await forgotPasswordModel.findById(userId);
     if(!tokenInfo)
       return res.status(400).send({message:"لینک نامعتبر"});
@@ -177,12 +182,14 @@ class AuthController {
       const user = await userModel.findById(userId);
       if(!user)
        return res.status(404).send({message:"لینک نامعتبر"});
+      //api won't delete the token as it is needed when changing password
+      //generating refreshToken to log the user in
       const token = user.generateRefreshToken();
       res.cookie("refreshToken",token,{
         httpOnly:true,
         maxAge:4*60*60*1000,
         sameSite:"strict",
-        //secure:true
+        //secure:true //TODO uncomment when deployed
       }).status(200).send("PasswordResetPage"); // TODO redirect to password reset page !!!
     }
     else { res.status(400).send({message:"لینک نامعتبر"});}
@@ -198,7 +205,6 @@ class AuthController {
     const user = await userModel.findById(userId);
     if (!user || !sendedVerificationToken || req.user._id.toString() != userId)
       return res.status(400).send({ message: "لینک نامعتبر" });
-      
     const tokenInfo = await forgotPasswordModel.findById(userId);
     if (tokenInfo.token === sendedVerificationToken) {
       req.body.password = await argon2.hash(req.body.password, {
@@ -223,9 +229,7 @@ class AuthController {
       )
       res.status(200).send({message:"رمز با موفقیت تغییر یافت"});
     } else return res.status(400).send({ message: "Invalid Request" });
-
   }
-
 }
 
 module.exports = new AuthController;

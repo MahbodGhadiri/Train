@@ -19,7 +19,6 @@ const cors = require("cors")
 
 class application 
 {
-    
     constructor()
     {
         this.setupExpressServer();
@@ -62,7 +61,7 @@ class application
         .catch((err)=>{console.log(`Conection to DB failed \n`,err);})
     }
 
-     setupRoutesAndMiddlewares()
+    setupRoutesAndMiddlewares()
     {
         const corsOpts = 
         {

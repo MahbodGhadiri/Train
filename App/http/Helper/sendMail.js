@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const crypto  = require("crypto");
 const argon2  = require( "argon2");
 const userModel = require( "../../Models/UserModel");
-const config = require("../../../config")
+const config = require("../../../config/default.json")
 const transport = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -43,7 +43,7 @@ async function sendEmail(userId,loginLink)
         background-color: rgb(23, 111, 184);
         font-size: 30px;">تایید حساب کاربری</form>
         <p style=" font-size: 20px;" align="right" dir="rtl"> سلام،${user.name} <br>لطفا برای تایید حساب کاربری بر روی دکمه ی زیر کلیک کنید.</p>
-        <a href="http://localhost:3000/api/auth/verify_email/${user._id}/${emailVerificationToken}"><button dir="rtl" style="  width: 20%;
+        <a href="${config.domain}/api/auth/verify_email/${user._id}/${emailVerificationToken}"><button dir="rtl" style="  width: 20%;
         background: rgb(23, 111, 184);
         margin: 0 0 0 80%;
         height: 30px;
@@ -119,9 +119,6 @@ async function sendEmail(userId,loginLink)
       
       </div>`,
     }   
-    
-    
-
   }
   transport.sendMail(mailOptions, function (error, response) {
     if (error && error != null) {

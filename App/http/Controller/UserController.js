@@ -8,23 +8,22 @@ const { refreshTokenModel } = require("../../Models/TokenModel");
 
 class UserController
 {
-  async getProfile(req,res) //Done
+  async getProfile(req,res) 
   {
     const user = await userModel.findById(req.user._id);
     if (!user) return res.status(404).send({message:"یافت نشد"});
     res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL"]));
   }
 
-  async logout(req,res) //Done
+  async logout(req,res) 
   {
-    await refreshTokenModel.deleteOne({_id:req.cookies.refreshToken._id});
+    await refreshTokenModel.deleteAll({_id:req.cookies.refreshToken._id});
     res.cookie("refreshToken","",{expires: new Date(0)});
     res.cookie("accessToken","",{expires: new Date(0)});
     res.status(200).send({message:"خروچ انجام شد"})
-
   }
 
-  async deleteAccount(req,res) //Mostly Done
+  async deleteAccount(req,res) 
   {
     const {error}=deleteAccountValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
@@ -38,14 +37,14 @@ class UserController
       timeCost: 2})
       )
     {
-      await refreshTokenModel.deleteOne({_id:req.cookies.refreshToken._id});
+      await refreshTokenModel.deleteAll({_id:req.cookies.refreshToken._id});
       res.cookie("refreshToken","",{expires: new Date(0)});
       res.cookie("accessToken","",{expires: new Date(0)});
       user.remove().then(res.status(200).send({message:"اکانت شما با موفقیت حذف شد"}));
     }
   }
 
-  async changeInfo(req,res) //TODO Test it
+  async changeInfo(req,res)
   {
     const { error } = registerValidator(req.body);
     if (error) { return res.status(400).send({ message: error.message }) };
@@ -59,27 +58,29 @@ class UserController
     res.status(200).send({message:"انجام شد"})
   }
 
-  async changePassword(req,res) //Done
+  async changePassword(req,res)
   {
     const {error} = changePasswordValidator(req.body);
     if(error){return res.status(400).send({message:error.message})}
 
-    
     const user = await userModel.findById(req.user._id)
-    if(!user)
+    if(!user) return res.status(404)
+    //Cheking if password is correct
+    if(await argon2.verify(user.password,req.body.oldPassword,{
+      type: argon2.argon2id,
+      memoryCost: 15360,
+      timeCost: 2})
+    )
     {
-      return res.status(404)
-    }
-    
-    if(await argon2.verify(user.password,req.body.oldPassword,config.argon2_options))
-    {
+      //hashing new password
       user.password =  await argon2.hash(req.body.newPassword,{
         "type": argon2.argon2id,
         "memoryCost": 15360,
         "timeCost": 2
       });
-     
+      //saving new password
       await user.save();
+      //Generating Tokens //? is it needed to remove older Tokens? or rotating tokens handle it ?
       const refreshToken=user.generateRefreshToken(req.cookie.refreshToken)
       const accessToken=user.generateAccessToken();
       res.cookie("accessToken",accessToken,
@@ -87,7 +88,7 @@ class UserController
           httpOnly:true,
           maxAge:10*60*1000,
           sameSite:"strict",
-          //secure:true
+          //secure:true //TODO Uncomment when launched
         }
       )
       res.cookie("refreshToken",refreshToken,
@@ -95,7 +96,7 @@ class UserController
           httpOnly:true,
           maxAge:4*60*60*1000,
           sameSite:"strict",
-          //secure:true
+          //secure:true //TODO Uncomment when launched
         }
       )
       res.status(200).send({message:"رمز با موفقیت تغییر یافت"});
@@ -103,20 +104,20 @@ class UserController
     else{res.status(400).send({message:"رمز نامعتبر است"})}
   }
   
-  async getTasks(req,res) //Done //optional query parameters: days , subject 
+  async getTasks(req,res)//optional query parameters: days , subject 
   {
     let tasks = await adminTaskModel.find({executors:req.user._id,done:false,delayed:false})
     if (req.query.days||req.query.subject)
     {
-      const filter = new Filter(tasks,req.query.days,req.query.subject)
-    filter.byDays()
-    filter.bySubject()
-    res.status(200).send({message:"با موفقیت انجام شد","tasks":filter.tasks}).json();
+      const filter = new Filter(tasks,req.query.days,req.query.subject);
+      filter.byDays();
+      filter.bySubject();
+      res.status(200).send({message:"انجام شد",tasks:filter.tasks});
     }
-    else res.status(200).send({message:"انجام شد",tasks:tasks})
+    else res.status(200).send({message:"انجام شد",tasks:tasks});
   }
 
-  async doneTask(req,res) //Done
+  async doneTask(req,res)//required query parameter : task(id)
   {
     const task = await adminTaskModel.findById(req.query.task)
     .exec((err,task)=>
@@ -140,8 +141,9 @@ class UserController
     
   }
 
-  async delayTask(req,res) //Done
+  async delayTask(req,res)//required query parameter : task(id)
   {
+    if(!req.query.task) return res.status(400).send("No taskId is provided") //TODO better messages
     const task = await adminTaskModel.findById(req.query.task) ;
     if(task.executors.includes(req.user._id))
     {
@@ -151,7 +153,7 @@ class UserController
     else return res.status(403).send({message:"شما اجازه این کار را ندارید"}) 
   }
 
-  async getCustomTasks(req,res) //Done
+  async getCustomTasks(req,res)
   {
     const user = await userModel
     .findById(req.user._id);
@@ -159,12 +161,12 @@ class UserController
     res.status(200).send(user.customTasks);
   }
 
-  async setCustomTask(req,res) //Done
+  async setCustomTask(req,res) 
   {
     const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
    
-    if(req.body.finishDate>req.body.startDate)
+    if(req.body.finishDate>req.body.startDate) //TODO startDate > now
     {
       const user = await userModel.findOne({_id:req.user._id})
       if(!user) {return res.status(404).send({message:"یافت نشد"})}
@@ -176,12 +178,12 @@ class UserController
     else return res.status(400).send({messgae:"Invalid Date"})
   }
 
-  async editCustomTask(req,res) //Done
+  async editCustomTask(req,res)
   {
     const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
 
-    if(req.body.finishDate>req.body.startDate)
+    if(req.body.finishDate>req.body.startDate) //TODO startDate > now
     {
       const user=await userModel
       .findOneAndUpdate(
@@ -195,7 +197,7 @@ class UserController
     else return res.status(400).send({messgae:"Invalid Date"})
   }
 
-  async doneCustomTask(req,res) //Done
+  async doneCustomTask(req,res)
   {
     const task = await userModel.findOneAndUpdate(
       {_id:req.user._id,"customTasks._id":req.query.task},
@@ -207,7 +209,7 @@ class UserController
     })
   }
 
-  async deleteCustomTask(req,res) //Done
+  async deleteCustomTask(req,res)
   {
     await userModel
     .updateOne(
@@ -217,10 +219,9 @@ class UserController
       if(error) return res.status(400).send({message:"عملیات ناموفق"})
       else return res.status(200).send({message:"باموفقیت انجام شد"})
     })
-
   }
 
-  async getPins(req,res) //Done
+  async getPins(req,res)
   {
     const pins = await pinModel.find({});
     if (!pins)
