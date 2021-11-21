@@ -24,5 +24,17 @@
     "nodemon": "^2.0.15",
     "winston": "^3.3.3",
     "winston-mongodb": "^5.0.7"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MahbodGhadiri/Train.git"
+  },
+  "keywords": [
+    "server"
+  ],
+  "bugs": {
+    "url": "https://github.com/MahbodGhadiri/Train/issues"
+  },
+  "homepage": "https://github.com/MahbodGhadiri/Train#readme"
 }
