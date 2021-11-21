@@ -68,7 +68,7 @@ class AuthController {
           sameSite:"Strict",
           //secure:true
         })
-        .status(200).send({message:"ورود با موفقیت انجام شد"});
+        .status(200).send({message:"ورود با موفقیت انجام شد",role:req.user.role});
       }
       else
       {
