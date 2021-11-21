@@ -9,7 +9,6 @@ const registerValidator = (data)=>
         password : joi.string().required().min(8).max(30),
         ability: joi.string().min(3).max(10),
         avatarURL: joi.string().max(40)
-
     })
     return schema.validate(data);
 }
@@ -22,7 +21,6 @@ const loginValidator = (data)=>
     })
     return schema.validate(data);
 }
-
 
 const changePasswordValidator = (data)=>
 {
