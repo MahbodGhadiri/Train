@@ -55,7 +55,7 @@ class AdminController
 
         if(req.body.finishDate>req.body.startDate)
         {
-           await adminTaskModel.findOneAndUpdate({_id:req.query.task},req.body).then(res.status(200).send({message:"انجام شد"}));
+           await adminTaskModel.findOneAndUpdate({_id:{eq:req.query.task}},req.body).then(res.status(200).send({message:"انجام شد"}));
            //TODO add a callback , wrong _id can cause a bug 
         }
         else return res.status(400).send({messgae:"Invalid Date"})
@@ -63,7 +63,7 @@ class AdminController
 
     async doneTask(req,res)//required query parameter: task(id)
     {
-        await adminTaskModel.findById(req.query.task)
+        await adminTaskModel.findOne({_id:{$eq:req.query.task}})
         .exec((err,task)=>
         {
             if (err) {return res.status(404).send({message:"یافت نشد"})}
@@ -83,7 +83,7 @@ class AdminController
     async deleteTask(req,res)//required query parameter: task(id)
     {
         await adminTaskModel
-        .findOneAndDelete({_id:req.query.task})
+        .findOneAndDelete({_id:{$eq:req.query.task}})
         .exec(function(error,task)
         {
             if(error) return res.status(400).send({message:"عملیات ناموفق"})
@@ -103,7 +103,7 @@ class AdminController
 
     async deletePin(req,res)//required query parameter: pin(id)
     {
-        await pinModel.findOneAndDelete({_id:req.query.pin})
+        await pinModel.findOneAndDelete({_id:{eq:req.query.pin}})
         .exec(function(error,pin)
         {
             if(error) return res.status(400).send({message:"عملیات ناموفق"})
@@ -114,7 +114,7 @@ class AdminController
 
     async activateUser(req,res)//required query parameter: user(id)
     {
-        const user= await UserModel.findOne({_id:req.query.user}); //TODO test with wrong user Id
+        const user= await UserModel.findOne({_id:{$eq:req.query.user}});
         if(user&&user.email.active&&!user.activeAccount)
         {
             user.activeAccount = true;
@@ -130,7 +130,7 @@ class AdminController
 
     async deactivateUser(req,res)//required query parameter: user(id)
     {
-        const user= await UserModel.findOne({_id:req.query.user}); //TODO test with wrong user Id
+        const user= await UserModel.findOne({_id:{$eq:req.query.user}}); 
         if(user&&user.activeAccount)
         {
             user.activeAccount = false;
@@ -142,7 +142,7 @@ class AdminController
 
     async promoteUser(req,res)//required query parameter: user(id)
     {
-        const user = await UserModel.findOne({_id:req.query.user}); //TODO test with wrong user Id
+        const user = await UserModel.findOne({_id:{$eq:req.query.user}});
         if(user&&user.activeAccount)
         {
             if(user.role==="user")
@@ -156,7 +156,7 @@ class AdminController
 
     async demoteUser(req,res)//required query parameter: user(id)
     {
-        const user = await UserModel.findOne({_id:req.query.user}); //TODO test with wrong user Id
+        const user = await UserModel.findOne({_id:{$eq:req.query.user}}); 
         if(user&&user.activeAccount)
         {
             if(user.role==="admin")

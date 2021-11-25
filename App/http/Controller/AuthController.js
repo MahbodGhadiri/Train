@@ -80,7 +80,7 @@ class AuthController {
 
   async resendActivationEmail(req,res)
   {
-    const user = await userModel.findById(req.query.userId);
+    const user = await userModel.findByOne({_id:{$eq:req.query.userId}});
     if(!user)
     {
       return res.status(400).send({message:"کاربر وجود ندارد یا اکانت قبلا فعال شده است"});

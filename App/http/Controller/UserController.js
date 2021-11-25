@@ -119,7 +119,7 @@ class UserController
 
   async doneTask(req,res)//required query parameter : task(id)
   {
-    const task = await adminTaskModel.findById(req.query.task)
+    const task = await adminTaskModel.findByOne({_id:{$eq:req.query.task}})
     .exec((err,task)=>
     {
       if (err) {return res.status(404).send({message:"یافت نشد"})}
@@ -144,7 +144,7 @@ class UserController
   async delayTask(req,res)//required query parameter : task(id)
   {
     if(!req.query.task) return res.status(400).send("No taskId is provided") //TODO better messages
-    const task = await adminTaskModel.findById(req.query.task) ;
+    const task = await adminTaskModel.findOne({_id:{$eq:req.query.task}}) ;
     if(task.executors.includes(req.user._id))
     {
       task.delayed = true;
@@ -187,7 +187,7 @@ class UserController
     {
       const user=await userModel
       .findOneAndUpdate(
-      {_id:req.user._id,"customTasks._id":req.query.task},
+      {_id:req.user._id,"customTasks._id":{$eq:req.query.task}},
       {$set : {"customTasks.$":req.body}},
       {new: true}
       )
@@ -200,7 +200,7 @@ class UserController
   async doneCustomTask(req,res)
   {
     const task = await userModel.findOneAndUpdate(
-      {_id:req.user._id,"customTasks._id":req.query.task},
+      {_id:req.user._id,"customTasks._id":{$eq : req.query.task}},
       {$set : {"customTasks.$.done":true}},
       {new: true}
       ).exec(function(error){
