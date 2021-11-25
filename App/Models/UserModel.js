@@ -1,5 +1,4 @@
 const { Schema, model } = require( "mongoose");
-const config = require("../../config/default.json");
 const {refreshTokenModel} = require("./TokenModel");
 const jwt = require("jsonwebtoken");
 const emailSchema = {
@@ -51,7 +50,7 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
           _id: this._id,
         };
       
-        let refreshToken = jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
+        let refreshToken = jwt.sign(data, process.env.secretKey , {expiresIn: 4 * 60 * 60});
         refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
         await refreshToken.save();
         return refreshToken; //? ._id
@@ -76,7 +75,7 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
           _id: this._id,
         };
       
-        let refreshToken = jwt.sign(data, config.secretKey , {expiresIn: 4 * 60 * 60});
+        let refreshToken = jwt.sign(data, process.env.secretKey , {expiresIn: 4 * 60 * 60});
         oldToken.nextToken=refreshToken;
         oldToken.invalidSince=Date.now();
         oldToken.save();
@@ -89,7 +88,7 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
 
 userSchema.methods.generateAccessToken = async function () 
 {
-    let accessToken = jwt.sign(this.getEssentialData(), config.secretKey , {expiresIn: 10 * 60});
+    let accessToken = jwt.sign(this.getEssentialData(), process.env.secretKey , {expiresIn: 10 * 60});
     return accessToken;
 }
 

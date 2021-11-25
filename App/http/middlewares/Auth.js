@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const config = require('../../../config/default.json');
 const userModel = require("../../Models/UserModel")
 require("cookie-parser");
 
@@ -17,7 +16,7 @@ module.exports = async function (req,res,next)
         //There is a refreshToken, Checking if its signature valid
         try
         {
-            userData = jwt.verify(refreshToken._id,config.secretKey);
+            userData = jwt.verify(refreshToken._id,process.env.secretKey);
         }
         catch{return res.status(401).send({message:"invalid credentials"});}
         //signature is valid, Cheking if user _id is valid
@@ -46,7 +45,7 @@ module.exports = async function (req,res,next)
             }
         )
         //saving in req.user important userData for further use in APIs
-        userData = jwt.verify(accessToken,config.secretKey);
+        userData = jwt.verify(accessToken,process.env.secretKey);
         req.user=userData;
         next();
     }
@@ -55,7 +54,7 @@ module.exports = async function (req,res,next)
         //accessToken Exist, cheking if its valid
         try
         {
-            userData = jwt.verify(accessToken,config.secretKey);
+            userData = jwt.verify(accessToken,process.env.secretKey);
         }
         catch{return res.status(401).send({message:"invalid credentials"})}
         req.user=userData;

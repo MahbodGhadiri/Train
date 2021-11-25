@@ -13,7 +13,6 @@ const certificate = fs.readFileSync(__dirname + '/../sslcert/certificate.crt', '
 const privateKey  = fs.readFileSync(__dirname+'/../sslcert/privateKey.key', 'utf8');
 const credentials = {key: privateKey, cert: certificate};
 const errorHandler = require("./http/middlewares/ErrorHandler");
-const config = require('../config/default.json');
 const api = require("./Routes/api")
 const cors = require("cors")
 
@@ -32,29 +31,29 @@ class application
         const httpServer = http.createServer(app);
         const httpsServer = https.createServer(credentials, app);
 
-        httpServer.listen(config.httpPort,(err)=>
+        httpServer.listen(process.env.httpPort,(err)=>
         {
             if (err){
                 console.log(err)
                 winston.error(err)
             }
-            else console.log(`http server Listening on port ${config.httpPort}`) 
+            else console.log(`http server Listening on port ${process.env.httpPort}`) 
         });
 
-        httpsServer.listen(config.httpsPort,(err)=>
+        httpsServer.listen(process.env.httpsPort,(err)=>
         {
             if (err){
                 console.log(err)
                 winston.error(err)
             }
-            else console.log(`https server Listening on port ${config.httpsPort}`)    
+            else console.log(`https server Listening on port ${process.env.httpsPort}`)    
         });
     }
 
     setupMongoose()
     {    
         mongoose
-        .connect(config.MongoDB_Adrress,{useNewUrlParser:true,useUnifiedTopology:true})
+        .connect(process.env.MongoDB_Adrress,{useNewUrlParser:true,useUnifiedTopology:true})
         .then(()=>{
             console.log("Connected to DB")
         })
@@ -95,7 +94,7 @@ class application
     setupConfigs()
     {
         winston.add(new winston.transports.File({filename : "Error-log.log"}))
-        winston.add(new winston.transports.MongoDB({db:config.MongoDB_log_Adrress},{useUnifiedTopology:true}))
+        winston.add(new winston.transports.MongoDB({db:process.env.MongoDB_log_Adrress},{useUnifiedTopology:true}))
 
         process.on("uncaughtExeption",(err)=>
         {

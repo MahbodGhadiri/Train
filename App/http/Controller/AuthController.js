@@ -3,7 +3,6 @@ const userModel = require("../../Models/UserModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
-const config = require("../../../config/default.json");
 const sendEmail = require("../Helper/sendMail");
 const forgotPasswordModel = require("../../Models/TokenModel");
 const crypto = require("crypto");
@@ -133,7 +132,7 @@ class AuthController {
         // generate token for login 
         const verificationToken = crypto.randomBytes(16).toString("hex");
         // generate link with valid format , link must have user._id and a valid token
-        const loginLink = `${config.domain}/api/auth/forgot-password/login/${user._id}/${verificationToken}`;
+        const loginLink = `${process.env.domain}/api/auth/forgot-password/login/${user._id}/${verificationToken}`;
         //remove any previously existing login token from DB
         //? may there be a bug that cause saving two Tokens in DB?
         let tokenInfo = await forgotPasswordModel.findById(user._id);
