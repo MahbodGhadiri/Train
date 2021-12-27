@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
+    "build": "cd Client && npm install && npm run build",
+    "rebuild":"cd Client && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mahbod-Peyman",

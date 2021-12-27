@@ -10,13 +10,13 @@ module.exports = async function (req,res,next)
     //Cheking if accessToken Exist
     if (!accessToken)
     {   //There is no accessToken, Cheking if a refreshToken Exist 
-        if ((!refreshToken)||(!refreshToken._id)) 
+        if (!refreshToken) 
             //There is no refreshToken, so login is needed
             return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});
-        //There is a refreshToken, Checking if its signature valid
+        //There is a refreshToken, Checking if its signature valid    
         try
         {
-            userData = jwt.verify(refreshToken._id,process.env.secretKey);
+            userData = jwt.verify(refreshToken,process.env.secretKey);
         }
         catch{return res.status(401).send({message:"invalid credentials"});}
         //signature is valid, Cheking if user _id is valid

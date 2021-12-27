@@ -13,8 +13,9 @@ const certificate = fs.readFileSync(__dirname + '/../sslcert/certificate.crt', '
 const privateKey  = fs.readFileSync(__dirname+'/../sslcert/privateKey.key', 'utf8');
 const credentials = {key: privateKey, cert: certificate};
 const errorHandler = require("./http/middlewares/ErrorHandler");
-const api = require("./Routes/api")
-const cors = require("cors")
+const api = require("./Routes/api");
+const cors = require("cors");
+const path = require("path");
 
 class application 
 {
@@ -80,6 +81,7 @@ class application
 
         app.use(express.json());
         app.use(express.urlencoded({extended:false}))
+        app.use(express.static(path.resolve(__dirname,"../Client/build")))
         app.use(cookieParser())
         app.use //? IS THIS NEEDED?
         (
@@ -88,6 +90,9 @@ class application
         app.use(cors(corsOpts)); 
      
         app.use("/api",api);
+        app.get('*',(req,res)=>{
+            res.sendFile(path.resolve(__dirname,"../Client/build","index.html"))
+          })
         app.use(errorHandler);
     }
 

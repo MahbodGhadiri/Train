@@ -53,21 +53,20 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         let refreshToken = jwt.sign(data, process.env.secretKey , {expiresIn: 4 * 60 * 60});
         refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
         await refreshToken.save();
-        return refreshToken; //? ._id
+        return refreshToken._id; //? ._id
     }
     else
     {
         let oldToken = await refreshTokenModel.findOne({_id:oldRefreshToken});
         if(!oldToken) return null;
         if(oldToken.nextToken)
-        {
-            while(oldToken.nextToken){
+        { 
+            while(oldToken){
 
                 const nextToken = await refreshTokenModel.findOne({_id:oldToken.nextToken});
                 await oldToken.remove();
                 oldToken=nextToken;
             }
-            await oldToken.remove();
             return null;
         }
         const data = 
@@ -79,9 +78,12 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         oldToken.nextToken=refreshToken;
         oldToken.invalidSince=Date.now();
         oldToken.save();
-        refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
-        await refreshToken.save()
-        return refreshToken; //? ._id
+        if (!await refreshTokenModel.findOne({_id:refreshToken})) //? is this if helpful?
+        {
+            refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
+            await refreshToken.save()
+        }
+        return refreshToken._id;
     }
    
 }
