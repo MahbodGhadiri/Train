@@ -3,6 +3,7 @@ import React, { useState, useRef } from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
+import {toast } from 'react-toastify';
 
 const Signup = () => {
 
@@ -58,8 +59,27 @@ const Signup = () => {
                 await axios.post("http://localhost:8080/api/auth/register", user).then(responce => {
                     console.log(responce.status);
                     status = responce.status;
+                    const showInfo = () => toast.info(responce.data.message, {
+                        position: "top-right",
+                        autoClose: false,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        });
+                    showInfo();
                 }).catch(error => {
-                    console.log(error)
+                    const showError = () => toast.error(error.response.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        });
+                    showError();
 
                 })
                 // api call end

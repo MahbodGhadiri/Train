@@ -10,6 +10,8 @@ import {
     setUserLoginDetails
 } from '../features/user/userSlice';
 import axios from "axios";
+import {toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
 
@@ -19,7 +21,7 @@ function Login() {
         new SimpleReactValidator({
             messages: {
                 required: "پر کردن این فیلد الزامی میباشد",
-                min: `لطفا بیشتر از 5 و کتر از 30 کاراکتر وارد کنید`,
+                min: `لطفا بیشتر از 5 و کمتر از 30 کاراکتر وارد کنید`,
                 email: "ایمیل نوشته شده صحیح نمی باشد",
 
             },
@@ -67,7 +69,17 @@ function Login() {
                         role = response.data.role;
                         console.log(role);
                     }).catch((error) => {
-                        console.log(error.message);
+                        
+                        const showError = () => toast.error(error.response.data.message, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            });
+                        showError();
                     });
 
 
@@ -109,7 +121,7 @@ function Login() {
 
         <>
             <div className="login">
-
+            
                 <div className="logo sl-logo">
                     <img src="./images/logo-min.png" alt="Train" title="Train" />
                 </div>
@@ -159,7 +171,7 @@ function Login() {
                     <input type="submit" value="ورود" className="send" />
 
                 </form>
-
+                
             </div>
         </>
     )
