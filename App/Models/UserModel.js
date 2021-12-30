@@ -43,17 +43,20 @@ const userSchema = new Schema({
 //TODO expire old refresh tokens in database in 5 minutes
 userSchema.methods.generateRefreshToken = async function (oldRefreshToken) 
 {
+    console.log("IN")
     if(!oldRefreshToken)
     {
         const data = 
         {
           _id: this._id,
+          r: Math.random()
         };
       
         let refreshToken = jwt.sign(data, process.env.secretKey , {expiresIn: 4 * 60 * 60});
         refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
         await refreshToken.save();
-        return refreshToken._id; //? ._id
+        console.log(`Token1 ${refreshToken}`)
+        return refreshToken; //? ._id
     }
     else
     {
@@ -72,18 +75,23 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         const data = 
         {
           _id: this._id,
+          r: Math.random()
         };
       
         let refreshToken = jwt.sign(data, process.env.secretKey , {expiresIn: 4 * 60 * 60});
         oldToken.nextToken=refreshToken;
         oldToken.invalidSince=Date.now();
         oldToken.save();
+        console.log(`line 88 , Token : ${refreshToken}`)
         if (!await refreshTokenModel.findOne({_id:refreshToken})) //? is this if helpful?
         {
             refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
             await refreshToken.save()
+            console.log(`Token2 ${refreshToken}`)
+            return refreshToken;
         }
-        return refreshToken._id;
+        console.log(`Token3 ${refreshToken}`)
+        return refreshToken;
     }
    
 }
