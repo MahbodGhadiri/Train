@@ -23,7 +23,7 @@ class AuthController {
     let user = await userModel.findOne(
       { $or: [{ "email.address": req.body.email }, { "phone.number": req.body.phoneNumber }] }
     )
-    if (user) { return res.status(400).send("کاربری با این اطلاعات وجود دارد!") }
+    if (user) { return res.status(400).send({message:"کاربری با این اطلاعات وجود دارد!"}) }
 
     const userData= 
     {
@@ -51,7 +51,7 @@ class AuthController {
     if (error) { return res.status(400).send({ message: error.message }) }
 
     const user = await userModel.findOne({ "email.address": req.body.email });
-    if (!user) { return res.status(400).send("رمز یا نام کاربری نامعتبر است") }
+    if (!user) { return res.status(400).send({message:"رمز یا نام کاربری نامعتبر است"}) }
 
     if(await argon2.verify(user.password,req.body.password,{
       type: argon2.argon2id,
@@ -75,7 +75,7 @@ class AuthController {
       }
       
     }
-    else{res.status(400).send({message:"رمز یا نام کاربری نامعتبر است"})};
+    else{res.status(400).send({message:"رمز یا نام کاربری نامعتبر است!"})};
     }
 
   async resendActivationEmail(req,res)

@@ -2,13 +2,44 @@ const joi = require ("joi");
 
 const setTaskValidator = (data)=>{
     const schema = joi.object({
-        title:joi.string().required().min(3).max(30),
-        task:joi.string().required().min(5).max(100),
-        subjectTag: joi.string().required().min(2).max(12),
+        title:joi.string().required().min(3).max(30).messages(
+            {
+                "any.required":"نوشتن موضوع الزامی است!",
+                "string.base":"موضوع نامعتبر است!",
+                "string.min":"موضوع باید حداقل سه کارکتر باشد!",
+                "string.max":"موضوع باید حداکثر سی کارکتر باشد!"
+            }
+        ),
+        task:joi.string().required().min(5).max(100).messages(
+            {
+                "any.required":"نوشتن توضیحات الزامی است!",
+                "string.base":"توضیحات نامعتبر است!",
+                "string.min":"توضیحات باید حداقل پنچ کارکتر باشد!",
+                "string.max":"توضیحات باید حداکثر صد کارکتر باشد!"
+            }
+        ),
+        subjectTag: joi.string().required().min(3).max(30).messages(
+            {
+                "any.required":"نوشتن تگ الزامی است!",
+                "string.base":"تگ نامعتبر است!",
+                "string.min":"تگ باید حداقل سه کارکتر باشد!",
+                "string.max":"تگ باید حداکثر سی کارکتر باشد!"
+            }
+        ),
         executors: joi.array().required(),
         assignedBy: joi.string().required(), //! object id
-        startDate:joi.date().required(),
-        finishDate:joi.date().required()
+        startDate:joi.date().required().messages(
+            {
+                "any.required":"نوشتن تاریخ شروع الزامی است!",
+                "date.base":"فرمت تاریخ شروع صحیح نیست"
+            }
+        ),
+        finishDate:joi.date().required().messages(
+            {
+                "any.required":"نوشتن تاریخ پایان الزامی است!",
+                "date.base":"فرمت تاریخ شروع صحیح نیست"
+            }
+        ),
     })
     return schema.validate(data);
 }

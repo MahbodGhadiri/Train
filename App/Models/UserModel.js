@@ -43,7 +43,6 @@ const userSchema = new Schema({
 //TODO expire old refresh tokens in database in 5 minutes
 userSchema.methods.generateRefreshToken = async function (oldRefreshToken) 
 {
-    console.log("IN")
     if(!oldRefreshToken)
     {
         const data = 
@@ -55,7 +54,6 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         let refreshToken = jwt.sign(data, process.env.secretKey , {expiresIn: 4 * 60 * 60});
         refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
         await refreshToken.save();
-        console.log(`Token1 ${refreshToken}`)
         return refreshToken; //? ._id
     }
     else
@@ -87,10 +85,8 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         {
             refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});
             await refreshToken.save()
-            console.log(`Token2 ${refreshToken}`)
             return refreshToken;
         }
-        console.log(`Token3 ${refreshToken}`)
         return refreshToken;
     }
    
