@@ -10,13 +10,13 @@ import { useSelector } from 'react-redux';
 import {getUserAuthenticationStatus} from "./SessionStorage"
 
 
-function PrivateRoute({ children, ...rest }) {
+export function PrivateRoute({ children, ...rest }) {
     const isUserAuthenticated = getUserAuthenticationStatus();
     return (
       <Route
         {...rest}
         render={({ location }) =>
-          isUserAuthenticated ? (
+          (isUserAuthenticated==="true") ? (
             children
           ) : (
             <Redirect
@@ -30,4 +30,25 @@ function PrivateRoute({ children, ...rest }) {
       />
     );
 }
-export default PrivateRoute
+
+export function LoginRoute({ children, ...rest }) {
+  const isUserAuthenticated = getUserAuthenticationStatus();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        (isUserAuthenticated!=="true") ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/admin",
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
