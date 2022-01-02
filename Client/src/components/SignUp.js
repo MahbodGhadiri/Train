@@ -5,12 +5,21 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import {toast } from 'react-toastify';
 
+const toastOptions=
+    {   position: "top-right",
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+    }
+
 const Signup = () => {
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
+    const [rePassword, setRePassword] = useState("")
     const [loading, setLoading] = useState(false);
     const history = useHistory();
 
@@ -22,12 +31,11 @@ const Signup = () => {
         new SimpleReactValidator({
             messages: {
                 required: "پر کردن این فیلد الزامی میباشد",
-                min: `لطفا بیشتر از 5 و کتر از 30 کاراکتر وارد کنید`,
-                max: `لطفا بیشتر از 5 و کتر از 30 کاراکتر وارد کنید`,
+                min: `لطفا بیشتر از 5 کاراکتر وارد کنید`,
+                max: `لطفا کمتر از 30 کاراکتر وارد کنید`,
                 email: "ایمیل نوشته شده صحیح نمی باشد",
-                size: "داشم فقط 11 تا",
                 phone: "لطفا شماره را صحیح وارد کنید",
-
+                in: "رمزها تطابق ندارند"
             },
             element: message => <div style={{ color: "red", textAlign: "center", fontSize: "2vh" }}>{message}</div>
         })
@@ -41,6 +49,7 @@ const Signup = () => {
         setEmail("");
         setPhoneNumber("");
         setPassword("");
+        setRePassword("")
     };
 
     const register = async event => {
@@ -56,32 +65,32 @@ const Signup = () => {
                 console.log("user registration info all valid");
                 let status;
                 // api call begin
-                await axios.post("http://localhost:8080/api/auth/register", user).then(responce => {
+                await axios.post("/auth/register", user).then(responce => {
                     console.log(responce.status);
                     status = responce.status;
-                    const showInfo = () => toast.info(responce.data.message, {
-                        position: "top-right",
-                        autoClose: false,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        });
-                    showInfo();
-                }).catch(error => {
-                    const showError = () => toast.error(error.response.data.message, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        });
-                    showError();
 
+                    const showInfo = () => toast.info(responce.data.message, 
+                        {
+                            ...toastOptions,
+                            autoClose: false,
+                            hideProgressBar: true,
+                        }
+                    );
+
+                    showInfo();
+
+                }).catch(error => {
+                    const showError = () => toast.error(error.response.data.message,
+                        {
+                            ...toastOptions,
+                            autoClose: 5000,
+                            hideProgressBar: false
+                        }
+                    );
+
+                    showError();
                 })
+                
                 // api call end
 
                 if (status === 200) {
@@ -89,13 +98,7 @@ const Signup = () => {
                     setLoading(false);
                     reset();
                 }
-                else {
-                    // toast.error("دوباره امتحان کن سیبیل", {
-                    //     position: "top-right",
-                    //     closeOnClick: true
-                    // });
-                    console.log("error");
-                }
+                
             }
         }
         catch (ex) {
@@ -190,8 +193,6 @@ const Signup = () => {
 
 
 
-
-
                 <input
                     type="password"
                     name="password"
@@ -210,7 +211,23 @@ const Signup = () => {
                     `required|min: 5`
                 )}
 
-                <input type="password" required placeholder="تکرار رمز ورود" />
+                <input 
+                    type="password" 
+                    name="rePassword"
+                    required placeholder="تکرار رمز ورود" 
+                    value={rePassword}
+                    onChange={e => {
+                        setRePassword(e.target.value);
+                        validator.current.showMessageFor(
+                            "rePassword"
+                        );
+                    }}/>
+                {validator.current.message(
+                    "rePassword",
+                    rePassword,
+                    `required|min: 5|in:${password}`
+                )}
+
                 <input type="submit" value="ثبت نام" className="send" />
             </form>
 

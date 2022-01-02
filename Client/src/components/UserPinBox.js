@@ -3,7 +3,17 @@ import axios from 'axios';
 import { connectAdvanced, useDispatch, useSelector } from 'react-redux';
 import { setPins, selectPin } from '../features/pin/pinSlice';
 import { store } from '../app/store';
+import {toast } from 'react-toastify';
 
+const toastOptions=
+    {   position: "top-right",
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        autoClose: 5000,
+        hideProgressBar: true
+    }
 
 function UserPinBox() {
     const dispatch = useDispatch();
@@ -14,13 +24,15 @@ function UserPinBox() {
     
     useEffect(async () => {
 
-        await axios.get("http://localhost:8080/api/user/pins",
+        await axios.get("/user/pins",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(responce => {
             console.log(responce.data);
             pins = responce.data;
         }).catch(error => {
             console.log(error);
+            const showError = () => toast.error(error.data.message,toastOptions);
+            showError();
         });
 
         dispatch(setPins({

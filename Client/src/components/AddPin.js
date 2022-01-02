@@ -1,5 +1,16 @@
 import React ,{useState}from 'react';
 import axios from 'axios';
+import {toast } from 'react-toastify';
+
+const toastOptions=
+    {   position: "top-right",
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        autoClose: 5000,
+        hideProgressBar: true,
+    }
 
 function AddPin() {
 
@@ -8,22 +19,23 @@ function AddPin() {
 
     const addPin = async (event) => {
         event.preventDefault();
-
-        console.log("inside AddPin");
-
         const Pin = {
             title: title,
             message: message
         };
 
-        await axios.post("http://localhost:8080/api/admin/pin",
+        await axios.post("admin/pin",
             Pin,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
             .then(responce => {
                 console.log(responce);
+                const showSuccess = () => toast.success(responce.data.message, toastOptions);
+                showSuccess();
             })
             .catch(error => {
                 console.log(error);
+                const showError = () => toast.error(error.response.data.message, toastOptions);
+                showError();
             })
     }
     return (

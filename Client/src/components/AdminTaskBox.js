@@ -3,7 +3,17 @@ import { selectTask, selectReload } from '../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
 import { setTasks , setReload} from '../features/task/taskSlice';
 import axios from 'axios';
+import {toast } from 'react-toastify';
 
+const toastOptions=
+    {   position: "top-right",
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        autoClose: 5000,
+        hideProgressBar: true
+    }
 
 const AdminTaskBox = () => {
 
@@ -21,7 +31,7 @@ const AdminTaskBox = () => {
         if (reload === false) {
             console.log('in you (if) in hook');
 
-            await axios.get("http://localhost:8080/api/admin/tasks",
+            await axios.get("/admin/tasks",
                 { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
             ).then(responce => {
                 // console.log(responce);
@@ -33,6 +43,8 @@ const AdminTaskBox = () => {
                 console.log(reload);
             }).catch(error => {
                 console.log(error);
+                const showError = () => toast.error(error.response.data.message,toastOptions);
+                showError();
             });
 
             // console.log(tasks);

@@ -65,7 +65,7 @@ class AuthController {
           httpOnly:true,
           maxAge:4*60*60*1000,
           sameSite:"Strict",
-          //secure:true
+          secure:true
         })
         .status(200).send({message:"ورود با موفقیت انجام شد",role:user.role});
       }

@@ -29,14 +29,14 @@ module.exports = async function (req,res,next)
         // //rotating refreshToken
         // refreshToken = await user.generateRefreshToken(refreshToken)
         // if (refreshToken===null) {return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});}
-        //generating accessToken
+        // generating accessToken
         accessToken = await user.generateAccessToken()
         res.cookie("accessToken",accessToken,
             {
                 httpOnly:true,
                 maxAge:10*60*1000,
                 sameSite:"strict",
-                //secure:true
+                secure:true
             }
         )
         res.cookie("refreshToken",refreshToken,
@@ -44,7 +44,7 @@ module.exports = async function (req,res,next)
                 httpOnly:true,
                 maxAge:4*60*60*1000,
                 sameSite:"strict",
-                //secure:true
+                secure:true
             }
         )
         //saving in req.user important userData for further use in APIs

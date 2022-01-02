@@ -4,6 +4,7 @@ const initialState = {
     email: "",
     role:"",
     phone:"",
+    isUserAuthenticated:false,
 }
 const userSlice = createSlice({
     name: "user",
@@ -15,19 +16,25 @@ const userSlice = createSlice({
             state.role = action.payload.role;
             state.phone = action.payload.phone;
         },
+        setUserAuthenticationStatus: (state, action)=>{
+            state.isUserAuthenticated = action.payload;
+            console.log(action.payload)
+            console.log(state.isUserAuthenticated)
+        },
         setSignOutState: state => {
             state.name = null;
             state.email = null;
             state.role = null;
             state.phone = null;
-
+            state.isUserAuthenticated=false;
         }
     }
 })
 
-export const { setSignOutState, setUserLoginDetails } = userSlice.actions;
+export const { setSignOutState, setUserLoginDetails, setUserAuthenticationStatus } = userSlice.actions;
 export const selectUserName = (state) => state.user.name;
 export const selectUserEmail = (state) => state.user.email;
 export const selectUserRole = (state) => state.user.role;
 export const selectUserPhone = (state) => state.user.phone;
+export const selectUserAuthenticationStatus = (state)=> state.user.isUserAuthenticated;
 export default userSlice.reducer;

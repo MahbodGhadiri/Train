@@ -2,6 +2,17 @@ import React ,{useState}from 'react'
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import axios from 'axios';
+import {toast } from 'react-toastify';
+
+const toastOptions=
+    {   position: "top-right",
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        autoClose: 5000,
+        hideProgressBar: true
+    }
 
 function AddTask() {
     const [title, setTitle] = useState("");
@@ -9,10 +20,9 @@ function AddTask() {
     const [days, setDays] = useState(0);
     const [subjectTag, setSubjectTag] = useState("");
     const [executors, setExecutors] = useState([]);
-
+    
     const addTask = async (event) => {
         event.preventDefault();
-        console.log("i");
 
         const Task = {
             title: title,
@@ -23,14 +33,16 @@ function AddTask() {
             subjectTag: subjectTag
         };
 
-        await axios.post("http://localhost:8080/api/admin/tasks",
+        await axios.post("/admin/tasks",
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
             .then(responce => {
-                console.log(responce);
+                const showSuccess = () => toast.success(responce.data.message,toastOptions);
+                showSuccess();
             })
             .catch(error => {
-                console.log(error);
+                const showError = () => toast.error(error.response.data.message,toastOptions);
+                showError();
             })
     }
 

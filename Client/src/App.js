@@ -4,13 +4,16 @@ import './App.css';
 import Train from './components/Train';
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+
+axios.defaults.baseURL = 'https://localhost:8081/api';
 
 function App() {
   return (
     <>
       <Router>
           <Train/>
-        <ToastContainer />
+          <ToastContainer rtl/>
       </Router>
     </>
   );

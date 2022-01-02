@@ -7,29 +7,41 @@ import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
 import AddPin from './AddPin';
 import UserPinBox from "./UserPinBox"
+import {toast } from 'react-toastify';
+
+const toastOptions=
+    {   position: "top-right",
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        autoClose: 5000,
+        hideProgressBar: true
+    }
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
 
     async function prof() {
         // event.preventDefault();
-        await axios.get("http://localhost:8080/api/user/profile",
+
+        await axios.get("/user/profile",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(responce => {
-            // console.log(responce);
             dispatch(
                 setUserLoginDetails({
                     name: responce.data.name,
                     phone: responce.data.phone.number,
                     email: responce.data.email.address,
-                }))
-
+                })
+            )
         }).catch(error => {
+            const showError = () => toast.error(error.response.data.message,toastOptions);
+            showError();
             console.log(error);
         });
-        console.log("12345")
     }
-    setTimeout(()=> prof(),1000);
+    setTimeout(()=> prof(),1000); //? What is this suppose to do?
 
     // const addTask = async (event) => {
     //     event.preventDefault();
@@ -55,15 +67,14 @@ function Admin() {
     //             console.log(error);
     //         })
     // }
-
     return (
 
         <div dir="rtl">
-            <button onClick={event => prof(event)}>322</button>
+            {/* <button onClick={event => prof(event)}>322</button> */}
             <div className="content">
                 <Header />
 
-
+               
                 <div className="right alonebox">
                     <h2>فعالیت های کاربران</h2>
 

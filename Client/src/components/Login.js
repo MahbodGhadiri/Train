@@ -7,12 +7,13 @@ import {
     selectUserEmail,
     selectUserName,
     selectUserRole,
-    setUserLoginDetails
+    selectUserAuthenticationStatus,
+    setUserLoginDetails,
 } from '../features/user/userSlice';
 import axios from "axios";
 import {toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import {setUserAuthenticationStatus,getUserAuthenticationStatus} from "./SessionStorage"
 function Login() {
 
 
@@ -33,16 +34,14 @@ function Login() {
     const dispatch = useDispatch();
     const history = useHistory();
     const name = useSelector(selectUserName);
-
-
+    const isUserAuthenticated = getUserAuthenticationStatus()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     useEffect(() => {
+
         console.log("hi");
-        if (!name) {
-            login();
-        }
+      
     }, [name]);
 
     const reset = () => {
@@ -59,7 +58,7 @@ function Login() {
             let status; let role;
 
             if (!name) {
-                await axios.post("http://localhost:8080/api/auth/login",
+                await axios.post(`/auth/login`,
                     user,
                     { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
                     .then((response) => {
@@ -68,6 +67,8 @@ function Login() {
                         console.log(status);
                         role = response.data.role;
                         console.log(role);
+                        if(response.status===200)
+                        setUserAuthenticationStatus("true")
                     }).catch((error) => {
                         
                         const showError = () => toast.error(error.response.data.message, {
@@ -84,8 +85,6 @@ function Login() {
 
 
                 if (status === 200) {
-                    console.log("IN");
-
                     switch (role) {
                         case "admin":
                             history.push("/admin");

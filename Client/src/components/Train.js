@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-
+    
+    Redirect,
     Switch,
     Route,
 
@@ -9,17 +10,44 @@ import Admin from './Admin';
 import Login from './Login';
 import SignUp from './SignUp';
 import { useSelector } from 'react-redux';
-import { selectUserName } from '../features/user/userSlice';
+import { 
+    selectUserName ,
+    selectUserAuthenticationStatus
+} from '../features/user/userSlice';
+import PrivateRoute from "./PrivateRoute"
 
 function Train() {
     const name = useSelector(selectUserName);
+    
     return (
         <Switch>
+            <Route exact path="/"> <Redirect to="/admin" /> </Route>
             <Route path="/signup" exact> <SignUp /> </Route>
             <Route path="/login" exact> <Login /> </Route> 
-            <Route path="/admin" exact> <Admin /> </Route>
+            <PrivateRoute path="/admin" exact> <Admin /> </PrivateRoute>
+            <Route path="*"> <Redirect to="/" /> </Route>
         </Switch>
     )
 }
 
+// function PrivateRoute({ children, ...rest }) {
+//     const isUserAuthenticated = useSelector(selectUserAuthenticationStatus)
+//     return (
+//       <Route
+//         {...rest}
+//         render={({ location }) =>
+//           isUserAuthenticated ? (
+//             children
+//           ) : (
+//             <Redirect
+//               to={{
+//                 pathname: "/login",
+//                 state: { from: location }
+//               }}
+//             />
+//           )
+//         }
+//       />
+//     );
+// }
 export default Train;
