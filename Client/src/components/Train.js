@@ -14,7 +14,7 @@ import {
     selectUserName ,
     selectUserAuthenticationStatus
 } from '../features/user/userSlice';
-import PrivateRoute from "./PrivateRoute"
+import {PrivateRoute,LoginRoute} from "./Routes"
 
 function Train() {
     const name = useSelector(selectUserName);
@@ -23,7 +23,7 @@ function Train() {
         <Switch>
             <Route exact path="/"> <Redirect to="/admin" /> </Route>
             <Route path="/signup" exact> <SignUp /> </Route>
-            <Route path="/login" exact> <Login /> </Route> 
+            <LoginRoute path="/login" exact> <Login /> </LoginRoute> 
             <PrivateRoute path="/admin" exact> <Admin /> </PrivateRoute>
             <Route path="*"> <Redirect to="/" /> </Route>
         </Switch>

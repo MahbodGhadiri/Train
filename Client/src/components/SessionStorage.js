@@ -1,11 +1,13 @@
-function setUserAuthenticationStatus(status)
+export function setUserAuthenticationStatus(status)
 {
     sessionStorage.setItem("isUserAuthenticated",status)
 }
-function getUserAuthenticationStatus()
+export function getUserAuthenticationStatus()
 {
     const isUserAuthenticated= sessionStorage.getItem("isUserAuthenticated")
+    if(isUserAuthenticated===undefined)
+    {
+        return "false"
+    }
     return isUserAuthenticated
 }
-
-module.exports = {setUserAuthenticationStatus,getUserAuthenticationStatus}
