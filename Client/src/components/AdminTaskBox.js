@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTasks , setReload} from '../features/task/taskSlice';
 import axios from 'axios';
 import {toast } from 'react-toastify';
+import { store } from '../app/store';
 
 const toastOptions=
     {   position: "top-right",
@@ -28,7 +29,7 @@ const AdminTaskBox = () => {
         
         console.log(reload);
 
-        if (reload === false) {
+        
             console.log('in you (if) in hook');
 
             await axios.get("/admin/tasks",
@@ -52,8 +53,8 @@ const AdminTaskBox = () => {
                 setTasks({
                     task: tasks
                 }));
-        }
-    }, []);
+        
+    }, [store.getState().task.reload]);
 
     return (
         <div>

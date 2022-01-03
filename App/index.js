@@ -16,7 +16,7 @@ const errorHandler = require("./http/middlewares/ErrorHandler");
 const api = require("./Routes/api");
 const path = require("path");
 const rateLimit = require("express-rate-limit").default;
-
+const cors = require("cors")
 class application 
 {
     constructor()
@@ -63,6 +63,21 @@ class application
 
     setupRoutesAndMiddlewares()
     {
+        const corsOpts = 
+        {
+           origin: 'http://localhost:3000',
+           withCredentials: true,
+           methods: 
+           [
+             'GET',
+             'POST',
+           ],
+
+           allowedHeaders: 
+           [
+             'Content-Type'
+           ],
+        };
         const apiLimiter = new rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutes
             max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -81,6 +96,11 @@ class application
         app.use(express.urlencoded({extended:false}))
         app.use(express.static(path.resolve(__dirname,"../Client/build")))
         app.use(cookieParser())
+        app.use //? IS THIS NEEDED?
+        (
+            (req,res,next)=>{res.header('Access-Control-Allow-Credentials',true) ; next();}
+        )
+        app.use(cors(corsOpts)); 
         app.use("/api",apiLimiter);
         app.use("/api",api);
         app.get('*',limiter,(req,res)=>{

@@ -1,26 +1,40 @@
-import React ,{useState}from 'react'
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import axios from 'axios';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import { selectReload, setReload } from '../features/task/taskSlice';
 
-const toastOptions=
-    {   position: "top-right",
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        autoClose: 5000,
-        hideProgressBar: true
-    }
+
+const toastOptions =
+{
+    position: "top-right",
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    autoClose: 5000,
+    hideProgressBar: true
+}
 
 function AddTask() {
+
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
-    const [days, setDays] = useState(0);
+    const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
     const [executors, setExecutors] = useState([]);
-    
+    const dispatch = useDispatch();
+    const reload = useSelector(selectReload);
+
+    const reset = () => {
+        setTitle("");
+        setTask("");
+        setDays(null);
+        setSubjectTag("");
+        setExecutors([]);
+
+    };
     const addTask = async (event) => {
         event.preventDefault();
 
@@ -37,11 +51,24 @@ function AddTask() {
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
             .then(responce => {
-                const showSuccess = () => toast.success(responce.data.message,toastOptions);
+                const showSuccess = () => toast.success(responce.data.message, toastOptions);
                 showSuccess();
+                reset();
+                ///////////////
+                if (reload === false) {
+                    dispatch(setReload({
+                        reload: true
+                    }))
+
+                } else {
+                    dispatch(setReload({
+                        reload: false
+                    }))
+                }
+                //////////////
             })
             .catch(error => {
-                const showError = () => toast.error(error.response.data.message,toastOptions);
+                const showError = () => toast.error(error.response.data.message, toastOptions);
                 showError();
             })
     }
@@ -59,17 +86,32 @@ function AddTask() {
                         setTask(e.target.value)
                     }></textarea>
                     <img src="./images/formicn.png" alt="formicn" />
-                    <input type="text" name="titr" placeholder="موضوع" required value={subjectTag} onChange={e =>
+                    <input list="category" type="text" name="titr" placeholder="موضوع" required value={subjectTag} onChange={e =>
                         setSubjectTag(e.target.value)
                     } />
-                    <input type="text" name="user" placeholder="کاربر" required value={executors} onChange={e =>
+
+                    <input list="userslist" type="text" name="user" placeholder="کاربر" required value={executors} onChange={e =>
                         setExecutors(e.target.value)
                     } />
-                    <input type="text" name="time" placeholder="زمان" required value={days} onChange={e =>
+                    <input type="number" name="time" placeholder="زمان" required value={days} onChange={e =>
                         setDays(e.target.value)
                     } />
                     <input type="submit" value="ثبت" />
                 </form>
+                
+                <datalist id="category">
+                    <option value="برنامه نویسی" />
+                    <option value="گرافیک" />
+                    <option value="مدیریت مالی" />
+                    <option value="مدیریت" />
+                </datalist>
+
+                <datalist id="userslist">
+                    <option value=" احمد" />
+                    <option value="امین" />
+                    <option value="مهبد" />
+                    <option value="محمد جمشید" />
+                </datalist>
             </div>
         </div>
     )

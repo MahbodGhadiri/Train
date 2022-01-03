@@ -7,17 +7,18 @@ import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
 import AddPin from './AddPin';
 import UserPinBox from "./UserPinBox"
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
-const toastOptions=
-    {   position: "top-right",
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        autoClose: 5000,
-        hideProgressBar: true
-    }
+const toastOptions =
+{
+    position: "top-right",
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    autoClose: 5000,
+    hideProgressBar: true
+}
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
@@ -36,12 +37,12 @@ function Admin() {
                 })
             )
         }).catch(error => {
-            const showError = () => toast.error(error.response.data.message,toastOptions);
+            const showError = () => toast.error(error.response.data.message, toastOptions);
             showError();
             console.log(error);
         });
     }
-    setTimeout(()=> prof(),1000); //? What is this suppose to do?
+    setTimeout(() => prof(), 1000); //? What is this suppose to do?
 
     // const addTask = async (event) => {
     //     event.preventDefault();
@@ -74,19 +75,34 @@ function Admin() {
             <div className="content">
                 <Header />
 
-               
+
                 <div className="right alonebox">
                     <h2>فعالیت های کاربران</h2>
 
-                    <form action="#" method="post">
-                        <img src="./images/formicn.png" alt="formicn" />
-                        <input type="text" name="titr" placeholder="موضوع" required />
-                        <input type="text" name="username" placeholder="کاربر" required />
-                        <input type="text" name="time" placeholder="زمان" required />
-                        <input type="submit" value="ثبت" />
-                    </form>
                     <div>
-                    
+                        <form action="#" method="post">
+                            <img src="./images/formicn.png" alt="formicn" />
+                            <input list="category" name="titr" placeholder="موضوع" required />
+                            <datalist id="category">
+                                <option value="برنامه نویسی" />
+                                <option value="گرافیک" />
+                                <option value="مدیریت مالی" />
+                                <option value="مدیریت" />
+                            </datalist>
+                            <input type="text" list="userslist" name="username" placeholder="کاربر" required />
+                            <datalist id="userslist">
+                                <option value=" احمد" />
+                                <option value="امین" />
+                            </datalist>
+
+                            <input type="number" name="time" placeholder="زمان(روز)" required />
+
+                            <input type="submit" value="ثبت" />
+
+                        </form>
+                    </div>
+                    <div>
+
                     </div>
 
                     <AdminTaskBox />
@@ -112,17 +128,17 @@ function Admin() {
 
 
                 <div className="right groupbox">
-                   
-                    <AddTask/>
 
-                    <AddPin/>
-                   
+                    <AddTask />
+
+                    <AddPin />
+
                 </div>
 
                 <div style={{ clear: 'both' }} ></div>
 
-                <UserPinBox/>
-               
+                <UserPinBox />
+
 
             </div>
 

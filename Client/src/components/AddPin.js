@@ -1,16 +1,17 @@
-import React ,{useState}from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
-const toastOptions=
-    {   position: "top-right",
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        autoClose: 5000,
-        hideProgressBar: true,
-    }
+const toastOptions =
+{
+    position: "top-right",
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    autoClose: 5000,
+    hideProgressBar: true,
+}
 
 function AddPin() {
 
@@ -50,12 +51,18 @@ function AddPin() {
 
                     <img src="./images/formicn.png" alt="formicn" />
 
-                    <input type="text" name="titr" placeholder="موضوع" required value={title} onChange={e =>
+                    <input list="category" type="text" name="titr" placeholder="موضوع" required value={title} onChange={e =>
                         setTitle(e.target.value)
                     } />
 
                     <input type="submit" value="ثبت" />
                 </form>
+                <datalist id="category">
+                    <option value="برنامه نویسی" />
+                    <option value="گرافیک" />
+                    <option value="مدیریت مالی" />
+                    <option value="مدیریت" />
+                </datalist>
             </div>
         </div>
     )

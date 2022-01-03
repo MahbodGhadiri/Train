@@ -1,27 +1,67 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { connectAdvanced, useDispatch, useSelector } from 'react-redux';
 import { setPins, selectPin } from '../features/pin/pinSlice';
 import { store } from '../app/store';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
-const toastOptions=
-    {   position: "top-right",
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        autoClose: 5000,
-        hideProgressBar: true
+const toastOptions =
+{
+    position: "top-right",
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    autoClose: 5000,
+    hideProgressBar: true
+}
+
+function indexGiveOut(wantedIndex, pinArray) {
+    let Arr = [0, 1, 2, 3, 4];
+    let filtered = Arr.filter((x) => x !== wantedIndex);
+    // console.log(filtered);
+    wantedIndex = filtered[Math.floor(Math.random() * 3)];
+    return wantedIndex;
+}
+
+function changeTitle(wantedIndex, pinArray) {
+
+    let subjectTag;
+    switch (pinArray[wantedIndex]?.title) {
+        case "برنامه نویسی":
+            // console.log("برنامه نویسی");
+            subjectTag = "#ffb830";
+            break;
+
+        case "گرافیک":
+            subjectTag = "#00af91";
+            // console.log("گرافیک");
+            break;
+
+        case "مدیریت ":
+            // console.log("مدیریت");
+            subjectTag = "#ff2442";
+            break;
+
+        case "دیگر ":
+            // console.log("دیگر");
+            subjectTag = "#ff2442";
+            break;
+        default:
+
+            break;
     }
+
+    return subjectTag;
+}
 
 function UserPinBox() {
     const dispatch = useDispatch();
     let pins = [];
     let pinList = useSelector(selectPin);
-    let x = 2;
+    let [pinArrIndex, setPinArrIndex] = useState(Math.floor(Math.random() * 4));
     let titleColor = "";
-    
+
     useEffect(async () => {
 
         await axios.get("/user/pins",
@@ -31,7 +71,7 @@ function UserPinBox() {
             pins = responce.data;
         }).catch(error => {
             console.log(error);
-            const showError = () => toast.error(error.data.message,toastOptions);
+            const showError = () => toast.error(error.data.message, toastOptions);
             showError();
         });
 
@@ -41,50 +81,55 @@ function UserPinBox() {
 
 
 
-    }, []);
+    }, [store.getState().pin.reload]);
 
 
-    console.log(pinList[x]?.title);
+    
+    function ReloadPin(event) {
+        event.preventDefault();
 
+        let Index = indexGiveOut(pinArrIndex, pinList);
+        console.log(Index);
+        titleColor = changeTitle(Index, pinList);
+        console.log(titleColor);
 
-    switch (pinList[x]?.title) {
-        case "برنامه نویسی":
-            console.log("برنامه نویسی");
-            titleColor = "#ffb830";
-            break;
-
-        case "گرافیک": titleColor = "#00af91";
-            break;
-
-        default: titleColor = "#ff2442";
-            break;
     }
-
-
+    console.log(pinArrIndex);
+    titleColor = changeTitle(pinArrIndex, pinList);
+    console.log(titleColor);
     return (
         <div>
-            <div className="alert-b" style={{ background: `${titleColor}` }}>
-                <i className="fa fa-circle" style={{ color: "#ffb830", right: "-40px" }} ariaHidden="true" onClick={() => {
-                    x = 0;
-                    console.log("x:0");
-                }}></i>
 
-                <i className="fa fa-circle" style={{ color: "#ff2442", right: "-20px" }} ariaHidden="true" onClick={() => {
-                    x = 1;
-                    console.log("x:1");
-                }}></i>
+            <div className="alert-b" style={{ background: `${titleColor}`, }}>
+                <i className="fa fa-circle"
+                    style={{ color: "#ffb830", right: "-40px" }}
+                    ariaHidden="true"
+                    onClick={(event) => ReloadPin(event)}></i>
 
-                <i className="fa fa-times" style={{
-                    background: "#fff", color: "red", cursor: "pointer"
-                }} ariaHidden="true" ></i>
+                <i className="fa fa-circle"
+                    style={{ color: "#ff2442", right: "-20px" }}
+                    ariaHidden="true"
+                    onClick={(event) => ReloadPin(event)}></i>
 
-                <p >{pinList[x]?.message}</p>
+                <i className="fa fa-times"
+                    style={{
+                        background: "#fff", color: "red", cursor: "pointer"
+                    }} ariaHidden="true" ></i>
 
-                <i className="fa fa-circle" style={{
-                    color: '#3db2ff', left: '-20px'
-                }} ariaHidden="true"></i>
+                <p >{pinList[pinArrIndex]?.message}</p>
 
-                <i className="fa fa-circle" style={{ color: '#00af91', left: '-40px' }} ariaHidden="true" onClick={() => x = 3}></i>
+
+                <i className="fa fa-circle"
+                    style={{
+                        color: '#3db2ff', left: '-20px'
+                    }}
+                    ariaHidden="true"
+                    onClick={(event) => ReloadPin(event)}></i>
+
+                <i className="fa fa-circle"
+                    style={{ color: '#00af91', left: '-40px' }}
+                    ariaHidden="true"
+                    onClick={(event) => ReloadPin(event)}></i>
             </div>
         </div>
     )
