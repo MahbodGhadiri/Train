@@ -166,7 +166,9 @@ class UserController
     const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
    
-    if(req.body.finishDate>req.body.startDate) //TODO startDate > now
+    const finishDate = new Date(req.body.finishDate).getTime()
+    const startDate = new Date(req.body.startDate).getTime()
+    if(finishDate>startDate) //TODO startDate > now
     {
       const user = await userModel.findOne({_id:req.user._id})
       if(!user) {return res.status(404).send({message:"یافت نشد"})}
@@ -183,7 +185,9 @@ class UserController
     const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
 
-    if(req.body.finishDate>req.body.startDate) //TODO startDate > now
+    const finishDate = new Date(req.body.finishDate).getTime()
+    const startDate = new Date(req.body.startDate).getTime()
+    if(finishDate>startDate) //TODO startDate > now
     {
       const user=await userModel
       .findOneAndUpdate(
