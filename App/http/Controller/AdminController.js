@@ -40,20 +40,22 @@ class AdminController
         req.body.assignedBy = req.user._id;
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
-   
-        if(req.body.finishDate>req.body.startDate) //TODO  startDate > now
+        const finishDate = new Date(req.body.finishDate).getTime()
+        const startDate = new Date(req.body.startDate).getTime()
+        if(finishDate>startDate) //TODO  startDate > now
         {
            await new adminTaskModel(req.body).save().then(res.status(201).send({message:"انجام شد"})); 
         }
-        else return res.status(400).send({messgae:"Invalid Date"})
+        else return res.status(400).send({message:"تاریخ نامعتبر است!"})
     }
 
     async editTask(req,res)//required query parameter : task (id)
     {
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
-
-        if(req.body.finishDate>req.body.startDate)
+        const finishDate = new Date(req.body.finishDate).getTime()
+        const startDate = new Date(req.body.startDate).getTime()
+        if(finishDate>startDate)
         {
            await adminTaskModel.findOneAndUpdate({_id:{eq:req.query.task}},req.body).then(res.status(200).send({message:"انجام شد"}));
            //TODO add a callback , wrong _id can cause a bug 

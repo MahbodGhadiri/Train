@@ -57,6 +57,7 @@ function AddTask() {
             })
             .catch(error => {
                 showError(error);
+                console.log(error.response.message)
             })
     }
 
