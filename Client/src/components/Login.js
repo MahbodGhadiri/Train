@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import {showError } from './Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
-import {setUserAuthenticationStatus,getUserAuthenticationStatus} from "./SessionStorage"
+import {setUserAuthenticationStatus,getUserAuthenticationStatus,setUserAuthorization} from "./SessionStorage"
 
 function Login() {
 
@@ -70,6 +70,7 @@ function Login() {
                         console.log(role);
                         if(response.status===200)
                         setUserAuthenticationStatus("true")
+                        setUserAuthorization(response.data.role)
                     }).catch((error) => {
                         showError(error)
                     });
