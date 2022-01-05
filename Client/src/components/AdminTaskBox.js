@@ -9,7 +9,6 @@ import { store } from '../app/store';
 
 const AdminTaskBox = () => {
 
-
     const dispatch = useDispatch();
     let tasks = [];
     const taskList = useSelector(selectTask);

@@ -6,15 +6,6 @@ import { store } from '../app/store';
 import { showError } from './Toast_Functions';
 
 
-
-function indexGiveOut(wantedIndex, pinArray) {
-    let Arr = [0, 1, 2, 3, 4];
-    let filtered = Arr.filter((x) => x !== wantedIndex);
-    // console.log(filtered);
-    wantedIndex = filtered[Math.floor(Math.random() * 3)];
-    return wantedIndex;
-}
-
 function changeTitle(wantedIndex, pinArray) {
 
     let subjectTag;
@@ -50,7 +41,7 @@ function UserPinBox() {
     const dispatch = useDispatch();
     let pins = [];
     let pinList = useSelector(selectPin);
-    let [pinArrIndex, setPinArrIndex] = useState(Math.floor(Math.random() * 4));
+    let [pinArrIndex, setPinArrIndex] = useState(2);
     let titleColor = "";
 
     useEffect(async () => {
@@ -72,31 +63,40 @@ function UserPinBox() {
 
     }, [store.getState().pin.reload]);
 
+    titleColor = changeTitle(pinArrIndex, pinList);
 
-    
-    function ReloadPin(event) {
+    function ReloadPinFront(event, index) {
         event.preventDefault();
+        index--;
+        if (index === -1) {
+            index = 4;
+            titleColor = changeTitle(index, pinList);
+        }
+        setPinArrIndex(index);
 
-        let Index = indexGiveOut(pinArrIndex, pinList);
-        console.log(Index);
-        titleColor = changeTitle(Index, pinList);
-        console.log(titleColor);
 
     }
-    titleColor = changeTitle(pinArrIndex, pinList);
+    function ReloadPinBack(event, index) {
+        event.preventDefault();
+        index++;
+        if (index === 5) {
+            index = 0;
+            titleColor = changeTitle(index, pinList);
+        }
+        setPinArrIndex(index);
+
+    }
+
     return (
         <div>
 
             <div className="alert-b" style={{ background: `${titleColor}`, }}>
-                <i className="fa fa-circle"
-                    style={{ color: "#ffb830", right: "-40px" }}
-                    ariaHidden="true"
-                    onClick={(event) => ReloadPin(event)}></i>
+               
 
                 <i className="fa fa-circle"
                     style={{ color: "#ff2442", right: "-20px" }}
                     ariaHidden="true"
-                    onClick={(event) => ReloadPin(event)}></i>
+                    onClick={(event) => ReloadPinBack(event, pinArrIndex)}></i>
 
                 <i className="fa fa-times"
                     style={{
@@ -111,12 +111,9 @@ function UserPinBox() {
                         color: '#3db2ff', left: '-20px'
                     }}
                     ariaHidden="true"
-                    onClick={(event) => ReloadPin(event)}></i>
+                    onClick={(event) => ReloadPinFront(event, pinArrIndex)}></i>
 
-                <i className="fa fa-circle"
-                    style={{ color: '#00af91', left: '-40px' }}
-                    ariaHidden="true"
-                    onClick={(event) => ReloadPin(event)}></i>
+                
             </div>
         </div>
     )
