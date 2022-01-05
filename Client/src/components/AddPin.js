@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { showSuccess, showError } from './Toast_Functions';
 
-const toastOptions =
-{
-    position: "top-right",
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    autoClose: 5000,
-    hideProgressBar: true,
-}
 
 function AddPin() {
 
@@ -28,15 +18,13 @@ function AddPin() {
         await axios.post("admin/pin",
             Pin,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then(responce => {
-                console.log(responce);
-                const showSuccess = () => toast.success(responce.data.message, toastOptions);
-                showSuccess();
+            .then(response => {
+                console.log(response);
+                showSuccess(response);
             })
             .catch(error => {
                 console.log(error);
-                const showError = () => toast.error(error.response.data.message, toastOptions);
-                showError();
+                showError(error);
             })
     }
     return (

@@ -2,20 +2,9 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { showSuccess,showError } from './Toast_Functions';
 import { selectReload, setReload } from '../features/task/taskSlice';
 
-
-const toastOptions =
-{
-    position: "top-right",
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    autoClose: 5000,
-    hideProgressBar: true
-}
 
 function AddTask() {
 
@@ -50,9 +39,8 @@ function AddTask() {
         await axios.post("/admin/tasks",
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then(responce => {
-                const showSuccess = () => toast.success(responce.data.message, toastOptions);
-                showSuccess();
+            .then(response => {
+                showSuccess(response);
                 reset();
                 ///////////////
                 if (reload === false) {
@@ -68,8 +56,7 @@ function AddTask() {
                 //////////////
             })
             .catch(error => {
-                const showError = () => toast.error(error.response.data.message, toastOptions);
-                showError();
+                showError(error);
             })
     }
 

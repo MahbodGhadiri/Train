@@ -3,18 +3,9 @@ import axios from 'axios';
 import { connectAdvanced, useDispatch, useSelector } from 'react-redux';
 import { setPins, selectPin } from '../features/pin/pinSlice';
 import { store } from '../app/store';
-import { toast } from 'react-toastify';
+import { showError } from './Toast_Functions';
 
-const toastOptions =
-{
-    position: "top-right",
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    autoClose: 5000,
-    hideProgressBar: true
-}
+
 
 function indexGiveOut(wantedIndex, pinArray) {
     let Arr = [0, 1, 2, 3, 4];
@@ -66,13 +57,11 @@ function UserPinBox() {
 
         await axios.get("/user/pins",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(responce => {
-            console.log(responce.data);
-            pins = responce.data;
+        ).then(response => {
+            console.log(response.data);
+            pins = response.data;
         }).catch(error => {
-            console.log(error);
-            const showError = () => toast.error(error.data.message, toastOptions);
-            showError();
+            showError(error);
         });
 
         dispatch(setPins({
@@ -94,9 +83,7 @@ function UserPinBox() {
         console.log(titleColor);
 
     }
-    console.log(pinArrIndex);
     titleColor = changeTitle(pinArrIndex, pinList);
-    console.log(titleColor);
     return (
         <div>
 

@@ -3,15 +3,7 @@ import React, { useState, useRef } from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
-import {toast } from 'react-toastify';
-
-const toastOptions=
-    {   position: "top-right",
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-    }
+import { showInfo,showError } from "./Toast_Functions";
 
 const Signup = () => {
 
@@ -65,30 +57,13 @@ const Signup = () => {
                 console.log("user registration info all valid");
                 let status;
                 // api call begin
-                await axios.post("/auth/register", user).then(responce => {
-                    console.log(responce.status);
-                    status = responce.status;
-
-                    const showInfo = () => toast.info(responce.data.message, 
-                        {
-                            ...toastOptions,
-                            autoClose: false,
-                            hideProgressBar: true,
-                        }
-                    );
-
-                    showInfo();
+                await axios.post("/auth/register", user).then(response => {
+                    console.log(response.status);
+                    status = response.status;
+                    showInfo(response);
 
                 }).catch(error => {
-                    const showError = () => toast.error(error.response.data.message,
-                        {
-                            ...toastOptions,
-                            autoClose: 5000,
-                            hideProgressBar: false
-                        }
-                    );
-
-                    showError();
+                    showError(error);
                 })
                 
                 // api call end

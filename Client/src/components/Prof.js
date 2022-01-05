@@ -7,13 +7,13 @@ async function Prof() {
 const dispatch = useDispatch();
     await axios.get("/user/profile",
         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-    ).then(responce => {
-        // console.log(responce);
+    ).then(response => {
+        // console.log(response);
         dispatch(
             setUserLoginDetails({
-                name: responce.data.name,
-                phone: responce.data.phone.number,
-                email: responce.data.email.address,
+                name: response.data.name,
+                phone: response.data.phone.number,
+                email: response.data.email.address,
             }))
 
     }).catch(error => {

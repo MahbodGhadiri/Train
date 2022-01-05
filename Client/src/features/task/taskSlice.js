@@ -25,9 +25,9 @@ const taskSlice = createSlice({
     }
 })
 
+
 export const { setTasks , setReload } = taskSlice.actions;
 
 export const selectTask = (state) => state.task.task;
 export const selectReload = (state) => state.task.reload;
-
 export default taskSlice.reducer;

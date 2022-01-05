@@ -1,20 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect,useState } from 'react'
 import { selectTask, selectReload } from '../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks , setReload} from '../features/task/taskSlice';
+import { setTasks , setReload, taskFilterSlice} from '../features/task/taskSlice';
 import axios from 'axios';
-import {toast } from 'react-toastify';
+import {showError } from './Toast_Functions';
 import { store } from '../app/store';
 
-const toastOptions=
-    {   position: "top-right",
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        autoClose: 5000,
-        hideProgressBar: true
-    }
 
 const AdminTaskBox = () => {
 
@@ -23,20 +14,39 @@ const AdminTaskBox = () => {
     let tasks = [];
     const taskList = useSelector(selectTask);
     const reload = useSelector(selectReload);
-    
+    const [userList,setUserList]=useState("")
+    const [time,setTime]=useState("")
+    const [category,setCategory]=useState("")
+    const [filter,setFilter]=useState("")
 
+    function filterTask(event)
+    {
+        event.preventDefault();
+        
+        if(category)
+        {
+            setFilter(filter+`subject=${category}&`)
+        }
+        if(time)
+        {
+            setFilter(filter+`days=${time}&`)
+        }
+        // if(userList)
+        // {
+        //     setFilter(filter+`userList=${userList}&`)
+        // }
+    }
     useEffect(async () => {
         
         console.log(reload);
 
         
             console.log('in you (if) in hook');
-
-            await axios.get("/admin/tasks",
+            await axios.get(`/admin/tasks/?${filter}`,
                 { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-            ).then(responce => {
-                // console.log(responce);
-                tasks = responce.data.tasks;
+            ).then(response => {
+                // console.log(response);
+                tasks = response.data.tasks;
                 
                 dispatch(setReload({
                     reload: true
@@ -44,8 +54,7 @@ const AdminTaskBox = () => {
                 console.log(reload);
             }).catch(error => {
                 console.log(error);
-                const showError = () => toast.error(error.response.data.message,toastOptions);
-                showError();
+                showError(error);
             });
 
             // console.log(tasks);
@@ -57,6 +66,34 @@ const AdminTaskBox = () => {
     }, [store.getState().task.reload]);
 
     return (
+        <div>
+        <h2>فعالیت های کاربران</h2>
+                <div>
+                    <form onSubmit={(event=>filterTask(event))}>
+                        <img src="./images/formicn.png" alt="formicn" />
+                        <input list="category" name="titr" placeholder="موضوع" required onChange={e=>setCategory(e.target.value)}/>
+                        <datalist id="category" >
+                            <option value="برنامه نویسی" />
+                            <option value="گرافیک" />
+                            <option value="مدیریت مالی" />
+                            <option value="مدیریت" />
+                        </datalist>
+                        <input type="text" list="userslist" name="username" placeholder="کاربر" required onChange={e=>setUserList(e.target.value)}/>
+                        <datalist id="userslist" >
+                            <option value=" احمد" />
+                            <option value="امین" />
+                        </datalist>
+
+                        <input type="number" name="time" placeholder="زمان(روز)" required onChange={e=>setTime(e.target.value)} />
+
+                        <input type="submit" value="ثبت" />
+
+                    </form>
+                </div>
+            <div>
+
+            </div>
+
         <div>
             {taskList &&
                 taskList.map(
@@ -88,6 +125,7 @@ const AdminTaskBox = () => {
                         </div>
                     )
                 )}
+        </div>
         </div>
     )
 }

@@ -11,9 +11,10 @@ import {
     setUserLoginDetails,
 } from '../features/user/userSlice';
 import axios from "axios";
-import {toast } from 'react-toastify';
+import {showError } from './Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
 import {setUserAuthenticationStatus,getUserAuthenticationStatus} from "./SessionStorage"
+
 function Login() {
 
 
@@ -70,17 +71,7 @@ function Login() {
                         if(response.status===200)
                         setUserAuthenticationStatus("true")
                     }).catch((error) => {
-                        
-                         toast.error(error.response.data.message, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            });
-                        
+                        showError(error)
                     });
 
 

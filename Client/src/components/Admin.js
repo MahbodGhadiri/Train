@@ -7,18 +7,8 @@ import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
 import AddPin from './AddPin';
 import UserPinBox from "./UserPinBox"
-import { toast } from 'react-toastify';
+import { showError } from './Toast_Functions';
 
-const toastOptions =
-{
-    position: "top-right",
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    autoClose: 5000,
-    hideProgressBar: true
-}
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
@@ -28,17 +18,16 @@ function Admin() {
 
         await axios.get("/user/profile",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(responce => {
+        ).then(response => {
             dispatch(
                 setUserLoginDetails({
-                    name: responce.data.name,
-                    phone: responce.data.phone.number,
-                    email: responce.data.email.address,
+                    name: response.data.name,
+                    phone: response.data.phone.number,
+                    email: response.data.email.address,
                 })
             )
         }).catch(error => {
-            const showError = () => toast.error(error.response.data.message, toastOptions);
-            showError();
+            showError(error);
             console.log(error);
         });
     }
@@ -61,8 +50,8 @@ function Admin() {
     //     await axios.post("http://localhost:8080/api/admin/tasks",
     //         Task,
     //         { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-    //         .then(responce => {
-    //             console.log(responce);
+    //         .then(response => {
+    //             console.log(response);
     //         })
     //         .catch(error => {
     //             console.log(error);
@@ -77,34 +66,7 @@ function Admin() {
 
 
                 <div className="right alonebox">
-                    <h2>فعالیت های کاربران</h2>
-
-                    <div>
-                        <form action="#" method="post">
-                            <img src="./images/formicn.png" alt="formicn" />
-                            <input list="category" name="titr" placeholder="موضوع" required />
-                            <datalist id="category">
-                                <option value="برنامه نویسی" />
-                                <option value="گرافیک" />
-                                <option value="مدیریت مالی" />
-                                <option value="مدیریت" />
-                            </datalist>
-                            <input type="text" list="userslist" name="username" placeholder="کاربر" required />
-                            <datalist id="userslist">
-                                <option value=" احمد" />
-                                <option value="امین" />
-                            </datalist>
-
-                            <input type="number" name="time" placeholder="زمان(روز)" required />
-
-                            <input type="submit" value="ثبت" />
-
-                        </form>
-                    </div>
-                    <div>
-
-                    </div>
-
+                    
                     <AdminTaskBox />
 
                 </div>
