@@ -19,7 +19,7 @@ function AddTask() {
     const reset = () => {
         setTitle("");
         setTask("");
-        setDays(null);
+        setDays(0);
         setSubjectTag("");
         setExecutors([]);
 
@@ -35,7 +35,7 @@ function AddTask() {
             executors: [executors],
             subjectTag: subjectTag
         };
-
+       
         await axios.post("/admin/tasks",
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
