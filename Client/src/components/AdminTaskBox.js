@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { selectTask, selectReload } from '../features/task/taskSlice';
+import { selectTask, selectReload, selectClick } from '../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, taskFilterSlice } from '../features/task/taskSlice';
+import { setTasks, setReload, setClick } from '../features/task/taskSlice';
 import axios from 'axios';
 import { showError } from './Toast_Functions';
 import { store } from '../app/store';
+import $ from "jquery";
 
 
 const AdminTaskBox = () => {
@@ -81,6 +82,19 @@ const AdminTaskBox = () => {
 
     }, [store.getState().task.reload]);
 
+    //TODO Stop useEffect from running multiple times
+    useEffect(()=>{
+        $('.alonerow i.fa-arrow-down').on('click', function() {
+            console.log("Y")
+            $(this).closest('.task').find('.task-down').toggle(350);
+            $(this).toggleClass('active');
+            if ($(this).hasClass('active')) {
+                $(this).closest('.alonerow').find('.time').hide(200);
+            } else {
+                $(this).closest('.alonerow').find('.time').show(200);
+            }
+        });
+    }) 
     return (
         <div>
             <h2>فعالیت های کاربران</h2>
