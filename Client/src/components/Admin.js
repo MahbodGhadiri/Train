@@ -8,7 +8,8 @@ import AddTask from './AddTask';
 import AddPin from './AddPin';
 import UserPinBox from "./UserPinBox"
 import { showError } from './Toast_Functions';
-
+import Profile from './AdminProfile';
+import { Route } from 'react-router'; 
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
@@ -33,30 +34,7 @@ function Admin() {
     }
     setTimeout(() => prof(), 1000); //? What is this suppose to do?
 
-    // const addTask = async (event) => {
-    //     event.preventDefault();
-    //     console.log("i");
 
-    //     const Task = {
-    //         title: title,
-    //         task: task,
-    //         startDate: moment().format('YYYY-MM-D '),
-    //         finishDate: moment().add(days, 'days').format('YYYY-MM-D '),
-    //         executors: [executors],
-    //         subjectTag: subjectTag
-    //     };
-    //     console.log(Task);
-
-    //     await axios.post("http://localhost:8080/api/admin/tasks",
-    //         Task,
-    //         { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-    //         .then(response => {
-    //             console.log(response);
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //         })
-    // }
     return (
 
         <div dir="rtl">
@@ -66,7 +44,7 @@ function Admin() {
 
 
                 <div className="right alonebox">
-                    
+
                     <AdminTaskBox />
 
                 </div>
@@ -101,6 +79,7 @@ function Admin() {
 
                 <UserPinBox />
 
+               
 
             </div>
 
