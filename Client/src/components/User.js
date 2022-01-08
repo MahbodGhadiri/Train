@@ -4,7 +4,7 @@ import UserPinBox from "./UserPinBox";
 
 function User() {
     return (
-        <div>
+        <div dir="rtl">
             <div className="content">
 
                 <Header />
