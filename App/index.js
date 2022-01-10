@@ -71,6 +71,7 @@ class application
            [
              'GET',
              'POST',
+             'PUT'
            ],
 
            allowedHeaders: 
@@ -80,14 +81,14 @@ class application
         };
         const apiLimiter = new rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+            max: 1000000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
             standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
             legacyHeaders: false, // Disable the `X-RateLimit-*` headers
             message: "Too many Requests",
         })
         const limiter = rateLimit({
             windowMs: 1 * 60 * 1000, // 1 minute
-            max: 10, // Limit each IP to 10 requests per `window` (here, per 1 minute)
+            max: 10000, // Limit each IP to 10 requests per `window` (here, per 1 minute)
             standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
             legacyHeaders: false, // Disable the `X-RateLimit-*` headers
             message: "Too many Requests",
@@ -104,7 +105,8 @@ class application
         app.use("/api",apiLimiter);
         app.use("/api",api);
         app.get('*',limiter,(req,res)=>{
-            res.sendFile(path.resolve(__dirname,"../Client/build","index.html"))
+            console.log("Front")
+            return res.sendFile(path.resolve(__dirname,"../Client/build","index.html"))
           })
         app.use(errorHandler);
     }

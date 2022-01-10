@@ -18,7 +18,7 @@ const refreshTokenSchema = new Schema({
 
 
 
-forgotPasswordModel = model("tokens",forgotPasswordTokenSchema);
+const forgotPasswordModel =new model("tokens",forgotPasswordTokenSchema);
 refreshTokenModel = model("refreshTokens",refreshTokenSchema);
 
 

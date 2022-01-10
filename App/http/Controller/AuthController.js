@@ -4,7 +4,7 @@ const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const sendEmail = require("../Helper/sendMail");
-const forgotPasswordModel = require("../../Models/TokenModel");
+const {forgotPasswordModel} = require("../../Models/TokenModel");
 const crypto = require("crypto");
 
 class AuthController {
@@ -123,7 +123,7 @@ class AuthController {
       const {error} = forgotPasswordUsingEmailValidator(req.body.email);
       if (error) 
       {
-        res.status(400).send(`an error occured , make sure you are using either your email or your phone number \n ${error} `)
+        res.status(400).send({message:`an error occured , make sure you are using either your email or your phone number \n ${error} `})
       }
       const user = await userModel.findOne({"email.address":req.body.email});
       //Check if account is activated
@@ -135,7 +135,7 @@ class AuthController {
         const loginLink = `${process.env.domain}/api/auth/forgot-password/login/${user._id}/${verificationToken}`;
         //remove any previously existing login token from DB
         //? may there be a bug that cause saving two Tokens in DB?
-        let tokenInfo = await forgotPasswordModel.findById(user._id);
+        let tokenInfo = await forgotPasswordModel.findOne({_id:user._id});
         if(tokenInfo)
         {
           await tokenInfo.remove();
@@ -189,14 +189,15 @@ class AuthController {
         maxAge:4*60*60*1000,
         sameSite:"strict",
         //secure:true //TODO uncomment when deployed
-      }).status(200).send("PasswordResetPage"); // TODO redirect to password reset page !!!
+      }).status(200).redirect(`http://localhost:3000/reset-password?userId=${userId}&token=${sendedVerificationToken}`); // TODO redirect to password reset page !!!
     }
     else { res.status(400).send({message:"لینک نامعتبر"});}
   }
 
   async resetPassword(req,res) //looks fine , needs to be checked for bugs
   {
-    
+    console.log(req.query.userId)
+    console.log(req.query.token)
     const { error } = resetPasswordValidator(req.body);
     if (error) return res.status(400).send({ message: error.message });
     const userId = req.body.path.slice(28).split("/")[0];
