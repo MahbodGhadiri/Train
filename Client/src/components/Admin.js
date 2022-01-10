@@ -10,6 +10,7 @@ import UserPinBox from "./UserPinBox"
 import { showError } from './Toast_Functions';
 import Profile from './AdminProfile';
 import { Route } from 'react-router'; 
+import {checklogin} from "./CheckLogin"
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
@@ -30,6 +31,7 @@ function Admin() {
         }).catch(error => {
             showError(error);
             console.log(error);
+            checklogin(error)
         });
     }
     setTimeout(() => prof(), 1000); //? What is this suppose to do?
