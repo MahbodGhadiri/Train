@@ -1,11 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect , useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import $ from 'jquery';
 
 const Header = () => {
     return (
         <div>
             <a href="./profile.html" className="usericn">
-                <Link to = {`/admin/profile`}>
+                <Link to={`/home/profile`}>
                     <img src="./images/usericn.png" alt="user" />
                 </Link>
             </a>

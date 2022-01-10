@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import SimpleReactValidator from "simple-react-validator";
-import { useHistory } from 'react-router';
+import { Redirect, useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     selectUserEmail,
@@ -11,9 +11,9 @@ import {
     setUserLoginDetails,
 } from '../features/user/userSlice';
 import axios from "axios";
-import {showError } from './Toast_Functions';
+import { showError } from './Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
-import {setUserAuthenticationStatus,getUserAuthenticationStatus,setUserAuthorization} from "./SessionStorage"
+import { setUserAuthenticationStatus, getUserAuthenticationStatus, setUserAuthorization } from "./SessionStorage"
 
 function Login() {
 
@@ -42,7 +42,7 @@ function Login() {
     useEffect(() => {
 
         console.log("hi");
-      
+
     }, [name]);
 
     const reset = () => {
@@ -68,8 +68,8 @@ function Login() {
                         console.log(status);
                         role = response.data.role;
                         console.log(role);
-                        if(response.status===200)
-                        setUserAuthenticationStatus("true")
+                        if (response.status === 200)
+                            setUserAuthenticationStatus("true")
                         setUserAuthorization(response.data.role)
                     }).catch((error) => {
                         showError(error)
@@ -108,11 +108,12 @@ function Login() {
         }))
 
     }
+
     return (
 
         <>
             <div className="login">
-            
+
                 <div className="logo sl-logo">
                     <img src="./images/logo-min.png" alt="Train" title="Train" />
                 </div>
@@ -159,10 +160,13 @@ function Login() {
                         password,
                         `required|min: 5`
                     )}
+                    <Link to="/forgot-password">
+                        <p style={{ textAlign: "center", color: '#6e85b2', cursor: "pointer" }}>فراموشی رمز عبور</p>
+                    </Link>
                     <input type="submit" value="ورود" className="send" />
 
                 </form>
-                
+
             </div>
         </>
     )

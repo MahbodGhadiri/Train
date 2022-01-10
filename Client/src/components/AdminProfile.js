@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone } from '../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
+import $ from 'jquery';
 
 function Profile() {
     const perName = useSelector(selectUserName);
@@ -14,6 +15,9 @@ function Profile() {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     //-------------------------------------------
+
+
+      
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -29,29 +33,12 @@ function Profile() {
         })
     );
     //user validation with "SimpleReactValidator" end
-    useEffect(async () => {
-        // await axios.get("/user/profile",
-        //     { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        // ).then(response => {
-        //     dispatch(
-        //         setUserLoginDetails({
-        //             name: response.data.name,
-        //             phone: response.data.phone.number,
-        //             email: response.data.email.address,
-        //         })
-        //     )
-        // }).catch(error => {
-        //     showError(error);
-        //     console.log(error);
-        // });
-    }, []);
-
     async function editUser(event) {
         event.preventDefault();
         await axios.put("/user/change-info",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
-            
+
         }).catch(error => {
             showError(error);
             console.log(error);
@@ -66,11 +53,12 @@ function Profile() {
                 console.log(response);
                 window.sessionStorage.removeItem("isUserAuthenticated");
                 window.sessionStorage.removeItem("role");
-                // window.location.reload();
+                window.location.reload();
             }).catch((error) => {
                 showError(error)
             });
     }
+
     return (
         <div>
             <body dir="rtl">
@@ -79,7 +67,7 @@ function Profile() {
 
                     <div className="right">
                         <div className="edit-box">
-                            <div className="edit-imgbox"><img src="./images/logo-min.png" alt="Train-logo" /></div>
+                            <div className="edit-imgbox"><img src="../images/logo-min.png" alt="Train-logo" /></div>
                             <form onSubmit={event => editUser(event)}  >
                                 <input type="text" placeholder={perName} value={name}
                                     onChange={e => {

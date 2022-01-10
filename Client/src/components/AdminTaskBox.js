@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { selectTask, selectReload, selectClick } from '../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
 import { setTasks, setReload, setClick } from '../features/task/taskSlice';
@@ -8,7 +8,10 @@ import { store } from '../app/store';
 import $ from "jquery";
 
 
+
 const AdminTaskBox = () => {
+
+
 
     const dispatch = useDispatch();
     let tasks = [];
@@ -16,11 +19,11 @@ const AdminTaskBox = () => {
     const reload = useSelector(selectReload);
     const [userList, setUserList] = useState("")
     const [time, setTime] = useState("")
-    const [category, setCategory] = useState("")
-    
-    // var [filter,setFilter]=useState("")
-    let [filter,setFilter]=useState("");
-    let tempFilter=""
+    const [category, setCategory] = useState("");
+    let [filter, setFilter] = useState("");
+    let tempFilter = "";
+
+    const [sendRequest, setSendRequest] = useState(false);
     function filterTask(event) {
         event.preventDefault();
 
@@ -54,9 +57,9 @@ const AdminTaskBox = () => {
         console.log(reload);
         //////////////
     }
+    
+
     useEffect(async () => {
-
-
 
         console.log('in you (if) in hook');
         await axios.get(`/admin/tasks/?${filter}`,
@@ -82,22 +85,10 @@ const AdminTaskBox = () => {
 
     }, [store.getState().task.reload]);
 
-    //TODO Stop useEffect from running multiple times
-    useEffect(()=>{
-        $('.alonerow i.fa-arrow-down').on('click', function() {
-            console.log("Y")
-            $(this).closest('.task').find('.task-down').toggle(350);
-            $(this).toggleClass('active');
-            if ($(this).hasClass('active')) {
-                $(this).closest('.alonerow').find('.time').hide(200);
-            } else {
-                $(this).closest('.alonerow').find('.time').show(200);
-            }
-        });
-    }) 
+    
     return (
         <div>
-            <h2>فعالیت های کاربران</h2>
+            <h2 >فعالیت های کاربران</h2>
             <div>
                 <form onSubmit={(event => filterTask(event))}>
                     <img src="./images/formicn.png" alt="formicn" />
@@ -133,7 +124,7 @@ const AdminTaskBox = () => {
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
                                     <h3>{task.title}</h3>
                                     <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" ></i>
-                                    <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true"  ></i>
+                                    <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
                                     <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} ariaHidden="true"  ></i>
                                     <div className="task-down">
                                         <p>
@@ -144,7 +135,6 @@ const AdminTaskBox = () => {
                                         <div className="date">
                                             <span>
                                                 شنبه 13/13/13 تا چهارشنبه 12/45/07
-
                                             </span>
                                         </div>
                                     </div>

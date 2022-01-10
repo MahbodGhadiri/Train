@@ -1,23 +1,22 @@
-import React from 'react';
 import {getUserAuthorization} from "./SessionStorage"
-import Admin from "./Admin"
-import User from "./User"
+import AdminProfile from "./AdminProfile"
+import UserProfile from "./UserProfile"
 
-function Home()
+function Profile()
 {
     const role = getUserAuthorization()
     if (role==="user")
     {
         return (
-            <User/>
+            <UserProfile/>
         )
     }
     else if (role==="admin"|role==="super admin")
     {
         return (
-            <Admin/>
+            <AdminProfile/>
         )
     }
 } 
 
-export default Home;
+export default Profile;
