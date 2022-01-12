@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react'
 import SimpleReactValidator from 'simple-react-validator';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { showError, showInfo } from './Toast_Functions';
+import { showError, showSuccess } from './Toast_Functions';
+import {setUserAuthenticationStatus,setUserAuthorization} from "./SessionStorage"
 
 function ResetPassword() {
 
@@ -32,13 +33,18 @@ function ResetPassword() {
         const Url= window.location.href
         let parameter= Url.split("?")
         parameter=parameter[1]
-        console.log(window.location.href);
         axios.put(`/auth/reset-password/?${parameter}`,
-            {  },
+            {password},
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
             .then((response) => {
                 console.log(response);
-                showInfo(response);
+                showSuccess(response);
+                if(response.status===200)
+                {
+                    setUserAuthenticationStatus("true")
+                    setUserAuthorization(response.data.role)
+                    window.location.href="http://localhost:8080/home"
+                }
 
             }).catch((error) => {
                 showError(error)
@@ -55,12 +61,12 @@ function ResetPassword() {
 
                 <div className="links">
 
-                    <Link to="/forgot-password">  تغییر ایمیل </Link>
+                    <Link to="/forgot-password">  تغییر رمز </Link>
                 </div>
 
 
                 <form action="#" method="post" onSubmit={e => resetPassword(e)}>
-                    <p style={{ textAlign: "center", color: '#6e85b2', cursor: "pointer" }}>لطفا ایمیل خود را وارد نمایید</p>
+                    <p style={{ textAlign: "center", color: '#6e85b2', cursor: "pointer" }}>لطفا رمز جدید خود را وارد نمایید</p>
                     <input
                         type="password"
                         name="password"

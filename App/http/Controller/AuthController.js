@@ -183,29 +183,32 @@ class AuthController {
        return res.status(404).send({message:"لینک نامعتبر"});
       //api won't delete the token as it is needed when changing password
       //generating refreshToken to log the user in
-      const token = user.generateRefreshToken();
+      const token = await user.generateRefreshToken();
       res.cookie("refreshToken",token,{
         httpOnly:true,
         maxAge:4*60*60*1000,
         sameSite:"strict",
         //secure:true //TODO uncomment when deployed
-      }).status(200).redirect(`http://localhost:3000/reset-password?userId=${userId}&token=${sendedVerificationToken}`); // TODO redirect to password reset page !!!
+      }).status(200).redirect(`${process.env.Domain}/reset-password?userId=${userId}&token=${sendedVerificationToken}`);
     }
     else { res.status(400).send({message:"لینک نامعتبر"});}
   }
 
   async resetPassword(req,res) //looks fine , needs to be checked for bugs
   {
-    console.log(req.query.userId)
-    console.log(req.query.token)
     const { error } = resetPasswordValidator(req.body);
     if (error) return res.status(400).send({ message: error.message });
-    const userId = req.body.path.slice(28).split("/")[0];
-    const sendedVerificationToken = req.body.path.slice(28).split("/")[1];
+
+    const userId = req.query.userId;
+    const sendedVerificationToken = req.query.token;
+    if (!userId || !sendedVerificationToken)
+      return res.status(400).send({ message: "لینک نامعتبر" })
     const user = await userModel.findById(userId);
-    if (!user || !sendedVerificationToken || req.user._id.toString() != userId)
+    if (!user || req.user._id.toString() != userId)
       return res.status(400).send({ message: "لینک نامعتبر" });
     const tokenInfo = await forgotPasswordModel.findById(userId);
+    if (!tokenInfo)
+      return res.status(400).send({ message: "لینک نامعتبر" })
     if (tokenInfo.token === sendedVerificationToken) {
       req.body.password = await argon2.hash(req.body.password, {
         type: argon2.argon2id,
@@ -217,6 +220,7 @@ class AuthController {
       await refreshTokenModel.deleteOne({_id:req.cookies.refreshToken._id});
       res.cookie("refreshToken","",{expires: new Date(0)});
       res.cookie("accessToken","",{expires: new Date(0)});
+      user.email.createdAt=undefined;
       await user.save();
       const refreshToken = await user.generateRefreshToken();
       res.cookie("refreshToken",refreshToken,
@@ -227,7 +231,7 @@ class AuthController {
           //secure:true
         }
       )
-      res.status(200).send({message:"رمز با موفقیت تغییر یافت"});
+      res.status(200).send({message:"رمز با موفقیت تغییر یافت",role:user.role}) 
     } else return res.status(400).send({ message: "Invalid Request" });
   }
 }

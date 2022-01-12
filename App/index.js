@@ -105,7 +105,6 @@ class application
         app.use("/api",apiLimiter);
         app.use("/api",api);
         app.get('*',limiter,(req,res)=>{
-            console.log("Front")
             return res.sendFile(path.resolve(__dirname,"../Client/build","index.html"))
           })
         app.use(errorHandler);

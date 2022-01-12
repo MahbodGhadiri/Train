@@ -118,7 +118,6 @@ const resetPasswordValidator = (data)=>
                 "string.max":"رمز باید حداکثر سی و دو کارکتر باشد!"
             }
         ),
-        path: joi.string().required().length(85),
     });
     return schema.validate(data);
 }
