@@ -20,6 +20,7 @@ function Admin() {
         await axios.get("/user/profile",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
+            console.log(response)
             dispatch(
                 setUserLoginDetails({
                     name: response.data.name,

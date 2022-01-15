@@ -1,9 +1,10 @@
 import axios from "axios";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
-import { showInfo,showError } from "./Toast_Functions";
+import { showInfo, showError } from "./Toast_Functions";
+import $ from 'jquery';
 
 const Signup = () => {
 
@@ -11,11 +12,13 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
-    const [rePassword, setRePassword] = useState("")
+    const [rePassword, setRePassword] = useState("");
+    let talents = [];
+    ///////////////////////////////////////////////
     const [loading, setLoading] = useState(false);
     const history = useHistory();
 
-    const [, forceUpdate] = useState();
+
 
 
     //user validation with "SimpleReactValidator" start
@@ -65,7 +68,7 @@ const Signup = () => {
                 }).catch(error => {
                     showError(error);
                 })
-                
+
                 // api call end
 
                 if (status === 200) {
@@ -73,7 +76,7 @@ const Signup = () => {
                     setLoading(false);
                     reset();
                 }
-                
+
             }
         }
         catch (ex) {
@@ -82,9 +85,17 @@ const Signup = () => {
         }
     };
 
+    function AddTalents(e, talent) {
+        e.preventDefault();
+        console.log(talent);
+        talents.push(talent);
+        console.log(talents)
 
+    }
 
     //register and reset start end
+
+
 
     return (
 
@@ -108,6 +119,7 @@ const Signup = () => {
 
             <form action="#" onSubmit={register}>
                 <input
+                    style={{ textAlign: "right" }}
                     id="name"
                     type="text"
                     name="name"
@@ -128,6 +140,7 @@ const Signup = () => {
                 )}
 
                 <input
+                    style={{ textAlign: "right" }}
                     type="email"
                     name="email"
                     required
@@ -145,6 +158,7 @@ const Signup = () => {
                 )}
 
                 <input
+                    style={{ textAlign: "right" }}
                     type="number"
                     name="phoneNumber"
                     required
@@ -169,6 +183,7 @@ const Signup = () => {
 
 
                 <input
+                    style={{ textAlign: "right" }}
                     type="password"
                     name="password"
                     required
@@ -186,23 +201,49 @@ const Signup = () => {
                     `required|min: 5`
                 )}
 
-                <input 
-                    type="password" 
+                <input
+                    style={{ textAlign: "right" }}
+                    type="password"
                     name="rePassword"
-                    required placeholder="تکرار رمز ورود" 
+                    required placeholder="تکرار رمز ورود"
                     value={rePassword}
                     onChange={e => {
                         setRePassword(e.target.value);
                         validator.current.showMessageFor(
                             "rePassword"
                         );
-                    }}/>
+                    }} />
                 {validator.current.message(
                     "rePassword",
                     rePassword,
                     `required|min: 5|in:${password}`
                 )}
-
+                <div className="skillsbox" style={{ textAlign: "right" }}
+                    value={talents}
+                    onChange={e => {
+                        setRePassword(e.target.value);
+                        validator.current.showMessageFor(
+                            "talents"
+                        );
+                    }} >مهارت های خود را وارد نمایید
+                    <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                    <ul>
+                        <li>
+                            <i className="fa fa-circle" style={{ color: "#00af91", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "گرافیک")}></i> گرافیک
+                        </li>
+                        <li>
+                            <i className="fa fa-circle" style={{ color: "#ff2442", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "برنامه نویسی")}></i> برنامه نویسی
+                        </li>
+                        <li>
+                            <i className="fa fa-circle" style={{ color: "#3db2ff", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "محتوا")}></i> محتوا
+                        </li>
+                    </ul>
+                </div>
+                {validator.current.message(
+                    "talents",
+                    talents,
+                    `required`
+                )}
                 <input type="submit" value="ثبت نام" className="send" />
             </form>
 

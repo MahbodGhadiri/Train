@@ -6,6 +6,7 @@ import axios from 'axios';
 import { showError } from './Toast_Functions';
 import { store } from '../app/store';
 import $ from "jquery";
+import { func } from 'joi';
 
 
 
@@ -57,7 +58,7 @@ const AdminTaskBox = () => {
         console.log(reload);
         //////////////
     }
-    
+
 
     useEffect(async () => {
 
@@ -85,27 +86,83 @@ const AdminTaskBox = () => {
 
     }, [store.getState().task.reload]);
 
-    
+    async function deleteTask(e, taskId) {
+        e.preventDefault();
+
+        console.log(taskId);
+
+        await axios.delete(`/admin/tasks/delete/?task=${taskId}`,
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+
+
+        }).catch(error => {
+            console.log(error);
+            showError(error);
+        });
+
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+        console.log(reload);
+    }
+    async function okTask(e, taskId) {
+        e.preventDefault();
+
+        console.log(taskId);
+
+        await axios.put(`/admin/tasks/done`,
+            taskId,
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+
+
+        }).catch(error => {
+            console.log(error);
+            showError(error);
+        });
+
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+        console.log(reload);
+    }
     return (
         <div>
             <h2 >فعالیت های کاربران</h2>
             <div>
                 <form onSubmit={(event => filterTask(event))}>
                     <img src="./images/formicn.png" alt="formicn" />
-                    <input list="category" name="titr" placeholder="موضوع" required value={category} onChange={e => setCategory(e.target.value)} />
+                    <input list="category" name="titr" placeholder="موضوع" value={category} onChange={e => setCategory(e.target.value)} />
                     <datalist id="category" >
                         <option value="برنامه نویسی" />
                         <option value="گرافیک" />
                         <option value="مدیریت مالی" />
                         <option value="مدیریت" />
                     </datalist>
-                    <input type="text" list="userslist" name="username" placeholder="کاربر" required onChange={e => setUserList(e.target.value)} />
+                    <input type="text" list="userslist" name="username" placeholder="کاربر" onChange={e => setUserList(e.target.value)} />
                     <datalist id="userslist" >
                         <option value=" احمد" />
                         <option value="امین" />
                     </datalist>
 
-                    <input type="number" name="time" placeholder="زمان(روز)" required value={time} onChange={e => setTime(e.target.value)} />
+                    <input type="number" name="time" placeholder="زمان(روز)" value={time} onChange={e => setTime(e.target.value)} />
 
                     <input type="submit" value="ثبت" />
 
@@ -123,9 +180,9 @@ const AdminTaskBox = () => {
                                 <div className="task">
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
                                     <h3>{task.title}</h3>
-                                    <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" ></i>
+                                    <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => deleteTask(e, task._id)}></i>
                                     <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
-                                    <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} ariaHidden="true"  ></i>
+                                    <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} ariaHidden="true"  onClick={e => okTask(e, task._id)}></i>
                                     <div className="task-down">
                                         <p>
                                             {task.task}

@@ -71,7 +71,8 @@ class application
            [
              'GET',
              'POST',
-             'PUT'
+             'PUT',
+             'DELETE'
            ],
 
            allowedHeaders: 

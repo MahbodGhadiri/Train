@@ -1,23 +1,28 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { showError } from './Toast_Functions';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone } from '../features/user/userSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails } from '../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
-import $ from 'jquery';
+import { checklogin } from './CheckLogin';
 
 function Profile() {
+    const dispatch = useDispatch();
+
+    //----------------------------------------------
     const perName = useSelector(selectUserName);
     const perEmail = useSelector(selectUserEmail);
     const perPhoneNumber = useSelector(selectUserPhone);
+    const perTalents = useSelector(selectUserPhone);
     //-------------------------------------------
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [talents, setTalents] = useState([]);
     //-------------------------------------------
+    const userList = useSelector(selectUserList);
+    let users = [];
 
-
-      
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -35,10 +40,18 @@ function Profile() {
     //user validation with "SimpleReactValidator" end
     async function editUser(event) {
         event.preventDefault();
+        const user = {
+            name: name ? name : perName,
+            email: email ? email : perEmail,
+            phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
+            talents: talents ? talents : perTalents
+        }
+        console.log(user);
         await axios.put("/user/change-info",
+            user,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
-
+            console.log(response)
         }).catch(error => {
             showError(error);
             console.log(error);
@@ -58,6 +71,54 @@ function Profile() {
                 showError(error)
             });
     }
+    useEffect(async () => {
+
+        prof();
+        await axios.get(`/admin/users`,
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+
+            users = response.data
+        }).catch(error => {
+            console.log(error);
+            showError(error);
+        });
+
+        dispatch(setUsersList({ userList: users }));
+    }, []);
+    async function prof() {
+        // event.preventDefault();
+
+        await axios.get("/user/profile",
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response)
+            dispatch(
+                setUserLoginDetails({
+                    name: response.data.name,
+                    phone: response.data.phone.number,
+                    email: response.data.email.address,
+                })
+            )
+        }).catch(error => {
+            showError(error);
+
+            console.log(error);
+            checklogin(error);
+        });
+    }
+    function AddTalents(e, talent) {
+        e.preventDefault();
+        console.log(talent);
+        if( talents.find(e => e = talent) === undefined){
+            talents.push(talent);
+            
+        }else{
+            console.log("مهارت قبلا وجود داشت ");
+        }
+        
+    }
 
     return (
         <div>
@@ -68,6 +129,7 @@ function Profile() {
                     <div className="right">
                         <div className="edit-box">
                             <div className="edit-imgbox"><img src="../images/logo-min.png" alt="Train-logo" /></div>
+
                             <form onSubmit={event => editUser(event)}  >
                                 <input type="text" placeholder={perName} value={name}
                                     onChange={e => {
@@ -82,7 +144,11 @@ function Profile() {
                                     name,
                                     `required|max: 30|min: 5 `
                                 )}
-                                <input type="text" placeholder={perEmail} value={email}
+
+
+                                <input type="text"
+                                    placeholder={perEmail}
+                                    value={email}
                                     onChange={e => {
                                         setEmail(e.target.value);
                                         validator.current.showMessageFor("email");
@@ -92,6 +158,7 @@ function Profile() {
                                     email,
                                     "required|email"
                                 )}
+
 
                                 <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autoComplete="off" value={phoneNumber}
                                     onChange={e => {
@@ -108,18 +175,18 @@ function Profile() {
                                     phoneNumber,
                                     `required|phone`
                                 )}
-                                <input type="password" placeholder="رمز ورود" />
-                                <div className="skillsbox">مهارت ها
+
+                                <div className="skillsbox">{perTalents.toString()}
                                     <i className="fa fa-arrow-down" aria-hidden="true"></i>
                                     <ul>
                                         <li>
-                                            <i className="fa fa-circle" style={{ color: "#00af91" }} aria-hidden="true"></i> گرافیک
+                                            <i className="fa fa-circle" style={{ color: "#00af91" , cursor: "pointer"}} aria-hidden="true" onClick={e => AddTalents(e, "گرافیک")}></i> گرافیک
                                         </li>
                                         <li>
-                                            <i className="fa fa-circle" style={{ color: "#ff2442" }} aria-hidden="true"></i> برنامه نویسی
+                                            <i className="fa fa-circle" style={{ color: "#ff2442" , cursor: "pointer"}} aria-hidden="true" onClick={e => AddTalents(e, "برنامه نویسی")}></i> برنامه نویسی
                                         </li>
                                         <li>
-                                            <i className="fa fa-circle" style={{ color: "#3db2ff" }} aria-hidden="true"></i> محتوا
+                                            <i className="fa fa-circle" style={{ color: "#3db2ff" , cursor: "pointer"}} aria-hidden="true" onClick={e => AddTalents(e, "محتوا")}></i> محتوا
                                         </li>
                                     </ul>
                                 </div>
@@ -148,20 +215,18 @@ function Profile() {
                             <input type="text" value="09124445566" readonly />
 
                             <h2>مشاهده کاربران</h2>
-                            <div className="user">
-                                <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true"></i>
-                                <i className="fa fa-arrow-down" aria-hidden="true"></i>
-                                <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true"></i>
-                                <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true"></i> مهبد غدیری ثانی
-                            </div>
-                            <div className="user">
-                                <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true"></i>
-                                <i className="fa fa-arrow-down" aria-hidden="true"></i>
-                                <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true"></i>
-                                <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true"></i> مهبد غدیری ثانی
-                            </div>
+                            {userList &&
+                                userList.map(
+                                    (user, key) => (<div className="user">
+                                        <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true"></i>
+                                        <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                                        <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true"></i>
+                                        <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true"></i> {user.name}
+                                    </div>))}
+
+
                             <h2>
-                                <a onClick={event => logOut(event)} >خروج</a>
+                                <a style={{ cursor: "pointer" }} onClick={event => logOut(event)} >خروج</a>
                             </h2>
                         </div >
                     </div >
