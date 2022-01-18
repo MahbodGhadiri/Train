@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { showInfo, showError } from "./Toast_Functions";
 import $ from 'jquery';
+import { Console } from "winston/lib/winston/transports";
 
 const Signup = () => {
 
@@ -17,8 +18,6 @@ const Signup = () => {
     ///////////////////////////////////////////////
     const [loading, setLoading] = useState(false);
     const history = useHistory();
-
-
 
 
     //user validation with "SimpleReactValidator" start
@@ -48,12 +47,16 @@ const Signup = () => {
     };
 
     const register = async event => {
+
+        console.log("salam");
+
         event.preventDefault();
         const user = {
             name: name,
             email: email,
             phoneNumber: phoneNumber,
-            password: password
+            password: password,
+            ability: talents.toString()
         };
         try {
             if (validator.current.allValid()) {
@@ -61,7 +64,7 @@ const Signup = () => {
                 let status;
                 // api call begin
                 await axios.post("/auth/register", user).then(response => {
-                    console.log(response.status);
+                    console.log(response);
                     status = response.status;
                     showInfo(response);
 
@@ -78,6 +81,9 @@ const Signup = () => {
                 }
 
             }
+            else if (!validator.current.allValid()) {
+                console.log("invalid")
+            }
         }
         catch (ex) {
             setLoading(false);
@@ -88,15 +94,18 @@ const Signup = () => {
     function AddTalents(e, talent) {
         e.preventDefault();
         console.log(talent);
-        talents.push(talent);
-        console.log(talents)
-
+        if (talents.find(t => t === talent)) {
+            showError({ response: { data: { message: "مهارت مورد نظر موجود است " } } });
+        } else {
+            talents.push(talent);
+            console.log(talents);
+        }
     }
 
     //register and reset start end
 
 
-
+    console.log(talents)
     return (
 
         <div className="signup">
@@ -117,7 +126,7 @@ const Signup = () => {
             </div>
 
 
-            <form action="#" onSubmit={register}>
+            <form onSubmit={e => register(e)}>
                 <input
                     style={{ textAlign: "right" }}
                     id="name"
@@ -218,32 +227,7 @@ const Signup = () => {
                     rePassword,
                     `required|min: 5|in:${password}`
                 )}
-                <div className="skillsbox" style={{ textAlign: "right" }}
-                    value={talents}
-                    onChange={e => {
-                        setRePassword(e.target.value);
-                        validator.current.showMessageFor(
-                            "talents"
-                        );
-                    }} >مهارت های خود را وارد نمایید
-                    <i className="fa fa-arrow-down" aria-hidden="true"></i>
-                    <ul>
-                        <li>
-                            <i className="fa fa-circle" style={{ color: "#00af91", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "گرافیک")}></i> گرافیک
-                        </li>
-                        <li>
-                            <i className="fa fa-circle" style={{ color: "#ff2442", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "برنامه نویسی")}></i> برنامه نویسی
-                        </li>
-                        <li>
-                            <i className="fa fa-circle" style={{ color: "#3db2ff", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "محتوا")}></i> محتوا
-                        </li>
-                    </ul>
-                </div>
-                {validator.current.message(
-                    "talents",
-                    talents,
-                    `required`
-                )}
+             
                 <input type="submit" value="ثبت نام" className="send" />
             </form>
 
