@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError } from './Toast_Functions';
+import { showError, showSuccess } from './Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails } from '../features/user/userSlice';
@@ -37,6 +37,7 @@ function Profile() {
             element: message => <div style={{ color: "red", textAlign: "center", fontSize: "2vh" }}>{message}</div>
         })
     );
+
     //user validation with "SimpleReactValidator" end
     async function editUser(event) {
         event.preventDefault();
@@ -46,11 +47,11 @@ function Profile() {
             phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
             talents: talents ? talents : perTalents
         }
-        console.log(user);
         await axios.put("/user/change-info",
             user,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
+            showSuccess(response)
             console.log(response)
         }).catch(error => {
             showError(error);
@@ -58,19 +59,21 @@ function Profile() {
         });
 
     }
+
     async function logOut(event) {
         event.preventDefault();
         await axios.get(`/user/logout`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then((response) => {
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then((response) => {
                 console.log(response);
                 window.sessionStorage.removeItem("isUserAuthenticated");
                 window.sessionStorage.removeItem("role");
                 window.location.reload();
-            }).catch((error) => {
-                showError(error)
-            });
+        }).catch((error) => {
+            showError(error)
+        });
     }
+
     useEffect(async () => {
 
         prof();

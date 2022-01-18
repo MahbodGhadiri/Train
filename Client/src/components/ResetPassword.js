@@ -10,8 +10,6 @@ function ResetPassword() {
     const [password, setPassword] = useState("");
     const [rePassword, setRePassword] = useState("")
 
-
-
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -35,20 +33,21 @@ function ResetPassword() {
         parameter=parameter[1]
         axios.put(`/auth/reset-password/?${parameter}`,
             {password},
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then((response) => {
-                console.log(response);
-                showSuccess(response);
-                if(response.status===200)
-                {
-                    setUserAuthenticationStatus("true")
-                    setUserAuthorization(response.data.role)
-                    window.location.href="http://localhost:8080/home"
-                }
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        )
+        .then((response) => {
+            showSuccess(response);
 
-            }).catch((error) => {
+            if(response.status===200)
+            {
+                setUserAuthenticationStatus("true")
+                setUserAuthorization(response.data.role)
+                window.location.href="http://localhost:8080/home"
+            }
+
+        }).catch((error) => {
                 showError(error)
-            });
+        });
     }
 
     return (

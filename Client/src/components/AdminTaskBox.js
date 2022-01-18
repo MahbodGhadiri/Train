@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { selectTask, selectReload, selectClick } from '../features/task/taskSlice';
+import React, { useEffect, useState } from 'react'
+import { selectTask, selectReload } from '../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, setClick } from '../features/task/taskSlice';
+import { setTasks, setReload, } from '../features/task/taskSlice';
 import axios from 'axios';
 import { showError } from './Toast_Functions';
 import { store } from '../app/store';
-import $ from "jquery";
-import { func } from 'joi';
+
 
 
 
@@ -24,7 +23,7 @@ const AdminTaskBox = () => {
     let [filter, setFilter] = useState("");
     let tempFilter = "";
 
-    const [sendRequest, setSendRequest] = useState(false);
+    //const [sendRequest, setSendRequest] = useState(false);
     function filterTask(event) {
         event.preventDefault();
 
@@ -120,7 +119,7 @@ const AdminTaskBox = () => {
         console.log(taskId);
 
         await axios.put(`/admin/tasks/done`,
-            taskId,
+            {taskId},
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);

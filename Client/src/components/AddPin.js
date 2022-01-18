@@ -17,8 +17,8 @@ function AddPin() {
 
         await axios.post("admin/pin",
             Pin,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then(response => {
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+            ).then(response => {
                 console.log(response);
                 showSuccess(response);
             })

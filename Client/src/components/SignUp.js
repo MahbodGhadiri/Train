@@ -4,8 +4,6 @@ import SimpleReactValidator from "simple-react-validator";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { showInfo, showError } from "./Toast_Functions";
-import $ from 'jquery';
-import { Console } from "winston/lib/winston/transports";
 
 const Signup = () => {
 
@@ -48,9 +46,8 @@ const Signup = () => {
 
     const register = async event => {
 
-        console.log("salam");
-
         event.preventDefault();
+
         const user = {
             name: name,
             email: email,
@@ -60,11 +57,9 @@ const Signup = () => {
         };
         try {
             if (validator.current.allValid()) {
-                console.log("user registration info all valid");
                 let status;
                 // api call begin
                 await axios.post("/auth/register", user).then(response => {
-                    console.log(response);
                     status = response.status;
                     showInfo(response);
 
@@ -74,11 +69,11 @@ const Signup = () => {
 
                 // api call end
 
-                if (status === 200) {
-                    history.push("/login");
-                    setLoading(false);
-                    reset();
-                }
+                // if (status === 200) {
+                //     history.push("/login");
+                //     setLoading(false);
+                //     reset();
+                // }
 
             }
             else if (!validator.current.allValid()) {
@@ -87,7 +82,6 @@ const Signup = () => {
         }
         catch (ex) {
             setLoading(false);
-            console.log(ex);
         }
     };
 

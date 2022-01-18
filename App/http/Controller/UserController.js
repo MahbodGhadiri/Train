@@ -46,7 +46,7 @@ class UserController
 
   async changeInfo(req,res)
   {
-    const { error } = registerValidator(req.body);
+    const { error } = changeInfoValidator(req.body);
     if (error) { return res.status(400).send({ message: error.message }) };
 
     user = await userModel.findOne({_id:req.user._id})

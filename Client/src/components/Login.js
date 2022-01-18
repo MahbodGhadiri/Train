@@ -1,19 +1,15 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import SimpleReactValidator from "simple-react-validator";
-import { Redirect, useHistory } from 'react-router';
+//import {useHistory} from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    selectUserEmail,
     selectUserName,
-    selectUserRole,
-    selectUserAuthenticationStatus,
-    setUserLoginDetails,
 } from '../features/user/userSlice';
 import axios from "axios";
 import { showError } from './Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
-import { setUserAuthenticationStatus, getUserAuthenticationStatus, setUserAuthorization } from "./SessionStorage"
+import { setUserAuthenticationStatus, setUserAuthorization } from "./SessionStorage"
 
 function Login() {
 
@@ -23,7 +19,8 @@ function Login() {
         new SimpleReactValidator({
             messages: {
                 required: "پر کردن این فیلد الزامی میباشد",
-                min: `لطفا بیشتر از 5 و کمتر از 30 کاراکتر وارد کنید`,
+                min: `لطفا بیشتر از 5 کاراکتر وارد کنید`,
+                min: `لطفا کمتر از 30 کاراکتر وارد کنید`,
                 email: "ایمیل نوشته شده صحیح نمی باشد",
 
             },
@@ -32,18 +29,12 @@ function Login() {
     );
     //user validation with "SimpleReactValidator" end
 
-    const dispatch = useDispatch();
-    const history = useHistory();
+    // const dispatch = useDispatch();
+    // const history = useHistory();
     const name = useSelector(selectUserName);
-    const isUserAuthenticated = getUserAuthenticationStatus()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    useEffect(() => {
-
-        console.log("hi");
-
-    }, [name]);
 
     const reset = () => {
         setEmail("");
@@ -53,60 +44,53 @@ function Login() {
     const login = async (event) => {
         if (validator.current.allValid()) {
             event.preventDefault();
-            console.log("all inputs valid in front auth ");
 
             const user = { email, password };
             let status; let role;
 
             if (!name) {
-                await axios.post(`/auth/login`,
+                await axios
+                .post(`/auth/login`,
                     user,
-                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-                    .then((response) => {
-                        console.log(response);
-                        status = response.status;
-                        console.log(status);
-                        role = response.data.role;
-                        console.log(role);
-                        if (response.status === 200)
-                            setUserAuthenticationStatus("true")
-                        setUserAuthorization(response.data.role)
-                    }).catch((error) => {
-                        showError(error)
-                    });
+                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+                )
+                .then((response) => {
+                    status = response.status;
+                    role = response.data.role;
+                    setUserAuthorization(response.data.role);
+                    setUserAuthenticationStatus("true");
+                    window.location.reload();
+                    //reset();
+                  
+                     
+                }).catch((error) => {
+                    showError(error)
+                });
 
 
-                if (status === 200) {
-                    switch (role) {
-                        case "admin":
-                            history.push("/admin");
-                            console.log("logged in")
-                            break;
-                        case "user":
-                            history.push("/user");
-                            break;
-                        case "super admin":
-                            history.push("/admin");
-                            break;
-                        default:
-                            break;
-                    }
+            //     if (status === 200) {
+            //         switch (role) {
+            //             case "admin":
+            //                 history.push("/admin");
+            //                 console.log("logged in")
+            //                 break;
+            //             case "user":
+            //                 history.push("/user");
+            //                 break;
+            //             case "super admin":
+            //                 history.push("/admin");
+            //                 break;
+            //             default:
+            //                 break;
+            //         }
 
-                    reset();
-                }
-            } else if (name) {
-                history.push("/signup")
+            //     reset();
+            // }
             }
+        //  else if (name) {
+        //     history.push("/signup")
+        // }
         }
-    }
-
-    const setUser = user => {
-        dispatch(setUserLoginDetails({
-            name: user.name,
-            email: user.email.address,
-            role: user.role
-        }))
-
     }
 
     return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { connectAdvanced, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setPins, selectPin } from '../features/pin/pinSlice';
 import { store } from '../app/store';
 import { showError } from './Toast_Functions';
@@ -59,8 +59,6 @@ function UserPinBox() {
             pin: pins
         }));
 
-
-
     }, [store.getState().pin.reload]);
 
     titleColor = changeTitle(pinArrIndex, pinList);
@@ -73,7 +71,6 @@ function UserPinBox() {
             titleColor = changeTitle(index, pinList);
         }
         setPinArrIndex(index);
-
 
     }
     function ReloadPinBack(event, index) {

@@ -17,7 +17,6 @@ class AdminController
                     password:0,
                     customTasks:0,
                     phone:0,
-                    ability:0,
                     activeAccount:0,
                     
                 }

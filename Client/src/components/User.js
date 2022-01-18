@@ -1,18 +1,14 @@
-import React from 'react'
+import React , {useState,useEffect}from 'react'
 import Header from "./Header";
 import UserAdminTaskBox from './UserAdminTaskBox';
 import UserPinBox from "./UserPinBox";
 import UserTaskBox from './UserTaskBox';
-import { selectTask, selectReload, selectClick } from '../features/task/taskSlice';
+import { selectTask, selectReload, } from '../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, setClick } from '../features/task/taskSlice';
+import { setTasks, setReload, } from '../features/task/taskSlice';
 import axios from 'axios';
 import { showError } from './Toast_Functions';
 import { store } from '../app/store';
-
-
-
-
 
 
 function User() {
@@ -26,19 +22,17 @@ function User() {
     let [filter, setFilter] = useState("");
     let tempFilter = "";
 
-    const [sendRequest, setSendRequest] = useState(false);
+    // const [sendRequest, setSendRequest] = useState(false);
     function filterTask(event) {
         event.preventDefault();
 
         if (category) {
-            // console.log(category);
             tempFilter = `subject=${category}&`;
 
         }
         if (time) {
-
             tempFilter += `days=${time}&`;
-            // console.log(filter)
+            
         }
         // if(userList)
         // {
@@ -116,6 +110,7 @@ function User() {
         }
         console.log(reload);
     }
+
     async function okTask(e, taskId) {
         e.preventDefault();
 

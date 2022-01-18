@@ -4,7 +4,7 @@ import Login from './Login';
 import SignUp from './SignUp';
 import Home from "./Home";
 import { useSelector } from 'react-redux';
-import { selectUserName, selectUserAuthenticationStatus } from '../features/user/userSlice';
+import { selectUserName } from '../features/user/userSlice';
 import { PrivateRoute, LoginRoute } from "./Routes";
 import Profile from './Profile';
 import $ from 'jquery';
@@ -12,11 +12,8 @@ import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
 
 function Train() {
-    const name = useSelector(selectUserName);
+    //const name = useSelector(selectUserName);
     useEffect(async () => {
-
-
-
 
         $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
@@ -41,21 +38,13 @@ function Train() {
             }
         });
 
-
-
         // Height Window
         var hw = ($(window).height()) - 125;
         $('.alonebox,.groupbox').css('height', hw + 'px');
 
-
-
         // Height Window
         var hw = ($(window).height()) - 130;
         $('.alonebox,.groupbox').css('height', hw + 'px');
-
-
-
-
 
     });
 

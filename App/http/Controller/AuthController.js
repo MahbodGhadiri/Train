@@ -19,7 +19,14 @@ class AuthController {
       if (field != "password") {
         req.body[field] = _.trim(req.body[field]);
       }
+      if (field === "ability"){
+        for (const item in req.body.ability){
+          if (!(item in this.allAbilities)) 
+            return res.status(400).send(`توایی با عنوان"${item} وجود ندارد!`)
+        }
+      }
     }
+    
     let user = await userModel.findOne(
       { $or: [{ "email.address": req.body.email }, { "phone.number": req.body.phoneNumber }] }
     )
@@ -123,7 +130,7 @@ class AuthController {
       const {error} = forgotPasswordUsingEmailValidator(req.body.email);
       if (error) 
       {
-        res.status(400).send({message:`an error occured , make sure you are using either your email or your phone number \n ${error} `})
+        res.status(400).send({message:`خطایی رخ داد! اطمینان حاصل کنید که ایمیل شما به درستی وارد شده باشد. \n ${error} `})
       }
       const user = await userModel.findOne({"email.address":req.body.email});
       //Check if account is activated
@@ -234,6 +241,8 @@ class AuthController {
       res.status(200).send({message:"رمز با موفقیت تغییر یافت",role:user.role}) 
     } else return res.status(400).send({ message: "Invalid Request" });
   }
+
+  static allAbilities = ["برنامه نویسی","گرافیک","مدیریت","دیگر","مدیریت مالی"];
 }
 
 module.exports = new AuthController;

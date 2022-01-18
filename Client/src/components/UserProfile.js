@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone } from '../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
-import $ from 'jquery';
+
 
 function Profile() {
     const perName = useSelector(selectUserName);

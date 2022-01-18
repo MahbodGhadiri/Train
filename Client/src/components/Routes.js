@@ -1,12 +1,10 @@
 import React from 'react';
 import {
     
-    Redirect,
-    Switch,
-    Route,
+  Redirect,
+  Route,
 
 } from "react-router-dom";
-import { useSelector } from 'react-redux';
 import {getUserAuthenticationStatus} from "./SessionStorage"
 
 

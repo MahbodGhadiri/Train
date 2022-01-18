@@ -1,18 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import SimpleReactValidator from "simple-react-validator";
 import axios from "axios";
 import { showError, showInfo } from './Toast_Functions';
-import 'react-toastify/dist/ReactToastify.css';
-import Login from './Login';
+//import 'react-toastify/dist/ReactToastify.css';
 
 function ForgotPassword() {
-
-
-
-
-
-
 
     const validator = useRef(
         new SimpleReactValidator({
@@ -28,7 +21,6 @@ function ForgotPassword() {
     //user validation with "SimpleReactValidator" end
 
 
-
     const [email, setEmail] = useState("");
 
     async function forgotPassword(e) {
@@ -36,15 +28,17 @@ function ForgotPassword() {
 
         axios.post("/auth//forgot-password",
            { email},
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then((response) => {
-                console.log(response);
-                showInfo(response);
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        )
+        .then((response) => {
+            console.log(response);
+            showInfo(response);
 
-            }).catch((error) => {
+        }).catch((error) => {
                 showError(error)
-            });
+        });
     }
+    
     return (
         <>
             <div className="login">
