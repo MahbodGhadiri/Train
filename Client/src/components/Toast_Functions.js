@@ -22,9 +22,20 @@ const toast_info_options =
     hideProgressBar: true,
 }
 
-export const showSuccess = (axiosResponse) => toast.success(axiosResponse.data.message, toast_default_options);
-
-export const showError = (axiosError) => toast.error(axiosError.response.data.message, toast_default_options);
+export const showSuccess = (axiosResponse) => 
+{
+    if(axiosResponse.data)
+        toast.success(axiosResponse.data.message, toast_default_options);
+    else
+        toast.success("انجام شد", toast_default_options);
+}
+export const showError = (axiosError) => 
+{
+    if(axiosError.response.data)
+        toast.error(axiosError.response.data.message, toast_default_options);
+    else
+        toast.success("خطایی رخ داد!", toast_default_options);
+}
 
 export const showInfo = (axiosResponse) => toast.info(axiosResponse.data.message,toast_info_options );
  

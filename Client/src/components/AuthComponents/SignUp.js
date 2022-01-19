@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
-import { showInfo, showError } from "./Toast_Functions";
+import { showInfo, showError } from "../Toast_Functions";
 
 const Signup = () => {
 

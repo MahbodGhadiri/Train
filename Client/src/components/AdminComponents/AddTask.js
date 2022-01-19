@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import axios from 'axios';
-import { showSuccess,showError } from './Toast_Functions';
-import { selectReload, setReload } from '../features/task/taskSlice';
+import { showSuccess,showError } from '../Toast_Functions';
+import { selectReload, setReload } from '../../features/task/taskSlice';
 
 
 function AddTask() {

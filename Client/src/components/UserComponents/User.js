@@ -1,14 +1,14 @@
 import React , {useState,useEffect}from 'react'
-import Header from "./Header";
+import Header from "../Header";
 import UserAdminTaskBox from './UserAdminTaskBox';
 import UserPinBox from "./UserPinBox";
 import UserTaskBox from './UserTaskBox';
-import { selectTask, selectReload, } from '../features/task/taskSlice';
+import { selectTask, selectReload, } from '../../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, } from '../features/task/taskSlice';
+import { setTasks, setReload, } from '../../features/task/taskSlice';
 import axios from 'axios';
-import { showError } from './Toast_Functions';
-import { store } from '../app/store';
+import { showError } from '../Toast_Functions';
+import { store } from '../../app/store';
 
 
 function User() {

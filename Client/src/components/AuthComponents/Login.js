@@ -2,14 +2,14 @@ import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import SimpleReactValidator from "simple-react-validator";
 //import {useHistory} from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
     selectUserName,
-} from '../features/user/userSlice';
+} from '../../features/user/userSlice';
 import axios from "axios";
-import { showError } from './Toast_Functions';
+import { showError } from '../Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
-import { setUserAuthenticationStatus, setUserAuthorization } from "./SessionStorage"
+import { setUserAuthenticationStatus, setUserAuthorization } from "../SessionStorage"
 
 function Login() {
 

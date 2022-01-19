@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
-import Header from './Header';
+import Header from '../Header';
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginDetails, selectUserName } from '../features/user/userSlice';
+import { setUserLoginDetails, selectUserName } from '../../features/user/userSlice';
 import axios from 'axios';
 import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
 import AddPin from './AddPin';
-import UserPinBox from "./UserPinBox"
-import { showError } from './Toast_Functions';
-import {checklogin} from "./CheckLogin";
+import UserPinBox from "../UserComponents/UserPinBox"
+import { showError } from '../Toast_Functions';
+import {checklogin} from "../CheckLogin";
 import $ from 'jquery';
 
 function Admin() {

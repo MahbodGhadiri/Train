@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError, showSuccess } from './Toast_Functions';
+import { showError, showSuccess } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails } from '../features/user/userSlice';
+import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
-import { checklogin } from './CheckLogin';
+import { checklogin } from '../CheckLogin';
 
 function Profile() {
     const dispatch = useDispatch();

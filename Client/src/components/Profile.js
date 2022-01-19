@@ -1,7 +1,7 @@
 import React,{useEffect} from 'react';
 import { getUserAuthorization } from "./SessionStorage"
-import AdminProfile from "./AdminProfile"
-import UserProfile from "./UserProfile"
+import AdminProfile from "./AdminComponents/AdminProfile"
+import UserProfile from "./UserComponents/UserProfile"
 import $ from 'jquery';
 
 function Profile() {

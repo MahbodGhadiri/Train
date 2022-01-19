@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import SimpleReactValidator from "simple-react-validator";
 import axios from "axios";
-import { showError, showInfo } from './Toast_Functions';
+import { showError, showInfo } from '../Toast_Functions';
 //import 'react-toastify/dist/ReactToastify.css';
 
 function ForgotPassword() {

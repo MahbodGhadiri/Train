@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react'
 import SimpleReactValidator from 'simple-react-validator';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { showError, showSuccess } from './Toast_Functions';
-import {setUserAuthenticationStatus,setUserAuthorization} from "./SessionStorage"
+import { showError, showSuccess } from '../Toast_Functions';
+import {setUserAuthenticationStatus,setUserAuthorization} from "../SessionStorage"
 
 function ResetPassword() {
 

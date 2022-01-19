@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError } from './Toast_Functions';
+import { showError } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone } from '../features/user/userSlice';
+import { selectUserEmail, selectUserName, selectUserPhone } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 
 

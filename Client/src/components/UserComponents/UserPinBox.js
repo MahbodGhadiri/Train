@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPins, selectPin } from '../features/pin/pinSlice';
-import { store } from '../app/store';
-import { showError } from './Toast_Functions';
+import { setPins, selectPin } from '../../features/pin/pinSlice';
+import { store } from '../../app/store';
+import { showError } from '../Toast_Functions';
 
 
 function changeTitle(wantedIndex, pinArray) {

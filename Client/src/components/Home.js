@@ -1,7 +1,7 @@
 import React from 'react';
 import {getUserAuthorization} from "./SessionStorage"
-import Admin from "./Admin"
-import User from "./User"
+import Admin from "./AdminComponents/Admin"
+import User from "./UserComponents/User"
 
 function Home()
 {
