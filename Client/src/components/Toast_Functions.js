@@ -31,10 +31,14 @@ export const showSuccess = (axiosResponse) =>
 }
 export const showError = (axiosError) => 
 {
-    if(axiosError.response.data)
-        toast.error(axiosError.response.data.message, toast_default_options);
-    else
-        toast.success("خطایی رخ داد!", toast_default_options);
+    if(axiosError.response)
+    {
+        if(axiosError.response.data)
+            toast.error(axiosError.response.data.message, toast_default_options);
+        else
+            toast.error("خطایی رخ داد!", toast_default_options);
+    }else
+        toast.error("خطایی رخ داد!", toast_default_options);
 }
 
 export const showInfo = (axiosResponse) => toast.info(axiosResponse.data.message,toast_info_options );

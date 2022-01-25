@@ -27,6 +27,7 @@ function Admin() {
                     name: response.data.name,
                     phone: response.data.phone.number,
                     email: response.data.email.address,
+                    ability: response.data.ability,
                 })
             )
         }).catch(error => {

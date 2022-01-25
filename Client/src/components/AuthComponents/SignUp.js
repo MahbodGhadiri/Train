@@ -53,7 +53,7 @@ const Signup = () => {
             email: email,
             phoneNumber: phoneNumber,
             password: password,
-            ability: talents.toString()
+            
         };
         try {
             if (validator.current.allValid()) {

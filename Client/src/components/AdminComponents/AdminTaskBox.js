@@ -57,8 +57,6 @@ const AdminTaskBox = () => {
         console.log(reload);
         //////////////
     }
-
-
     useEffect(async () => {
 
         console.log('in you (if) in hook');
@@ -84,7 +82,6 @@ const AdminTaskBox = () => {
             }));
 
     }, [store.getState().task.reload]);
-
     async function deleteTask(e, taskId) {
         e.preventDefault();
 
@@ -118,8 +115,7 @@ const AdminTaskBox = () => {
 
         console.log(taskId);
 
-        await axios.put(`/admin/tasks/done`,
-            {taskId},
+        await axios.get(`/admin/tasks/done?task=${taskId}`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
@@ -142,6 +138,7 @@ const AdminTaskBox = () => {
         }
         console.log(reload);
     }
+
     return (
         <div>
             <h2 >فعالیت های کاربران</h2>
@@ -175,13 +172,13 @@ const AdminTaskBox = () => {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
-                            <div className="alonerow">
+                            <div className="alonerow" style={task.done ? { opacity: "50%" } : { opacity: "100" }}>
                                 <div className="task">
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
                                     <h3>{task.title}</h3>
                                     <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => deleteTask(e, task._id)}></i>
                                     <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
-                                    <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} ariaHidden="true"  onClick={e => okTask(e, task._id)}></i>
+                                    {task.done ? <></> : <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}
                                     <div className="task-down">
                                         <p>
                                             {task.task}
