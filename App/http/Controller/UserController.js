@@ -49,7 +49,7 @@ class UserController
     const { error } = changeInfoValidator(req.body);
     if (error) { return res.status(400).send({ message: error.message }) };
 
-    user = await userModel.findOne({_id:req.user._id})
+    const user = await userModel.findOne({_id:req.user._id})
     user.phone.number=req.body.phoneNumber;
     user.name = req.body.name;
     user.avatarURL = req.body.avatarURL;
@@ -174,6 +174,7 @@ class UserController
       if(!user) {return res.status(404).send({message:"یافت نشد"})}
      
       user.customTasks.push(req.body);
+      user.email.createdAt=undefined;
       await user.save();
       res.status(200).send(user.customTasks[user.customTasks.length-1]);
     }

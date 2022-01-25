@@ -35,13 +35,13 @@ const registerValidator = (data)=>
                 "string.max":"رمز باید حداکثر سی و دو کارکتر باشد!"
             }
         ),
-        ability: joi.arary().min(1).max(3).items(
-            joi.string().min(3).max(10)
+        ability: joi.array().min(1).max(3).items(
+            joi.string().min(3).max(15)
             .messages(
             {
                 "string.base":"توانایی نامعتبر است!",
                 "string.min":"توانایی باید حداقل سه کارکتر باشد!",
-                "string.max":"توانایی باید حداکثر ده کارکتر باشد!"
+                "string.max":"توانایی باید حداکثر پانزده کارکتر باشد!"
             }
             )
         ).messages(
