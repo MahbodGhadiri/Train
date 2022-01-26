@@ -79,7 +79,7 @@ function AddTask() {
                         setSubjectTag(e.target.value)
                     } />
 
-                    <input  type="button" list="userslist" onClick={ <UserPopUp/>}  name="user" placeholder="کاربر" required value={executors} onChange={e =>
+                    <input  type="text" list="userslist" onClick={ <UserPopUp/>}  name="user" placeholder="کاربر" required value={executors} onChange={e =>
                         setExecutors(e.target.value)
                     } />
                     

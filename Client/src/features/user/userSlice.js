@@ -9,6 +9,7 @@ const initialState = {
     isUserAuthenticated:false,
     userList:[],
     customTasks:null,
+   
 }
 const userSlice = createSlice({
     name: "user",
@@ -56,4 +57,5 @@ export const selectUserAuthenticationStatus = (state)=> state.user.isUserAuthent
 export const selectUserList = (state) => state.user.userList;
 export const selectUserAbility = (state) => state.user.ability;
 export const selectUserId = (state) => state.user.id;
+
 export default userSlice.reducer;

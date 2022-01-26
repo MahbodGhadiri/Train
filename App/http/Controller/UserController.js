@@ -61,8 +61,8 @@ class UserController
 
   async changePassword(req,res)
   {
-    const {error} = changePasswordValidator(req.body);
-    if(error){return res.status(400).send({message:error.message})}
+    // const {error} = changePasswordValidator(req.body);
+    // if(error){return res.status(400).send({message:error.message})}
 
     const user = await userModel.findById(req.user._id)
     if(!user) return res.status(404)

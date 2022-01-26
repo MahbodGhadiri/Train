@@ -5,7 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserRole, selectUserAbility } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import { func } from 'joi';
+import { selectReload, setReload } from '../../features/task/taskSlice';
+import { store } from '../../app/store';
+
 
 function Profile() {
     const dispatch = useDispatch();
@@ -28,6 +30,11 @@ function Profile() {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [talents, setTalents] = useState([]);
     const [password, setPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+
+    //-------------------------------------------
+    const reload = useSelector(selectReload);
+    const [activated, setActivated] = useState(false);
     //-------------------------------------------
     const userList = useSelector(selectUserList);
     let users = [];
@@ -54,12 +61,15 @@ function Profile() {
     // edit user
     async function editUser(event) {
         event.preventDefault();
+
         const editTalents = perTalents.concat(talents);
+
         const user = {
             name: name ? name : perName,
             phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
-            ability: talents ? editTalents : perTalents
+            ability: talents === [] ? editTalents : ["دیگر"],
         }
+
         await axios.put("/user/change-info",
             user,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
@@ -70,6 +80,20 @@ function Profile() {
             showError(error);
             console.log(error);
         });
+        console.log(newPassword);
+        console.log(password);
+        if (newPassword) {
+            await axios.post("/user/change-password",
+                { newPassword: newPassword, oldPassword: password },
+                { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+            ).then(response => {
+                showSuccess(response)
+                console.log(response)
+            }).catch(error => {
+                showError(error);
+                console.log(error);
+            });
+        }
 
     }
 
@@ -104,7 +128,7 @@ function Profile() {
         });
 
         dispatch(setUsersList({ userList: users }));
-    }, []);
+    }, [store.getState().task.reload]);
     async function prof() {
         // event.preventDefault();
 
@@ -158,10 +182,24 @@ function Profile() {
         ).then(response => {
             console.log(response);
             showSuccess(response);
+            setActivated(true);
+
         }).catch(error => {
             showError(error);
             checklogin(error);
         })
+        ///////////////
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+        //////////////
     }
     async function deActiveUser(e, userId) {
         e.preventDefault();
@@ -170,10 +208,23 @@ function Profile() {
         ).then(response => {
             console.log(response);
             showSuccess(response);
+            setActivated(false);
         }).catch(error => {
             showError(error);
             checklogin(error);
         })
+        ///////////////
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+        //////////////
     }
     async function promoteUser(e, userId) {
         e.preventDefault();
@@ -183,10 +234,12 @@ function Profile() {
             console.log(response);
             showSuccess(response);
             setPerUserRole("admin");
+
         }).catch(error => {
             showError(error);
             checklogin(error);
         })
+
     }
     async function demoteUser(e, userId) {
         e.preventDefault();
@@ -219,6 +272,7 @@ function Profile() {
             checklogin(error);
         })
     }
+
     return (
         <div>
             <body dir="rtl">
@@ -240,7 +294,7 @@ function Profile() {
                                 {validator.current.message(
                                     "name",
                                     name,
-                                    `required|max: 30|min: 5 `
+                                    `max: 30|min: 5 `
                                 )}
 
 
@@ -267,9 +321,26 @@ function Profile() {
                                 {validator.current.message(
                                     "phoneNumber",
                                     phoneNumber,
-                                    `required|phone`
+                                    `phone`
                                 )}
+                                <input
+                                    style={{ textAlign: "right" }}
+                                    type="password"
+                                    name="password"
 
+                                    placeholder="رمز جدید"
+                                    value={newPassword}
+                                    onChange={e => {
+                                        setNewPassword(e.target.value);
+                                        validator.current.showMessageFor(
+                                            "password"
+                                        );
+                                    }} />
+                                {validator.current.message(
+                                    "password",
+                                    newPassword,
+                                    `min: 5`
+                                )}
                                 <div className="skillsbox">{!perTalents || perTalents?.length == 0 ? "مهارتی نیست" : perTalents.toString()}
                                     <i className="fa fa-arrow-down" aria-hidden="true"></i>
                                     <ul>
@@ -290,7 +361,7 @@ function Profile() {
                                     style={{ textAlign: "right" }}
                                     type="password"
                                     name="password"
-                                    required
+
                                     placeholder="رمز ورود"
                                     value={password}
                                     onChange={e => {
@@ -302,9 +373,9 @@ function Profile() {
                                 {validator.current.message(
                                     "password",
                                     password,
-                                    `required|min: 5`
+                                    `min: 5`
                                 )}
-                               
+
                                 <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perUserId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "-20px" }} id="edit-btn" />
 
                             </form>
@@ -342,7 +413,7 @@ function Profile() {
 
                             {userList &&
                                 userList.map(
-                                    (user, key) => (<div className="user">
+                                    (user, key) => (<div className="user" style={user.activeAccount === true ? { opacity: "100%" } : { opacity: "50%" }} >
 
                                         <i className="fa fa-times"
                                             style={{ background: "#ff2442" }}
@@ -366,7 +437,7 @@ function Profile() {
                                             className="fa fa-circle"
                                             style={{ color: "#707070" }}
                                             aria-hidden="true"
-                                        ></i> {user.name}({user.role})
+                                        ></i> {user.name}({user.role}{user.activeAccount})
                                     </div>
 
                                     ))}
