@@ -16,8 +16,6 @@ class AdminController
                     "email.verficationToken":0,
                     password:0,
                     customTasks:0,
-            
-                    
                 }
             }
         ]);
@@ -135,7 +133,7 @@ class AdminController
 
     async deactivateUser(req,res)//required query parameter: user(id)
     {
-        if (req.user.id !== req.query.user)
+        if (req.user._id !== req.query.user)
         {    const user= await UserModel.findOne({_id:{$eq:req.query.user}}); 
             if(user&&user.activeAccount)
             {

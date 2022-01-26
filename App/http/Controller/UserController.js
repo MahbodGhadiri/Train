@@ -12,7 +12,7 @@ class UserController
   {
     const user = await userModel.findById(req.user._id);
     if (!user) return res.status(404).send({message:"یافت نشد"});
-    res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL"]));
+    res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL","_id"]));
   }
 
   async logout(req,res) 

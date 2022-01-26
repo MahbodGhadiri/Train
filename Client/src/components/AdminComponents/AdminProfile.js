@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserAbility } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import { func } from 'joi';
+import {getUserId, setUserId} from "../SessionStorage"
 
 function Profile() {
     const dispatch = useDispatch();
@@ -90,8 +90,6 @@ function Profile() {
         await axios.get(`/admin/users`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
-            console.log(response);
-
             users = response.data
         }).catch(error => {
             console.log(error);
@@ -107,7 +105,7 @@ function Profile() {
         await axios.get("/user/profile",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
-            console.log(response)
+            setUserId(response.data._id)
             dispatch(
                 setUserLoginDetails({
                     name: response.data.name,
@@ -258,13 +256,20 @@ function Profile() {
                             <h2>مشاهده کاربران</h2>
                             {userList &&
                                 userList.map(
-                                    (user, key) => (<div className="user">
-                                        <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true" onClick={e => deActiveUser(e, user._id)}></i>
-                                        <i className="fa fa-arrow-down active" style={{ transform: 'rotate(180deg)' }} aria-hidden="true" onClick={e => showInfo(e, user.name, user.email.address, user.phone.number)}></i>
-                                        <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true" onClick={e => activeUser(e, user._id)}></i>
-                                        <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true" ></i> {user.name}
-                                    </div>))}
-
+                                    (user) => {
+                                        if (user.id!=getUserId())
+                                        {    return (
+                                            <div className="user">
+                                                <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true" onClick={e => deActiveUser(e, user._id)}></i>
+                                                <i className="fa fa-arrow-down active" style={{ transform: 'rotate(180deg)' }} aria-hidden="true" onClick={e => showInfo(e, user.name, user.email.address, user.phone.number)}></i>
+                                                <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true" onClick={e => activeUser(e, user._id)}></i>
+                                                <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true" ></i> {user.name}
+                                            </div>
+                                            )
+                                        }
+                                    }
+                                )
+                            }
 
                             <h2>
                                 <a style={{ cursor: "pointer" }} onClick={event => logOut(event)} >خروج</a>

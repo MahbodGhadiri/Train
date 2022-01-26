@@ -10,6 +10,7 @@ import UserPinBox from "../UserComponents/UserPinBox"
 import { showError } from '../Toast_Functions';
 import {checklogin} from "../CheckLogin";
 import $ from 'jquery';
+import { setUserId } from '../SessionStorage';
 
 function Admin() {
     const dispatch = useDispatch();
@@ -21,6 +22,8 @@ function Admin() {
         await axios.get("/user/profile",
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
+            setUserId(response.data._id)
+            console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
             console.log(response)
             dispatch(
                 setUserLoginDetails({

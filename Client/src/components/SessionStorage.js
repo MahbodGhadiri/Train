@@ -27,3 +27,19 @@ export function getUserAuthorization()
     }
     return role
 }
+
+export function setUserId(userId)
+{
+    sessionStorage.setItem("id",userId)
+    console.log(userId)
+}
+
+export function getUserId()
+{
+    const role= sessionStorage.getItem("id")
+    if(role===undefined)
+    {
+        return ""
+    }
+    return role
+}
