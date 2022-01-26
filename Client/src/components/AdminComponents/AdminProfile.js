@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from 'react'
 import { showError, showSuccess } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails } from '../../features/user/userSlice';
+import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserAbility } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
+import { func } from 'joi';
 
 function Profile() {
     const dispatch = useDispatch();
@@ -13,7 +14,12 @@ function Profile() {
     const perName = useSelector(selectUserName);
     const perEmail = useSelector(selectUserEmail);
     const perPhoneNumber = useSelector(selectUserPhone);
-    const perTalents = useSelector(selectUserPhone);
+    const perTalents = useSelector(selectUserAbility);
+    //-------------------------------------------
+    let [perUserName, setPerUserName] = useState(perName);
+    let [perUserEmail, setPerUserEmail] = useState(useSelector(selectUserEmail));
+    let [perUserPhoneNumber, setPerUserPhoneNumber] = useState(useSelector(selectUserPhone));
+
     //-------------------------------------------
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -39,13 +45,15 @@ function Profile() {
     );
 
     //user validation with "SimpleReactValidator" end
+
+    // edit user
     async function editUser(event) {
         event.preventDefault();
+        const editTalents = perTalents.concat(talents);
         const user = {
             name: name ? name : perName,
-            email: email ? email : perEmail,
             phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
-            talents: talents ? talents : perTalents
+            ability: talents ? editTalents : perTalents
         }
         await axios.put("/user/change-info",
             user,
@@ -60,20 +68,22 @@ function Profile() {
 
     }
 
+    // log out
     async function logOut(event) {
         event.preventDefault();
         await axios.get(`/user/logout`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then((response) => {
-                console.log(response);
-                window.sessionStorage.removeItem("isUserAuthenticated");
-                window.sessionStorage.removeItem("role");
-                window.location.reload();
+            console.log(response);
+            window.sessionStorage.removeItem("isUserAuthenticated");
+            window.sessionStorage.removeItem("role");
+            window.location.reload();
         }).catch((error) => {
             showError(error)
         });
     }
 
+    // profile
     useEffect(async () => {
 
         prof();
@@ -90,6 +100,7 @@ function Profile() {
 
         dispatch(setUsersList({ userList: users }));
     }, []);
+
     async function prof() {
         // event.preventDefault();
 
@@ -102,6 +113,7 @@ function Profile() {
                     name: response.data.name,
                     phone: response.data.phone.number,
                     email: response.data.email.address,
+                    ability: response.data.ability,
                 })
             )
         }).catch(error => {
@@ -111,23 +123,57 @@ function Profile() {
             checklogin(error);
         });
     }
+
     function AddTalents(e, talent) {
         e.preventDefault();
         console.log(talent);
-        if( talents.find(e => e = talent) === undefined){
+        if (talents.find(e => e = talent) === undefined) {
             talents.push(talent);
-            
-        }else{
+
+        } else {
             console.log("مهارت قبلا وجود داشت ");
         }
-        
+
+    }
+
+    function showInfo(e, name, email, phone) {
+        console.log("hi");
+        e.preventDefault();
+        setPerUserEmail(email);
+        setPerUserName(name);
+        setPerUserPhoneNumber(phone);
+        console.log(perUserName);
+    }
+
+    async function activeUser(e, userId) {
+        e.preventDefault();
+        await axios.put(`admin/users/activate?user=${userId}`,
+            {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+            showSuccess(response);
+        }).catch(error => {
+            showError(error);
+            checklogin(error);
+        })
+    }
+    async function deActiveUser(e, userId) {
+        e.preventDefault();
+        await axios.put(`admin/users/deactivate?user=${userId}`,
+            {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+            showSuccess(response);
+        }).catch(error => {
+            showError(error);
+            checklogin(error);
+        })
     }
 
     return (
         <div>
             <body dir="rtl">
                 <div className="pro-content">
-
 
                     <div className="right">
                         <div className="edit-box">
@@ -155,12 +201,8 @@ function Profile() {
                                     onChange={e => {
                                         setEmail(e.target.value);
                                         validator.current.showMessageFor("email");
-                                    }} />
-                                {validator.current.message(
-                                    "email",
-                                    email,
-                                    "required|email"
-                                )}
+                                    }} readOnly />
+
 
 
                                 <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autoComplete="off" value={phoneNumber}
@@ -179,17 +221,17 @@ function Profile() {
                                     `required|phone`
                                 )}
 
-                                <div className="skillsbox">{perTalents.toString()}
+                                <div className="skillsbox">{!perTalents || perTalents?.length == 0 ? "مهارتی نیست" : perTalents.toString()}
                                     <i className="fa fa-arrow-down" aria-hidden="true"></i>
                                     <ul>
                                         <li>
-                                            <i className="fa fa-circle" style={{ color: "#00af91" , cursor: "pointer"}} aria-hidden="true" onClick={e => AddTalents(e, "گرافیک")}></i> گرافیک
+                                            <i className="fa fa-circle" style={{ color: "#00af91", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "گرافیک")}></i> گرافیک
                                         </li>
                                         <li>
-                                            <i className="fa fa-circle" style={{ color: "#ff2442" , cursor: "pointer"}} aria-hidden="true" onClick={e => AddTalents(e, "برنامه نویسی")}></i> برنامه نویسی
+                                            <i className="fa fa-circle" style={{ color: "#ff2442", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "برنامه نویسی")}></i> برنامه نویسی
                                         </li>
                                         <li>
-                                            <i className="fa fa-circle" style={{ color: "#3db2ff" , cursor: "pointer"}} aria-hidden="true" onClick={e => AddTalents(e, "محتوا")}></i> محتوا
+                                            <i className="fa fa-circle" style={{ color: "#3db2ff", cursor: "pointer" }} aria-hidden="true" onClick={e => AddTalents(e, "محتوا")}></i> محتوا
                                         </li>
                                     </ul>
                                 </div>
@@ -204,27 +246,23 @@ function Profile() {
                             <h2>پروفایل</h2>
                             <div className="show-item">
                                 <i className="fa fa-circle" style={{ color: "#00af91" }} aria-hidden="true"></i>
-                                <input type="text" value="امیرعلی شفیعی مقدم" readonly />
+                                <input type="text" value={perUserName ? perUserName : perName} readonly />
                             </div>
                             <div className="show-item">
                                 <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true"></i>
-                                <input type="email" value="jenotwenty@yahoo.com" readonly />
+                                <input type="email" value={perUserEmail ? perUserEmail : perEmail} readonly />
                             </div>
-                            <div className="show-item">
-                                <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true"></i>
-                                <i className="fa fa-eye" style={{ color: "#707070" }} aria-hidden="true"></i>
-                                <input type="password" value="12345678" id="pro-pass" readonly />
-                            </div>
-                            <input type="text" value="09124445566" readonly />
+
+                            <input type="text" value={perUserPhoneNumber ? perUserPhoneNumber : perPhoneNumber} readonly />
 
                             <h2>مشاهده کاربران</h2>
                             {userList &&
                                 userList.map(
                                     (user, key) => (<div className="user">
-                                        <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true"></i>
-                                        <i className="fa fa-arrow-down" aria-hidden="true"></i>
-                                        <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true"></i>
-                                        <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true"></i> {user.name}
+                                        <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true" onClick={e => deActiveUser(e, user._id)}></i>
+                                        <i className="fa fa-arrow-down active" style={{ transform: 'rotate(180deg)' }} aria-hidden="true" onClick={e => showInfo(e, user.name, user.email.address, user.phone.number)}></i>
+                                        <i className="fa fa-circle circle-topbtn" style={{ color: "#00af91" }} aria-hidden="true" onClick={e => activeUser(e, user._id)}></i>
+                                        <i className="fa fa-circle" style={{ color: "#707070" }} aria-hidden="true" ></i> {user.name}
                                     </div>))}
 
 
@@ -233,6 +271,7 @@ function Profile() {
                             </h2>
                         </div >
                     </div >
+
                     <div style={{ clear: "both" }} ></div>
                 </div >
             </body>
@@ -240,4 +279,4 @@ function Profile() {
     )
 }
 
-export default Profile
+export default Profile;

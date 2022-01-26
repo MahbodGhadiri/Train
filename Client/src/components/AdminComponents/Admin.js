@@ -38,7 +38,8 @@ function Admin() {
         });
     }
     setTimeout(() => prof(), 1); //? What is this suppose to do?
-
+    
+    //Jquery useEffect
     useEffect(() => {
 
      

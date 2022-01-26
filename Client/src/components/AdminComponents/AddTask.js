@@ -4,6 +4,7 @@ import moment from 'moment';
 import axios from 'axios';
 import { showSuccess,showError } from '../Toast_Functions';
 import { selectReload, setReload } from '../../features/task/taskSlice';
+import UserPopUp from './UserPopUp';
 
 
 function AddTask() {
@@ -78,9 +79,10 @@ function AddTask() {
                         setSubjectTag(e.target.value)
                     } />
 
-                    <input list="userslist" type="text" name="user" placeholder="کاربر" required value={executors} onChange={e =>
+                    <input  type="button" list="userslist" onClick={ <UserPopUp/>}  name="user" placeholder="کاربر" required value={executors} onChange={e =>
                         setExecutors(e.target.value)
                     } />
+                    
                     <input type="number" name="time" placeholder="زمان" required value={days} onChange={e =>
                         setDays(e.target.value)
                     } />

@@ -62,18 +62,18 @@ const Signup = () => {
                 await axios.post("/auth/register", user).then(response => {
                     status = response.status;
                     showInfo(response);
-
+                
                 }).catch(error => {
                     showError(error);
                 })
 
-                // api call end
+                //api call end
 
-                // if (status === 200) {
-                //     history.push("/login");
-                //     setLoading(false);
-                //     reset();
-                // }
+                if (status === 200) {
+                    history.push("/login");
+                    setLoading(false);
+                    reset();
+                }
 
             }
             else if (!validator.current.allValid()) {

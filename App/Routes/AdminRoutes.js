@@ -20,9 +20,9 @@ router.post("/pin",[Auth,Admin],AdminController.setPin);
 
 router.delete("/pin/delete",[Auth,Admin],AdminController.deletePin); //required query parameter: pin(id)
 
-router.put("/users/activate",[Auth,Admin,SuperAdmin],AdminController.activateUser); //required query parameter: user(id)
+router.put("/users/activate",[Auth,Admin],AdminController.activateUser); //required query parameter: user(id)
 
-router.put("/users/deactivate",[Auth,Admin,SuperAdmin],AdminController.deactivateUser); //required query parameter: user(id)
+router.put("/users/deactivate",[Auth,Admin],AdminController.deactivateUser); //required query parameter: user(id)
 
 router.put("/users/promote",[Auth,Admin,SuperAdmin],AdminController.promoteUser); //required query parameter: user(id)
 
