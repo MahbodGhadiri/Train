@@ -37,7 +37,7 @@ class UserController
       timeCost: 2})
       )
     {
-      await refreshTokenModel.deleteAll({_id:req.cookies.refreshToken._id});
+      await refreshTokenModel.deleteMany({_id:req.cookies.refreshToken._id});
       res.cookie("refreshToken","",{expires: new Date(0)});
       res.cookie("accessToken","",{expires: new Date(0)});
       user.remove().then(res.status(200).send({message:"اکانت شما با موفقیت حذف شد"}));

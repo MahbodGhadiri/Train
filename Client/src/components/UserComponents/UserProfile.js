@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { showError, showSuccess } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserAbility } from '../../features/user/userSlice';
+import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserAbility, selectUserId } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
 
@@ -14,11 +14,14 @@ function Profile() {
     const perEmail = useSelector(selectUserEmail);
     const perPhoneNumber = useSelector(selectUserPhone);
     const perTalents = useSelector(selectUserAbility);
+    const perId = useSelector(selectUserId);
     //-------------------------------------------
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [talents, setTalents] = useState([]);
+    const [password, setPassword] = useState("");
+
     //-------------------------------------------
     const userList = useSelector(selectUserList);
     let users = [];
@@ -94,6 +97,7 @@ function Profile() {
                     phone: response.data.phone.number,
                     email: response.data.email.address,
                     ability: response.data.ability,
+                    id: response.data._id,
                 })
             )
         }).catch(error => {
@@ -116,7 +120,24 @@ function Profile() {
         }
         
     }
+    async function deleteUser(e, userId) {
+        e.preventDefault();
+        await axios.post(`user/delete-account?user=${userId}`,
+            { password: password },
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true },
 
+        ).then(response => {
+            console.log(response);
+            showSuccess(response);
+            window.sessionStorage.removeItem("isUserAuthenticated");
+            window.sessionStorage.removeItem("role");
+            window.location.reload();
+
+        }).catch(error => {
+            showError(error);
+            checklogin(error);
+        })
+    }
     return (
         <div>
             <div>
@@ -124,7 +145,7 @@ function Profile() {
                     <div className="pro-content">
 
 
-                        <div className="signup" style={{marginBottom:"5px"}}>
+                        <div className="signup" style={{marginBottom:"5px" , marginTop:"-20px"}}>
                             <div className="edit-box">
                                 <div className="edit-imgbox"><img src="../images/logo-min.png" alt="Train-logo" /></div>
 
@@ -185,8 +206,30 @@ function Profile() {
                                         </ul>
                                     </div>
                                     <input type="submit" value="ویرایش" id="edit-btn" />
-                                    <h2 style={{ cursor: "pointer", textAlign: "center" }}>
-                                        <a style={{ cursor: "pointer", textAlign: "center" }} onClick={event => logOut(event)} >خروج</a>
+                                    <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                <input
+                                    style={{ textAlign: "right" }}
+                                    type="password"
+                                    name="password"
+                                    required
+                                    placeholder="رمز ورود"
+                                    value={password}
+                                    onChange={e => {
+                                        setPassword(e.target.value);
+                                        validator.current.showMessageFor(
+                                            "password"
+                                        );
+                                    }} />
+                                {validator.current.message(
+                                    "password",
+                                    password,
+                                    `required|min: 5`
+                                )}
+                               
+                                <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "5px" ,marginTop: "5px" }} id="edit-btn" />
+
+                                    <h2 style={{ cursor: "pointer", textAlign: "center" ,marginBottom: "-40px"}}>
+                                        <a style={{ cursor: "pointer", textAlign: "center"  }} onClick={event => logOut(event)} >خروج</a>
                                     </h2>
                                 </form>
                             </div>

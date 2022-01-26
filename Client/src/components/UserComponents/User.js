@@ -12,8 +12,9 @@ import { store } from '../../app/store';
 import $ from 'jquery';
 import { showSuccess } from '../Toast_Functions';
 import moment from 'moment';
-import { setUserLoginDetails, selectUserName, selectUserAbility } from '../../features/user/userSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList } from '../../features/user/userSlice';
 import { checklogin } from '../CheckLogin';
+import Prof from '../Prof';
 
 function User() {
 
@@ -33,30 +34,9 @@ function User() {
     const [subjectTag, setSubjectTag] = useState("");
     const [executors, setExecutors] = useState([]);
     const name = useSelector(selectUserName);
-   
-    async function prof() {
+
+
  
-
-        await axios.get("/user/profile",
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response)
-            dispatch(
-                setUserLoginDetails({
-                    name: response.data.name,
-                    phone: response.data.phone.number,
-                    email: response.data.email.address,
-                    ability: response.data.ability,
-                })
-            )
-        }).catch(error => {
-            showError(error);
-
-            console.log(error);
-            checklogin(error)
-        });
-    }
-    setTimeout(() => prof(),1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000);
 
     const reset = () => {
         setTitle("");
@@ -66,6 +46,7 @@ function User() {
         setExecutors([]);
 
     };
+    
     const addTask = async (event) => {
         event.preventDefault();
 
@@ -84,16 +65,16 @@ function User() {
                 showSuccess(response);
                 reset();
                 ///////////////
-                if (reload === false) {
-                    dispatch(setReload({
-                        reload: true
-                    }))
+                // if (reload === false) {
+                //     dispatch(setReload({
+                //         reload: true
+                //     }))
 
-                } else {
-                    dispatch(setReload({
-                        reload: false
-                    }))
-                }
+                // } else {
+                //     dispatch(setReload({
+                //         reload: false
+                //     }))
+                // }
                 //////////////
             })
             .catch(error => {
@@ -102,7 +83,7 @@ function User() {
             })
     }
     useEffect(async () => {
-
+        
         $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
@@ -173,10 +154,11 @@ function User() {
             $('.alert-b').hide(100);
         });
     });
-    const talentTransformer = (e , talents) => {
+
+    const talentTransformer = (e, talents) => {
         e.preventDefault()
         let output;
-       
+
         for(let i = 0 ; i<talents.length; i++)
         {
             output = output+talents[i]+" "
@@ -184,8 +166,23 @@ function User() {
         }
         console.log(output);
         return output;
-    }
+    };
 
+    useEffect(()=>{
+        Prof().then(res=> {
+            dispatch(
+                setUserLoginDetails({
+                    name: res.name,
+                    phone: res.phone.number,
+                    email: res.email.address,
+                    ability: res.ability,
+                })
+            )
+        }).catch(
+            err=> console.log(err)
+        )
+    },[]);
+    
     return (
         <div dir="rtl">
             <div className="content">
@@ -203,7 +200,7 @@ function User() {
                     <h2>{name}</h2>
                     <div className="img-sortby">
 
-                        <span style={{ color: "#ff2442" }} >{e => talentTransformer(e , talents)}</span>
+                        <span style={{ color: "#ff2442" }} >{e => talentTransformer(e, talents)}</span>
 
                     </div>
                 </div>

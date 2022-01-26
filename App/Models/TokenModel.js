@@ -19,7 +19,7 @@ const refreshTokenSchema = new Schema({
 
 
 const forgotPasswordModel =new model("tokens",forgotPasswordTokenSchema);
-refreshTokenModel = model("refreshTokens",refreshTokenSchema);
+const refreshTokenModel = new model("refreshTokens",refreshTokenSchema);
 
 
 module.exports = {forgotPasswordModel,refreshTokenModel};
