@@ -16,8 +16,7 @@ class AdminController
                     "email.verficationToken":0,
                     password:0,
                     customTasks:0,
-                    phone:0,
-                    activeAccount:0,
+            
                     
                 }
             }
