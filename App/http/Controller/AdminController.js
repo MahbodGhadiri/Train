@@ -135,15 +135,18 @@ class AdminController
 
     async deactivateUser(req,res)//required query parameter: user(id)
     {
-        const user= await UserModel.findOne({_id:{$eq:req.query.user}}); 
-        if(user&&user.activeAccount)
-        {
-            user.activeAccount = false;
-            user.email.createdAt =undefined;
-            await user.save();
-            res.status(200).send({message:"انجام شد"});
+        if (req.user.id !== req.query.user)
+        {    const user= await UserModel.findOne({_id:{$eq:req.query.user}}); 
+            if(user&&user.activeAccount)
+            {
+                user.activeAccount = false;
+                user.email.createdAt =undefined;
+                await user.save();
+                res.status(200).send({message:"انجام شد"});
+            }
+            else res.status(400).send({message:"کاربر وجود ندارد یا اکانت کاربر فعال نیست"});
         }
-        else res.status(400).send({message:"کاربر وجود ندارد یا اکانت کاربر فعال نیست"});
+        else res.status(409).send({message:"امکان غیر فعال سازی خود شخص وجود ندارد! می توانید از صفحه پروفایل اکانت خود را حذف کنید."})
     }
 
     async promoteUser(req,res)//required query parameter: user(id)
