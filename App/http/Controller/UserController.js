@@ -54,7 +54,8 @@ class UserController
     user.name = req.body.name;
     user.avatarURL = req.body.avatarURL;
     user.ability = req.body.ability;
-    user.save()
+    user.email.createdAt =undefined;
+    await user.save()
     res.status(200).send({message:"انجام شد"})
   }
 
@@ -79,6 +80,7 @@ class UserController
         "timeCost": 2
       });
       //saving new password
+      user.email.createdAt =undefined;
       await user.save();
       //Generating Tokens //? is it needed to remove older Tokens? or rotating tokens handle it ?
       const refreshToken=user.generateRefreshToken(req.cookie.refreshToken)

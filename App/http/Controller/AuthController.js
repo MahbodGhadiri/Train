@@ -45,7 +45,8 @@ class AuthController {
       ability:req.body.ability
     }
     user = await new userModel(userData);
-    user = await user.save();
+    user.email.createdAt =undefined;
+    await user.save();
     
     sendEmail(user._id);
   
