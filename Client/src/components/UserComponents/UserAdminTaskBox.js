@@ -5,7 +5,7 @@ import { setTasks, setReload, } from '../../features/task/taskSlice';
 import axios from 'axios';
 import { showError } from '../Toast_Functions';
 import { store } from '../../app/store';
-import $ from 'jquery';
+import { dateToJalali,find_diff } from '../date_functions';
 
 function UserAdminTaskBox() {
     const dispatch = useDispatch();
@@ -158,13 +158,13 @@ function UserAdminTaskBox() {
                                         <span style={{ color: "#868686" }}>توسط <span style={{ color: "#ffb830" }}>امیرعلی</span></span>
                                         <div className="date">
                                             <span>
-                                                شنبه 13/13/13 تا چهارشنبه 12/45/07
+                                                {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="time">
-                                    9روز
+                                    {find_diff(task.startDate,task.finishDate)} 
                                 </div>
                             </div>
                         ))}

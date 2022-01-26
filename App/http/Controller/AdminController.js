@@ -122,6 +122,7 @@ class AdminController
         if(user&&user.email.active&&!user.activeAccount)
         {
             user.activeAccount = true;
+            user.email.createdAt =undefined;
             await user.save();
             res.status(200).send({message:"انجام شد"});
         }
@@ -138,6 +139,7 @@ class AdminController
         if(user&&user.activeAccount)
         {
             user.activeAccount = false;
+            user.email.createdAt =undefined;
             await user.save();
             res.status(200).send({message:"انجام شد"});
         }
@@ -152,7 +154,8 @@ class AdminController
             if(user.role==="user")
             {
                 user.role="admin";
-                user.save();
+                user.email.createdAt =undefined;
+                await user.save();
                 return res.status(200).send({message:"انجام شد"})
             }else {return res.status(400).send({message:"کاربر از قبل ادمین است"})}
         }else{return res.status(404).send({message:"کاربر یافت نشد"})}
@@ -166,7 +169,8 @@ class AdminController
             if(user.role==="admin")
             {
                 user.role="user";
-                user.save();
+                user.email.createdAt =undefined;
+                await user.save();
                 return res.status(200).send({message:"انجام شد"})
             }else {return res.status(400).send({message:"این کاربر ادمین نیست"})}
         }else{return res.status(404).send({message:"کاربر یافت نشد"})}
