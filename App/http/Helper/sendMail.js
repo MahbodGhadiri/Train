@@ -20,7 +20,6 @@ async function sendEmail(userId,loginLink)
     
     const emailVerificationToken = crypto.randomBytes(16).toString("hex");
     user.email.verificationToken = emailVerificationToken;
-    user.email.createdAt =undefined;
     await user.save();
 
     mailOptions = 

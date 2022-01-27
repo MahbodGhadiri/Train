@@ -5,6 +5,7 @@ import { setTasks, setReload, } from '../../features/task/taskSlice';
 import axios from 'axios';
 import { showError } from '../Toast_Functions';
 import { store } from '../../app/store';
+import moment from "moment";
 import { dateToJalali,find_diff } from '../date_functions';
 
 
@@ -206,7 +207,7 @@ const AdminTaskBox = () => {
                                     </div>
                                 </div>
                                 <div className="time">
-                                    {find_diff(task.startDate,task.finishDate)} 
+                                    {find_diff(task.startDate,moment())} 
                                 </div>
                             </div>
                         )
