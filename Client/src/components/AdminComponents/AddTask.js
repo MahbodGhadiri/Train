@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import axios from 'axios';
 import { showSuccess,showError } from '../Toast_Functions';
 import { selectReload, setReload } from '../../features/task/taskSlice';
-import UserPopUp from './UserPopUp';
 
 
 function AddTask() {
@@ -13,27 +12,41 @@ function AddTask() {
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
-    const [executors, setExecutors] = useState([]);
     const dispatch = useDispatch();
     const reload = useSelector(selectReload);
+    const [users,setUsers] = useState([])
+    let executors=[];
 
     const reset = () => {
         setTitle("");
         setTask("");
         setDays(0);
         setSubjectTag("");
-        setExecutors([]);
 
     };
+
+    const setExecutors=()=>
+    {
+        //user must be an object with name and _id
+        for (let i=0; i<users.length;i++)
+        {
+            const cb = document.querySelector(`#cb${users[i]._id}`)
+            if (cb.checked)
+            {
+                console.log(cb.checked)
+                executors.push({_id:users[i]._id,name:users[i].name})
+            }
+        }
+    }
     const addTask = async (event) => {
         event.preventDefault();
-
+        setExecutors();
         const Task = {
             title: title,
             task: task,
             startDate: moment().format('YYYY-MM-D '),
             finishDate: moment().add(days, 'days').format('YYYY-MM-D '),
-            executors: [executors],
+            executors: executors,
             subjectTag: subjectTag
         };
        
@@ -62,6 +75,28 @@ function AddTask() {
             })
     }
 
+    useEffect(()=>
+    {
+        var checkList = document.getElementById('list1');
+        checkList.getElementsByClassName('anchor')[0].onclick = function(evt) {
+            if (checkList.classList.contains('visible'))
+                checkList.classList.remove('visible');
+            else
+                checkList.classList.add('visible');
+        }
+
+    })
+    useEffect(()=>{
+        setTimeout(async ()=>{await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+        .then(( response) =>{
+            console.log(response)
+            setUsers(response.data)
+        }).catch((err)=>{
+            showError(err)
+        })},20000)
+        
+    }
+    )
     return (
         <div>
             <div className="borderc">
@@ -79,9 +114,12 @@ function AddTask() {
                         setSubjectTag(e.target.value)
                     } />
 
-                    <input  type="button" list="userslist" onClick={ <UserPopUp/>}  name="user" placeholder="کاربر" required value={executors} onChange={e =>
-                        setExecutors(e.target.value)
-                    } />
+                    <div id="list1" class="dropdown-check-list" tabindex="100">
+                    <span class="anchor">انتخاب کاربر</span>
+                    <ul class="items">
+                        {users && users.map((user)=> (<li><input type="checkbox" id={`cb${user._id}`} value={user.name} />{user.name} </li>))}
+                    </ul>
+                    </div>
                     
                     <input type="number" name="time" placeholder="زمان" required value={days} onChange={e =>
                         setDays(e.target.value)

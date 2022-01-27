@@ -102,6 +102,7 @@ userSchema.methods.getEssentialData = function()
 {
     data={
         _id:this._id,
+        name:this.name,
         role:this.role
     }
     return data;

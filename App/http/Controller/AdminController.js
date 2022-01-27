@@ -37,7 +37,7 @@ class AdminController
 
     async setTask(req,res)
     {
-        req.body.assignedBy = req.user._id;
+        req.body.assignedBy={_id:req.user._id,name:req.user.name}
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
         const finishDate = new Date(req.body.finishDate).getTime()

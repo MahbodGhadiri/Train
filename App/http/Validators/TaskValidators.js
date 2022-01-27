@@ -27,7 +27,12 @@ const setTaskValidator = (data)=>{
             }
         ),
         executors: joi.array().required(),
-        assignedBy: joi.string().required(), //! object id
+        assignedBy: joi.object(
+            {
+                _id: joi.string(), //! object id
+                name: joi.string().required().min(3).max(30)
+            }
+        ).required(), 
         startDate:joi.date().required().messages(
             {
                 "any.required":"نوشتن تاریخ شروع الزامی است!",
