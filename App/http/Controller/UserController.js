@@ -3,6 +3,7 @@ const userModel = require("../../Models/UserModel");
 const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
 const _ = require("lodash")
 const {deleteAccountValidator , setCustomTaskValidator , changeInfoValidator} = require("../Validators/UserValidators");
+const {changePasswordValidator}=require("../Validators/AuthValidators")
 const argon2=require("argon2");
 const { refreshTokenModel } = require("../../Models/TokenModel");
 
@@ -61,8 +62,8 @@ class UserController
 
   async changePassword(req,res)
   {
-    // const {error} = changePasswordValidator(req.body);
-    // if(error){return res.status(400).send({message:error.message})}
+    const {error} = changePasswordValidator(req.body);
+    if(error){return res.status(400).send({message:error.message})}
 
     const user = await userModel.findById(req.user._id)
     if(!user) return res.status(404)
