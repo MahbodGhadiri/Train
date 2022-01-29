@@ -1,4 +1,4 @@
-const moment = require("moment-jalaali") 
+const moment = require("moment-jalaali");
 
 export function dateToJalali(date){
     const m= moment(date,"YYYY/M/D").format("jYYYY/jM/jD")

@@ -37,7 +37,7 @@ class UserController
       timeCost: 2})
       )
     {
-      await refreshTokenModel.deleteAll({_id:req.cookies.refreshToken._id});
+      await refreshTokenModel.deleteMany({_id:req.cookies.refreshToken._id});
       res.cookie("refreshToken","",{expires: new Date(0)});
       res.cookie("accessToken","",{expires: new Date(0)});
       user.remove().then(res.status(200).send({message:"اکانت شما با موفقیت حذف شد"}));
@@ -61,8 +61,8 @@ class UserController
 
   async changePassword(req,res)
   {
-    const {error} = changePasswordValidator(req.body);
-    if(error){return res.status(400).send({message:error.message})}
+    // const {error} = changePasswordValidator(req.body);
+    // if(error){return res.status(400).send({message:error.message})}
 
     const user = await userModel.findById(req.user._id)
     if(!user) return res.status(404)

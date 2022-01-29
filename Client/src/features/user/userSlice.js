@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
+    id: "",
     name: "",
     email: "",
     role:"",
@@ -8,6 +9,7 @@ const initialState = {
     isUserAuthenticated:false,
     userList:[],
     customTasks:null,
+   
 }
 const userSlice = createSlice({
     name: "user",
@@ -19,6 +21,7 @@ const userSlice = createSlice({
             state.role = action.payload.role;
             state.phone = action.payload.phone;
             state.ability = action.payload.ability;
+            state.id = action.payload.id;
         },
         setUserAuthenticationStatus: (state, action)=>{
             state.isUserAuthenticated = action.payload;
@@ -53,4 +56,6 @@ export const selectCustomTasks = (state) => state.user.customTasks;
 export const selectUserAuthenticationStatus = (state)=> state.user.isUserAuthenticated;
 export const selectUserList = (state) => state.user.userList;
 export const selectUserAbility = (state) => state.user.ability;
+export const selectUserId = (state) => state.user.id;
+
 export default userSlice.reducer;
