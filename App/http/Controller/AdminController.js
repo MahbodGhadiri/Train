@@ -137,10 +137,14 @@ class AdminController
         {    const user= await UserModel.findOne({_id:{$eq:req.query.user}}); 
             if(user&&user.activeAccount)
             {
-                user.activeAccount = false;
-                user.email.createdAt =undefined;
-                await user.save();
-                res.status(200).send({message:"انجام شد"});
+                if(user.role!=="super admin")
+                {
+                    user.activeAccount = false;
+                    user.email.createdAt =undefined;
+                    await user.save();
+                    res.status(200).send({message:"انجام شد"});
+                }
+                else res.status(409).send({message:"شما نمی توانید سوپرادمین را غیرفعال کنید!"})
             }
             else res.status(400).send({message:"کاربر وجود ندارد یا اکانت کاربر فعال نیست"});
         }
