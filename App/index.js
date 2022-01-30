@@ -1,4 +1,4 @@
-
+const cluster= require('cluster')
 const express = require("express");
 const app =express();
 const cookieParser=require("cookie-parser")
@@ -17,6 +17,8 @@ const api = require("./Routes/api");
 const path = require("path");
 const rateLimit = require("express-rate-limit").default;
 const cors = require("cors")
+
+
 class application 
 {
     constructor()
@@ -35,19 +37,19 @@ class application
         httpServer.listen(process.env.httpPort,(err)=>
         {
             if (err){
-                console.log(err)
+                console.log(`\u001b[1;31m${err}\u001b[0m`)
                 winston.error(err)
             }
-            else console.log(`http server Listening on port ${process.env.httpPort}`) 
+            else console.log(`\u001b[1;32mhttp server Listening on port ${process.env.httpPort}, \u001b[1;34mworkerId:${cluster.worker.id}\u001b[0m`) //? do i have to "require" cluster here?
         });
 
         httpsServer.listen(process.env.httpsPort,(err)=>
         {
             if (err){
-                console.log(err)
+                console.log(`\u001b[1;31m${err}\u001b[0m`)
                 winston.error(err)
             }
-            else console.log(`https server Listening on port ${process.env.httpsPort}`)    
+            else console.log(`\u001b[1;32mhttps server Listening on port ${process.env.httpsPort}, \u001b[1;34mworkerId:${cluster.worker.id}\u001b[0m`)    
         });
     }
 
@@ -56,9 +58,9 @@ class application
         mongoose
         .connect(process.env.MongoDB_Adrress,{useNewUrlParser:true,useUnifiedTopology:true})
         .then(()=>{
-            console.log("Connected to DB")
+            console.log(`\u001b[1;32mConnected to DB,  \u001b[1;34mworkerId:${cluster.worker.id}\u001b[0m`)
         })
-        .catch((err)=>{console.log(`Conection to DB failed \n`,err);})
+        .catch((err)=>{console.log(`\u001b[1;31mConection to DB failed,  \u001b[1;33mworkerId:${cluster.worker.id}\u001b[0m \n`,err);})
     }
 
     setupRoutesAndMiddlewares()
