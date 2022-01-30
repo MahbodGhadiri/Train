@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Header from '../Header';
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginDetails, selectUserName } from '../../features/user/userSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility } from '../../features/user/userSlice';
 import axios from 'axios';
 import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
@@ -15,7 +15,7 @@ import { setUserId } from '../SessionStorage';
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
-
+    const talents = useSelector(selectUserAbility)
     async function prof() {
         // event.preventDefault();
 
@@ -145,8 +145,8 @@ function Admin() {
                             <img src="./images/shape-2-min.png" className="admin-img" alt="" />
                             <h2>{name}</h2>
                             <div className="img-sortby">
-                                <span style={{ color: "#ff2442" }}>کدفرانت</span>
-                                <span style={{ color: "#ffb830" }}>Ui/Ux</span>
+                                <span style={{ color: "#ff2442" }}>{"" + talents + ""}</span>
+                                
                             </div>
                         </div>
                     </div>

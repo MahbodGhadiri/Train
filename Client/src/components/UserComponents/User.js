@@ -225,7 +225,7 @@ function User() {
                     <h2>{name}</h2>
                     <div className="img-sortby">
 
-                        <span style={{ color: "#ff2442" }} >{talents + " "}</span>
+                        <span style={{ color: "#ff2442" }} >{"" + talents + " "}</span>
 
                     </div>
                 </div>

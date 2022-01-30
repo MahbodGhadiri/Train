@@ -39,6 +39,7 @@ function AddTask() {
     const addTask = async (event) => {
         event.preventDefault();
         setExecutors();
+        console.log(executors);
         const Task = {
             title: title,
             task: task,
