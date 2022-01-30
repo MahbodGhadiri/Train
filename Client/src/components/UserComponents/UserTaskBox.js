@@ -22,43 +22,11 @@ function UserTaskBox() {
     let tempFilter = "";
 
     //const [sendRequest, setSendRequest] = useState(false);
-    function filterTask(event) {
-        event.preventDefault();
-
-        if (category) {
-            // console.log(category);
-            tempFilter = `subject=${category}&`;
-
-        }
-        if (time) {
-
-            tempFilter += `days=${time}&`;
-            // console.log(filter)
-        }
-        // if(userList)
-        // {
-        //     setFilter(filter+`userList=${userList}&`)
-        // }
-
-        setFilter(tempFilter)
-        console.log(tempFilter);
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
-        //////////////
-    }
+    
     useEffect(async () => {
 
-        console.log('in admin taskbox ueEffect');
-        await axios.get(`/user/custom-tasks`,
+        console.log('getting user taskbox');
+        await axios.get(`/user/custom-tasks/?${filter}`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
@@ -139,27 +107,51 @@ function UserTaskBox() {
         }
         console.log(reload);
     }
-    
+    function filterTask(event) {
+        event.preventDefault();
+        console.log("gd");
+        if (category) {
+            // console.log(category);
+            tempFilter = `subject=${category}&`;
+
+        }
+        if (time) {
+
+            tempFilter += `days=${time}&`;
+            // console.log(filter)
+        }
+        // if(userList)
+        // {
+        //     setFilter(filter+`userList=${userList}&`)
+        // }
+
+        setFilter(tempFilter)
+        console.log(tempFilter);
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+        console.log(reload);
+        //////////////
+    }
     return (
         <div>
             <div className="right alonebox">
                 <h2>فعالیت های فردی</h2>
                 <div>
 
-                    <form onSubmit={(event => filterTask(event))}>
+                    <form onSubmit={event => filterTask(event)}>
                         <img src="./images/formicn.png" alt="formicn" />
                         <input list="category" name="titr" placeholder="موضوع" value={category} onChange={e => setCategory(e.target.value)} />
-                        <datalist id="category" >
-                            <option value="برنامه نویسی" />
-                            <option value="گرافیک" />
-                            <option value="مدیریت مالی" />
-                            <option value="مدیریت" />
-                        </datalist>
+                        
                         <input type="text" list="userslist" name="username" placeholder="کاربر" onChange={e => setUserList(e.target.value)} />
-                        <datalist id="userslist" >
-                            <option value=" احمد" />
-                            <option value="امین" />
-                        </datalist>
+                        
 
                         <input type="number" name="time" placeholder="زمان(روز)" value={time} onChange={e => setTime(e.target.value)} />
 

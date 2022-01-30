@@ -54,7 +54,7 @@ function UserAdminTaskBox() {
     }
     useEffect(async () => {
 
-        console.log('in admin taskbox ueEffect');
+        console.log('getting admin taskbox');
         await axios.get(`/user/tasks/?${filter}`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {

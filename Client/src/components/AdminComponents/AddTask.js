@@ -56,11 +56,13 @@ function AddTask() {
                 reset();
                 ///////////////
                 if (reload === false) {
+                    console.log("changing reload to true");
                     dispatch(setReload({
                         reload: true
                     }))
 
                 } else {
+                    console.log("changing reload to false");
                     dispatch(setReload({
                         reload: false
                     }))
