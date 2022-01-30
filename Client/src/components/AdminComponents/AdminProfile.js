@@ -68,7 +68,7 @@ function Profile() {
         const user = {
             name: name ? name : perName,
             phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
-            ability: talents === [] ? editTalents : ["دیگر"],
+            ability: talents !== [] ? editTalents : ["دیگر"],
         }
 
         await axios.put("/user/change-info",
@@ -112,7 +112,6 @@ function Profile() {
             showError(error)
         });
     }
-
     // profile
     useEffect(async () => {
 
@@ -153,14 +152,16 @@ function Profile() {
             checklogin(error);
         });
     }
+    
     function AddTalents(e, talent) {
         e.preventDefault();
         console.log(talent);
-        if (talents.find(e => e = talent) === undefined) {
+        if (talents.find(e => e === talent) === undefined) {
             talents.push(talent);
 
         } else {
             console.log("مهارت قبلا وجود داشت ");
+            showError({response:{data:{message:"مهارت قبلا وجود داشت"}}})
         }
 
     }

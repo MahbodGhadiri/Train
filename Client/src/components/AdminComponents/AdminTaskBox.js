@@ -184,12 +184,13 @@ const AdminTaskBox = () => {
                                         <p>
                                             {task.task}
                                         </p>
-                                        <span className="created" style={{ color: "#868686" }} >توسط <span style={{ color: "#ffb830" }} >{task.assignedBy.name}</span></span>
+                                        <span className="created" style={{ color: "#868686" }} >توسط <span style={{ color: "#ffb830" }} >{task.assignedBy.name}<span style={{opacity: "0"}}>-</span></span></span>
                                         
-                                        <span className="created" style={{ color: "#868686" }} > برای <span style={{ color: "#ffb830" }} >{ task.executors.map(
+                                        <span className="created" style={{ color: "#868686" }} > <span >برای</span> {task.executors[0] === undefined ? <span >همه</span> : <></>} <span style={{ color: "#ffb830" }} >
+                                            {task.executors && task.executors.map(
                                                 (executor,index)=>{
                                                     if(index!=0)
-                                                    return ` و ${executor.name} `
+                                                    return (<span > <span style={{opacity: "0"}}>-</span> <sth style={{color:"#868686"}}> و </sth> <span> {executor.name} </span> </span>)
                                                     else
                                                         return executor.name
                                                 }

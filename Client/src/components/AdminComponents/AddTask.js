@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import axios from 'axios';
-import { showSuccess,showError } from '../Toast_Functions';
+import { showSuccess, showError } from '../Toast_Functions';
 import { selectReload, setReload } from '../../features/task/taskSlice';
 
 
@@ -14,8 +14,8 @@ function AddTask() {
     const [subjectTag, setSubjectTag] = useState("");
     const dispatch = useDispatch();
     const reload = useSelector(selectReload);
-    const [users,setUsers] = useState([])
-    let executors=[];
+    const [users, setUsers] = useState([])
+    let executors = [];
 
     const reset = () => {
         setTitle("");
@@ -25,22 +25,21 @@ function AddTask() {
 
     };
 
-    const setExecutors=()=>
-    {
+    const setExecutors = () => {
         //user must be an object with name and _id
-        for (let i=0; i<users.length;i++)
-        {
+        for (let i = 0; i < users.length; i++) {
             const cb = document.querySelector(`#cb${users[i]._id}`)
-            if (cb.checked)
-            {
+            if (cb.checked) {
                 console.log(cb.checked)
-                executors.push({_id:users[i]._id,name:users[i].name})
+                executors.push({ _id: users[i]._id, name: users[i].name })
             }
         }
     }
+
     const addTask = async (event) => {
         event.preventDefault();
         setExecutors();
+        console.log(executors);
         const Task = {
             title: title,
             task: task,
@@ -49,7 +48,7 @@ function AddTask() {
             executors: executors,
             subjectTag: subjectTag
         };
-       
+
         await axios.post("/admin/tasks",
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
@@ -64,11 +63,13 @@ function AddTask() {
                 
                 ///////////////
                 if (reload === false) {
+                    console.log("changing reload to true");
                     dispatch(setReload({
                         reload: true
                     }))
 
                 } else {
+                    console.log("changing reload to false");
                     dispatch(setReload({
                         reload: false
                     }))
@@ -81,10 +82,9 @@ function AddTask() {
             })
     }
 
-    useEffect(()=>
-    {
+    useEffect(() => {
         var checkList = document.getElementById('list1');
-        checkList.getElementsByClassName('anchor')[0].onclick = function(evt) {
+        checkList.getElementsByClassName('anchor')[0].onclick = function (evt) {
             if (checkList.classList.contains('visible'))
                 checkList.classList.remove('visible');
             else
@@ -92,17 +92,20 @@ function AddTask() {
         }
 
     })
-    useEffect(()=>{
-        setTimeout(async ()=>{await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-        .then(( response) =>{
-            console.log(response)
-            setUsers(response.data)
-        }).catch((err)=>{
-            showError(err)
-        })},20000)
+
+    useEffect(async () => {
+   
+            await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+                .then((response) => {
+                    console.log(response)
+                    setUsers(response.data)
+                }).catch((err) => {
+                    showError(err)
+                })
         
-    }
-    )
+
+    }, [])
+
     return (
         <div>
             <div className="borderc">
@@ -120,19 +123,19 @@ function AddTask() {
                         setSubjectTag(e.target.value)
                     } />
 
-                    <div id="list1" class="dropdown-check-list" tabindex="100">
-                    <span class="anchor">انتخاب کاربر</span>
-                    <ul class="items">
-                        {users && users.map((user)=> (<li><input type="checkbox" id={`cb${user._id}`} value={user.name} />{user.name} </li>))}
-                    </ul>
+                    <div id="list1" class="dropdown-check-list"  tabindex="100">
+                        <span class="anchor" > کاربر</span>
+                        <ul class="items">
+                            {users && users.map((user) => (<li><input type="checkbox" id={`cb${user._id}`} value={user.name} />{user.name} </li>))}
+                        </ul>
                     </div>
-                    
+
                     <input type="number" name="time" placeholder="زمان" required value={days} onChange={e =>
                         setDays(e.target.value)
                     } />
                     <input type="submit" value="ثبت" />
                 </form>
-                
+
                 <datalist id="category">
                     <option value="برنامه نویسی" />
                     <option value="گرافیک" />
@@ -140,12 +143,7 @@ function AddTask() {
                     <option value="مدیریت" />
                 </datalist>
 
-                <datalist id="userslist">
-                    <option value=" احمد" />
-                    <option value="امین" />
-                    <option value="مهبد" />
-                    <option value="محمد جمشید" />
-                </datalist>
+                
             </div>
         </div>
     )

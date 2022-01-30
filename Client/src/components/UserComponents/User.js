@@ -15,6 +15,7 @@ import moment from 'moment';
 import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList } from '../../features/user/userSlice';
 import { checklogin } from '../CheckLogin';
 import Prof from '../Prof';
+import { setUserId } from '../SessionStorage';
 
 function User() {
 
@@ -34,19 +35,19 @@ function User() {
     const [subjectTag, setSubjectTag] = useState("");
     const [executors, setExecutors] = useState([]);
     const name = useSelector(selectUserName);
+    const [transformedAbilities, setTransformedAbilities] = useState("");
 
 
- 
 
     const reset = () => {
         setTitle("");
         setTask("");
-        setDays(0);
+        setDays("");
         setSubjectTag("");
         setExecutors([]);
 
     };
-    
+
     const addTask = async (event) => {
         event.preventDefault();
 
@@ -64,18 +65,18 @@ function User() {
             .then(response => {
                 showSuccess(response);
                 reset();
-                ///////////////
-                // if (reload === false) {
-                //     dispatch(setReload({
-                //         reload: true
-                //     }))
+                /////////////
+                if (reload === false) {
+                    dispatch(setReload({
+                        reload: true
+                    }))
 
-                // } else {
-                //     dispatch(setReload({
-                //         reload: false
-                //     }))
-                // }
-                //////////////
+                } else {
+                    dispatch(setReload({
+                        reload: false
+                    }))
+                }
+                ////////////
             })
             .catch(error => {
                 showError(error);
@@ -83,7 +84,7 @@ function User() {
             })
     }
     useEffect(async () => {
-        
+
         $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
@@ -155,34 +156,58 @@ function User() {
         });
     });
 
-    const talentTransformer = (e, talents) => {
-        e.preventDefault()
-        let output;
 
-        for(let i = 0 ; i<talents.length; i++)
-        {
-            output = output+talents[i]+" "
 
-        }
-        console.log(output);
-        return output;
-    };
 
-    useEffect(()=>{
-        Prof().then(res=> {
-            dispatch(
-                setUserLoginDetails({
-                    name: res.name,
-                    phone: res.phone.number,
-                    email: res.email.address,
-                    ability: res.ability,
-                })
-            )
-        }).catch(
-            err=> console.log(err)
-        )
+    useEffect(async () => {
+        console.log("first");
+        await prof();
+        console.log("second");
+       
     },[]);
-    
+
+    async function prof() {
+        // event.preventDefault();
+
+        await axios.get("/user/profile",
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(async response => {
+            setUserId(response.data._id)
+            await dispatch(
+                setUserLoginDetails({
+                    name: response.data.name,
+                    phone: response.data.phone.number,
+                    email: response.data.email.address,
+                    ability: response.data.ability,
+                })
+
+            )
+             
+        }).catch(error => {
+            showError(error);
+
+            console.log(error);
+            checklogin(error)
+        });
+      console.log(talents);
+    }
+    const talentTransformer = ( talents) => {
+  
+        console.log(talents);
+        if (talents) {
+        let output = "";
+            // output += talents[0];
+            for (let i = 0; i < talents.length; i++) {
+                output = output + talents[i] + " "
+
+            }
+            setTransformedAbilities(output);
+        } else {
+            setTransformedAbilities("مهارتی مشخص نشده است");
+        }
+       
+    };
+    //setTimeout(() => talentTransformer(talents),1000);
     return (
         <div dir="rtl">
             <div className="content">
@@ -200,7 +225,7 @@ function User() {
                     <h2>{name}</h2>
                     <div className="img-sortby">
 
-                        <span style={{ color: "#ff2442" }} >{e => talentTransformer(e, talents)}</span>
+                        <span style={{ color: "#ff2442" }} >{"" + talents + " "}</span>
 
                     </div>
                 </div>
@@ -225,13 +250,13 @@ function User() {
                         <input type="text" name="tpost" placeholder="موضوع خود را بنویسید" required value={title} onChange={e =>
                             setTitle(e.target.value)
                         } />
-                        <textarea name="cpost" id="" cols="30" rows="10" placeholder="توضیحات" requiredvalue={task} onChange={e =>
+                        <textarea name="cpost" id="" cols="30" rows="10" placeholder="توضیحات" required value={task} onChange={e =>
                             setTask(e.target.value)
                         }></textarea>
                         <input type="text" name="retpost" placeholder="موضوع" required value={subjectTag} onChange={e =>
                             setSubjectTag(e.target.value)
                         } />
-                        <input type="text" name="time" placeholder="زمان" requiredvalue={days} onChange={e =>
+                        <input type="text" name="time" placeholder="زمان" required value={days} onChange={e =>
                             setDays(e.target.value)
                         } />
                         <input type="submit" value="ثبت" />
