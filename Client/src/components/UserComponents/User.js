@@ -15,6 +15,7 @@ import moment from 'moment';
 import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList } from '../../features/user/userSlice';
 import { checklogin } from '../CheckLogin';
 import Prof from '../Prof';
+import { setUserId } from '../SessionStorage';
 
 function User() {
 
@@ -168,20 +169,34 @@ function User() {
         return output;
     };
 
-    useEffect(()=>{
-        Prof().then(res=> {
+    async function prof() {
+        // event.preventDefault();
+
+        await axios.get("/user/profile",
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            setUserId(response.data._id)
+            console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+            console.log(response)
             dispatch(
                 setUserLoginDetails({
-                    name: res.name,
-                    phone: res.phone.number,
-                    email: res.email.address,
-                    ability: res.ability,
+                    name: response.data.name,
+                    phone: response.data.phone.number,
+                    email: response.data.email.address,
+                    ability: response.data.ability,
                 })
             )
-        }).catch(
-            err=> console.log(err)
-        )
-    },[]);
+        }).catch(error => {
+            showError(error);
+
+            console.log(error);
+            checklogin(error)
+        });
+    }
+    useEffect(async () => {
+        prof();
+    }, [])
+
     
     return (
         <div dir="rtl">

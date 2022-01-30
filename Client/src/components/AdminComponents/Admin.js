@@ -8,7 +8,7 @@ import AddTask from './AddTask';
 import AddPin from './AddPin';
 import UserPinBox from "../UserComponents/UserPinBox"
 import { showError } from '../Toast_Functions';
-import {checklogin} from "../CheckLogin";
+import { checklogin } from "../CheckLogin";
 import $ from 'jquery';
 import { setUserId } from '../SessionStorage';
 
@@ -40,13 +40,15 @@ function Admin() {
             checklogin(error)
         });
     }
-    setTimeout(() => prof(), 1); //? What is this suppose to do?
-    
+    useEffect(async () => {
+        prof();
+    }, [])
+
     //Jquery useEffect
     useEffect(() => {
 
-     
-        $('.skillsbox .fa-arrow-down').click(function(e) {
+
+        $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
                 $('.skillsbox ul').slideDown();
@@ -56,11 +58,11 @@ function Admin() {
                 $(this).css('transform', 'rotate(0deg)');
             }
         });
-    
-        $('.show-box .show-item i.fa-eye').click(function() {
+
+        $('.show-box .show-item i.fa-eye').click(function () {
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
-    
+
                 $(this).removeClass('fa-eye').addClass('fa-eye-slash');
                 $('#pro-pass').attr('type', 'text');
             } else {
@@ -68,28 +70,28 @@ function Admin() {
                 $('#pro-pass').attr('type', 'password');
             }
         });
-    
-    
-    
+
+
+
         // Height Window
         var hw = ($(window).height()) - 125;
         $('.alonebox,.groupbox').css('height', hw + 'px');
-    
+
         // Post
-        $('.post-btn').click(function(e) {
+        $('.post-btn').click(function (e) {
             $('.post').show(200);
         });
-        $('.post .fa-times').click(function(e) {
+        $('.post .fa-times').click(function (e) {
             $('.post').hide(200);
         });
-    
+
         // Alert Close
-        $('.alert-b i.fa-times').click(function(e) {
+        $('.alert-b i.fa-times').click(function (e) {
             $('.alert-b').hide(100);
         });
-    
+
         // AloneRow
-        $('.alonerow i.fa-arrow-down').on('click', function() {
+        $('.alonerow i.fa-arrow-down').on('click', function () {
             $(this).closest('.task').find('.task-down').toggle(350);
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
@@ -98,26 +100,26 @@ function Admin() {
                 $(this).closest('.alonerow').find('.time').show(200);
             }
         });
-    
+
         // Height Window
         var hw = ($(window).height()) - 130;
         $('.alonebox,.groupbox').css('height', hw + 'px');
-    
+
         // Post
-        $('.post-btn').click(function(e) {
+        $('.post-btn').click(function (e) {
             $('.post').show(200);
         });
-        $('.post .fa-times').click(function(e) {
+        $('.post .fa-times').click(function (e) {
             $('.post').hide(200);
         });
-    
+
         // Alert Close
-        $('.alert-b i.fa-times').click(function(e) {
+        $('.alert-b i.fa-times').click(function (e) {
             $('.alert-b').hide(100);
         });
-    
-    
-        });
+
+
+    });
 
     return (
 
