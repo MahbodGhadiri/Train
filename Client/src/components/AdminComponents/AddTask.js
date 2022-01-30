@@ -56,6 +56,12 @@ function AddTask() {
             .then(response => {
                 showSuccess(response);
                 reset();
+                // removing ckeck marks from checkboxes
+                for (let i=0; i<users.length;i++)
+                {
+                    document.querySelector(`#cb${users[i]._id}`).checked=false;
+                }   
+                
                 ///////////////
                 if (reload === false) {
                     dispatch(setReload({
