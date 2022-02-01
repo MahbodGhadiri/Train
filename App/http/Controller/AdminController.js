@@ -3,7 +3,8 @@ const setPinValidator =require( "../Validators/PinValidators");
 const UserModel = require("../../Models/UserModel")
 const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
 const {setTaskValidator,taskIdValidator} = require("../Validators/TaskValidators")
-const {userIdValidator}=require("../Validators/UserValidators")
+const {userIdValidator}=require("../Validators/UserValidators");
+const mongoose = require("mongoose");
 class AdminController 
 {
     async getUsers (req,res)
@@ -25,6 +26,16 @@ class AdminController
     async getTasks(req,res)//optional query parameters for filtering : days , subject 
     {
         const tasks = await adminTaskModel.find({});
+        for (let i=0;i<tasks.length;i++)
+        {
+            const finishDate = new Date(tasks[i].finishDate).getTime();
+            const now = Date.now();
+            if ((Math.floor((finishDate-now)/(24*60*60*1000)))<0)
+            {
+                tasks[i].delayed=true;
+                tasks[i].save();
+            }
+        }
         if(req.query.days||req.query.subject)
         {
             const filter = new Filter(tasks,req.query.days,req.query.subject);
@@ -63,7 +74,7 @@ class AdminController
            await adminTaskModel.findOneAndUpdate({_id:{eq:req.query.task}},req.body).then(res.status(200).send({message:"انجام شد"}));
            //TODO add a callback , wrong _id can cause a bug 
         }
-        else return res.status(400).send({messشge:"Invalid Date"})
+        else return res.status(400).send({message:"Invalid Date"})
     }
 
     async doneTask(req,res)//required query parameter: task(id)
@@ -214,6 +225,25 @@ class AdminController
             res.status(409).send({message:"امکان پذیر نمی باشد!"})
         }
     }
+
+    async getLog(req,res)
+    {
+        const logConnection = mongoose.createConnection(process.env.MongoDB_log_Adrress);
+        const logModel = logConnection
+            .model('log',new mongoose
+                .Schema({
+                    timestamp: {Date} ,
+                    level: {String},
+                    message: {String},
+                    meta:{ String}
+                })
+            )
+        
+        const log = await logModel.find({})
+        res.status(200).send({log:log})
+    }
 }
+
+
 
 module.exports =  new AdminController;

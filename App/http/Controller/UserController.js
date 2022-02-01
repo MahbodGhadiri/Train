@@ -110,7 +110,18 @@ class UserController
   async getTasks(req,res)//optional query parameters: days , subject 
   {
     let tasks = await adminTaskModel.find({"executors._id":req.user._id,done:false,delayed:false})
-    console.log(tasks);
+    // auto delaying expired tasks
+    for (let i=0;i<tasks.length;i++)
+    {
+      const finishDate = new Date(tasks[i].finishDate).getTime();
+      const now = new Date(moment()).getTime();
+      if (Math.floor((finishDate-now)/(24*60*60*1000))<0)
+      {
+        tasks[i].delayed=true;
+        tasks[i].save();
+      }
+    }
+
     if (req.query.days||req.query.subject)
     {
       const filter = new Filter(tasks,req.query.days,req.query.subject);
@@ -130,7 +141,7 @@ class UserController
       if (task)
       {
         let bool = false;
-        for(let i=0; i<task.length;i++)
+        for(let i=0; i<task.executors.length;i++)
         {
           if (task.executors._id==req.user._id)
           {
@@ -159,7 +170,7 @@ class UserController
     if(!req.query.task) return res.status(400).send("No taskId is provided") //TODO better messages
     const task = await adminTaskModel.findOne({_id:{$eq:req.query.task}}) ;
     let bool = false;
-    for(let i=0; i<task.length;i++)
+    for(let i=0; i<task.executors.length;i++)
     {
       if (task.executors._id==req.user._id)
       {

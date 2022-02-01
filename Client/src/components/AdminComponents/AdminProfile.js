@@ -411,7 +411,7 @@ function Profile() {
                             {userList &&
                                 userList.map(
                                     (user) => {
-                                        if (user.id!=getUserId())
+                                        if (user._id!=getUserId())
                                         {    return (<div className="user" style={user.activeAccount === true ? { opacity: "100%" } : { opacity: "50%" }} >
 
                                         <i className="fa fa-times"

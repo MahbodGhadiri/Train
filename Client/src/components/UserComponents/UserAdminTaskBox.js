@@ -179,9 +179,9 @@ function UserAdminTaskBox() {
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
                                     <h3>{task.title}</h3>
                                     <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
-                                        console.log(task.delay);
+                                        console.log(task.delayed);
                                        
-                                            console.log("delay");
+                                            console.log("delayed");
                                             delayTask(e, task._id);
                                         
                                     }}></i>

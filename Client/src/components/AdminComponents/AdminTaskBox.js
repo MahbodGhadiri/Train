@@ -117,8 +117,8 @@ const AdminTaskBox = () => {
 
         console.log(taskId);
 
-        await axios.get(`/admin/tasks/done?task=${taskId}`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        await axios.put(`/admin/tasks/done?task=${taskId}`,
+            {},{ headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
 
@@ -174,7 +174,7 @@ const AdminTaskBox = () => {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
-                            <div className="alonerow" style={task.done || task.delay ? { opacity: "50%" } : { opacity: "100" }}>
+                            <div className="alonerow" style={task.done || task.delayed ? { opacity: "50%" } : { opacity: "100" }}>
                                 <div className="task">
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
                                     <h3>{task.title}</h3>
@@ -209,7 +209,7 @@ const AdminTaskBox = () => {
                                     </div>
                                 </div>
                                 <div className="time">
-                                    {find_diff(task.startDate,moment())} 
+                                    {find_diff(task.finishDate)} 
                                 </div>
                             </div>
                         )
