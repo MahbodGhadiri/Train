@@ -201,7 +201,7 @@ function UserAdminTaskBox() {
                                     </div>
                                 </div>
                                 <div className="time">
-                                    {find_diff(task.startDate, moment())}
+                                    {find_diff(task.finishDate)}
                                 </div>
                             </div>
                         ))}

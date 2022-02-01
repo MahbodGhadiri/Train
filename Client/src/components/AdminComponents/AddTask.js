@@ -53,7 +53,7 @@ function AddTask() {
                 title: title === "" ? singleTask.title : title,
                 task: task === "" ? singleTask.task : task,
                 startDate: moment().format('YYYY-MM-D '),
-                finishDate: days !== null ? moment().add(days, 'days').format('YYYY-MM-D ') : moment().add(find_diff(singleTask.startDate, moment()), 'days').format('YYYY-MM-D '),
+                finishDate: days !== null ? moment().add(days, 'days').format('YYYY-MM-D ') : moment().add(find_diff(singleTask.finishDate), 'days').format('YYYY-MM-D '),
                 executors: executors === [] ? singleTask.executors : executors,
                 subjectTag: subjectTag === "" ? singleTask.subjectTag : subjectTag
             };
