@@ -11,6 +11,7 @@ import { showError } from '../Toast_Functions';
 import { checklogin } from "../CheckLogin";
 import $ from 'jquery';
 import { setUserId } from '../SessionStorage';
+import { Link } from 'react-router-dom';
 
 function Admin() {
     const dispatch = useDispatch();
@@ -49,14 +50,14 @@ function Admin() {
     useEffect(() => {
 
 
-        
+
 
 
         // Height Window
         var hw = ($(window).height()) - 125;
         $('.alonebox,.groupbox').css('height', hw + 'px');
 
-        
+
 
         // Alert Close
         $('.alert-b i.fa-times').click(function (e) {
@@ -78,7 +79,7 @@ function Admin() {
         var hw = ($(window).height()) - 130;
         $('.alonebox,.groupbox').css('height', hw + 'px');
 
-        
+
 
 
     });
@@ -108,7 +109,7 @@ function Admin() {
                             <h2>{name}</h2>
                             <div className="img-sortby">
                                 <span style={{ color: "#ff2442" }}>{"" + talents + ""}</span>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -126,7 +127,7 @@ function Admin() {
                 <div style={{ clear: 'both' }} ></div>
 
                 <UserPinBox />
-
+                
 
 
             </div>

@@ -134,7 +134,7 @@ class UserController
 
   async doneTask(req,res)//required query parameter : task(id)
   {
-    const task = await adminTaskModel.findByOne({_id:{$eq:req.query.task}})
+    await adminTaskModel.findOne({_id:{$eq:req.query.task}})
     .exec((err,task)=>
     {
       if (err) {return res.status(404).send({message:"یافت نشد"})}

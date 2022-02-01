@@ -4,10 +4,12 @@ import moment from 'moment';
 import axios from 'axios';
 import { showSuccess, showError } from '../Toast_Functions';
 import { selectReload, setReload } from '../../features/task/taskSlice';
-
+import { selectSingleTask } from '../../features/task/singleTaskSlice';
+import { find_diff } from '../date_functions';
 
 function AddTask() {
-
+    const singleTask = useSelector(selectSingleTask);
+    const [stateTask, setStateTask] = useState({});
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
@@ -36,31 +38,38 @@ function AddTask() {
         }
     }
 
+    function setEditTaskExecutors(executors) {
+
+        for (let i = 0; i < executors.length; i++) {
+            console.log(document.querySelector(`#cb${executors[i]._id}`));
+            document.querySelector(`#cb${executors[i]._id}`).checked = true;
+        }
+    }
     const addTask = async (event) => {
         event.preventDefault();
         setExecutors();
-        console.log(executors);
-        const Task = {
-            title: title,
-            task: task,
-            startDate: moment().format('YYYY-MM-D '),
-            finishDate: moment().add(days, 'days').format('YYYY-MM-D '),
-            executors: executors,
-            subjectTag: subjectTag
-        };
+          
+            const Task = {
+                title: title === "" ? singleTask.title : title,
+                task: task === "" ? singleTask.task : task,
+                startDate: moment().format('YYYY-MM-D '),
+                finishDate: days !== null ? moment().add(days, 'days').format('YYYY-MM-D ') : moment().add(find_diff(singleTask.startDate, moment()), 'days').format('YYYY-MM-D '),
+                executors: executors === [] ? singleTask.executors : executors,
+                subjectTag: subjectTag === "" ? singleTask.subjectTag : subjectTag
+            };
 
-        await axios.post("/admin/tasks",
+        if (singleTask !== null) {
+            await axios.put("/admin/tasks/edit",
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
             .then(response => {
                 showSuccess(response);
                 reset();
                 // removing ckeck marks from checkboxes
-                for (let i=0; i<users.length;i++)
-                {
-                    document.querySelector(`#cb${users[i]._id}`).checked=false;
-                }   
-                
+                for (let i = 0; i < users.length; i++) {
+                    document.querySelector(`#cb${users[i]._id}`).checked = false;
+                }
+
                 ///////////////
                 if (reload === false) {
                     console.log("changing reload to true");
@@ -80,6 +89,41 @@ function AddTask() {
                 showError(error);
                 console.log(error.response.message)
             })
+        } else {
+
+            
+
+            await axios.post("/admin/tasks",
+                Task,
+                { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+                .then(response => {
+                    showSuccess(response);
+                    reset();
+                    // removing ckeck marks from checkboxes
+                    for (let i = 0; i < users.length; i++) {
+                        document.querySelector(`#cb${users[i]._id}`).checked = false;
+                    }
+
+                    ///////////////
+                    if (reload === false) {
+                        console.log("changing reload to true");
+                        dispatch(setReload({
+                            reload: true
+                        }))
+
+                    } else {
+                        console.log("changing reload to false");
+                        dispatch(setReload({
+                            reload: false
+                        }))
+                    }
+                    //////////////
+                })
+                .catch(error => {
+                    showError(error);
+                    console.log(error.response.message)
+                })
+        }
     }
 
     useEffect(() => {
@@ -94,16 +138,15 @@ function AddTask() {
     })
 
     useEffect(async () => {
-   
-            await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-                .then((response) => {
-                    console.log(response)
-                    setUsers(response.data)
-                }).catch((err) => {
-                    showError(err)
-                })
-        
 
+        await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+            .then((response) => {
+                console.log(response)
+                setUsers(response.data)
+            }).catch((err) => {
+                showError(err)
+            })
+        setStateTask(singleTask)
     }, [])
 
     return (
@@ -112,25 +155,27 @@ function AddTask() {
                 <h2>پست جدید</h2>
                 <form onSubmit={(event) => addTask(event)}>
                     <i className="fa fa-circle" style={{ color: "#00af91" }} ariaHidden="true" ></i>
-                    <input type="text" name="tpost" placeholder="موضوع خود را بنویسید" required value={title} onChange={e =>
+                    <input type="text" name="tpost" placeholder={singleTask === null ? "موضوع خود را بنویسید" : singleTask.title} value={title} onChange={e =>
                         setTitle(e.target.value)
                     } />
-                    <textarea name="cpost" cols="30" rows="10" placeholder="توضیحات" required value={task} onChange={e =>
+                    <textarea name="cpost" cols="30" rows="10" placeholder={singleTask === null ? "توضیحات خود را بنویسید" : singleTask.task} value={task} onChange={e =>
                         setTask(e.target.value)
                     }></textarea>
                     <img src="./images/formicn.png" alt="formicn" />
-                    <input list="category" type="text" name="titr" placeholder="موضوع" required value={subjectTag} onChange={e =>
+                    <input list="category" type="text" name="titr" placeholder={singleTask === null ? "سابجکت" : singleTask.subjectTag} value={subjectTag} onChange={e =>
                         setSubjectTag(e.target.value)
                     } />
 
-                    <div id="list1" class="dropdown-check-list"  tabindex="100">
-                        <span class="anchor" > کاربر</span>
+                    <div id="list1" class="dropdown-check-list" tabindex="100">
+                        <span class="anchor" onClick={singleTask === null ? <></> : setEditTaskExecutors(singleTask.executors)}> کاربر</span>
                         <ul class="items">
-                            {users && users.map((user) => (<li><input type="checkbox" id={`cb${user._id}`} value={user.name} />{user.name} </li>))}
+                            {users && users.map((user) => (
+                                <li><input type="checkbox" id={`cb${user._id}`} value={user.name} />{user.name} </li>
+                            ))}
                         </ul>
                     </div>
 
-                    <input type="number" name="time" placeholder="زمان" required value={days} onChange={e =>
+                    <input type="number" name="time" placeholder={singleTask === null ? "زمان" : find_diff(singleTask.startDate, moment())} value={days} onChange={e =>
                         setDays(e.target.value)
                     } />
                     <input type="submit" value="ثبت" />
@@ -143,7 +188,7 @@ function AddTask() {
                     <option value="مدیریت" />
                 </datalist>
 
-                
+
             </div>
         </div>
     )

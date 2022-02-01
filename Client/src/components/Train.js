@@ -8,6 +8,7 @@ import Profile from './Profile';
 import $ from 'jquery';
 import ForgotPassword from './AuthComponents/ForgotPassword';
 import ResetPassword from './AuthComponents/ResetPassword';
+import Log from './Log';
 
 function Train() {
     //const name = useSelector(selectUserName);
@@ -54,6 +55,7 @@ function Train() {
             <Route exact path="/forgot-password"> <ForgotPassword /> </Route>
             <Route exact path="/reset-password"> <ResetPassword /> </Route>
             <PrivateRoute path="/home" exact> <Home /> </PrivateRoute>
+            <PrivateRoute path="/log" exact> <Log /> </PrivateRoute>
             <PrivateRoute path={`/home/profile`} exact > <Profile /> </PrivateRoute>
             <Route path="*"> <Redirect to="/" /> </Route>
         </Switch>

@@ -90,7 +90,7 @@ function UserAdminTaskBox() {
         ).then(response => {
             console.log(response);
             tasks = response.data.tasks;
-            console.log(filter);
+
             dispatch(setReload({
                 reload: true
             }));
@@ -137,10 +137,10 @@ function UserAdminTaskBox() {
     async function okTask(e, taskId) {
         e.preventDefault();
 
-        console.log(taskId);
+        console.log("ncvdovnnnlskdvnkfvmd;fkbm");
 
-        await axios.put(`/admin/tasks/done`,
-            { taskId },
+        await axios.get(`/user/tasks/done?task=${taskId}`,
+          
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
@@ -186,7 +186,7 @@ function UserAdminTaskBox() {
                                         
                                     }}></i>
                                     <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
-                                    {task.done ? <></> : <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}
+                                    {task.done ? <i className="fa fa-circle circle-topbtn" style={{ color: "green" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>: <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}
                                     <div className="task-down">
                                         <p>
                                             {task.task}
