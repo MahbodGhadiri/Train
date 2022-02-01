@@ -1,4 +1,5 @@
 const joi = require ("joi");
+joi.objectId=require("joi-objectid")(joi)
 
 const deleteAccountValidator=(data)=> //This Block looks kinda dumb
 {
@@ -95,10 +96,15 @@ const changeInfoValidator=(data)=>{
     })
     return schema.validate(data);
 }
-
+const userIdValidator= (data)=>
+{
+    const schema = joi.objectId()
+    return schema.validate(data);
+}
 module.exports=
 {
     deleteAccountValidator,
     setCustomTaskValidator,
-    changeInfoValidator
+    changeInfoValidator,
+    userIdValidator
 };

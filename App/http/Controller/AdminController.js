@@ -2,8 +2,8 @@ const pinModel = require("../../Models/PinModel");
 const setPinValidator =require( "../Validators/PinValidators");
 const UserModel = require("../../Models/UserModel")
 const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
-const {setTaskValidator} = require("../Validators/TaskValidators")
-
+const {setTaskValidator,taskIdValidator} = require("../Validators/TaskValidators")
+const {userIdValidator}=require("../Validators/UserValidators")
 class AdminController 
 {
     async getUsers (req,res)
@@ -51,20 +51,25 @@ class AdminController
 
     async editTask(req,res)//required query parameter : task (id)
     {
+        const {error}=taskIdValidator(req.query.task);
+        if(error){return res.status(400).send({message: error.message})}
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
         const finishDate = new Date(req.body.finishDate).getTime()
         const startDate = new Date(req.body.startDate).getTime()
         if(finishDate>startDate)
         {
+            req.body.delayed=false;
            await adminTaskModel.findOneAndUpdate({_id:{eq:req.query.task}},req.body).then(res.status(200).send({message:"انجام شد"}));
            //TODO add a callback , wrong _id can cause a bug 
         }
-        else return res.status(400).send({messgae:"Invalid Date"})
+        else return res.status(400).send({messشge:"Invalid Date"})
     }
 
     async doneTask(req,res)//required query parameter: task(id)
     {
+        const {error}=taskIdValidator(req.query.task);
+        if(error){return res.status(400).send({message: error.message})}
         await adminTaskModel.findOne({_id:{$eq:req.query.task}})
         .exec((err,task)=>
         {
@@ -84,6 +89,8 @@ class AdminController
 
     async deleteTask(req,res)//required query parameter: task(id)
     {
+        const {error}=taskIdValidator(req.query.task);
+        if(error){return res.status(400).send({message: error.message})}
         await adminTaskModel
         .findOneAndDelete({_id:{$eq:req.query.task}})
         .exec(function(error,task)
@@ -116,6 +123,8 @@ class AdminController
 
     async activateUser(req,res)//required query parameter: user(id)
     {
+        const {error}= userIdValidator(req.query.user);
+        if(error){return res.status(400).send({message: error.message})}
         const user= await UserModel.findOne({_id:{$eq:req.query.user}});
         if(user&&user.email.active&&!user.activeAccount)
         {
@@ -133,6 +142,8 @@ class AdminController
 
     async deactivateUser(req,res)//required query parameter: user(id)
     {
+        const {error}= userIdValidator(req.query.user);
+        if(error){return res.status(400).send({message: error.message})}
         if (req.user._id !== req.query.user)
         {    const user= await UserModel.findOne({_id:{$eq:req.query.user}}); 
             if(user&&user.activeAccount)
@@ -153,6 +164,8 @@ class AdminController
 
     async promoteUser(req,res)//required query parameter: user(id)
     {
+        const {error}= userIdValidator(req.query.user);
+        if(error){return res.status(400).send({message: error.message})}
         const user = await UserModel.findOne({_id:{$eq:req.query.user}});
         if(user&&user.activeAccount)
         {
@@ -168,6 +181,8 @@ class AdminController
 
     async demoteUser(req,res)//required query parameter: user(id)
     {
+        const {error}= userIdValidator(req.query.user);
+        if(error){return res.status(400).send({message: error.message})}
         const user = await UserModel.findOne({_id:{$eq:req.query.user}}); 
         if(user&&user.activeAccount)
         {
@@ -181,6 +196,24 @@ class AdminController
         }else{return res.status(404).send({message:"کاربر یافت نشد"})}
     }
 
+    async deleteUser(req,res)//required query parameter: user(id)
+    {
+        const {error}= userIdValidator(req.query.user);
+        if(error){return res.status(400).send({message: error.message})}
+        const user = await UserModel.findOne({_id:{$eq:req.query.user}});
+        if(user&&!(user.activeAccount))
+        {
+            await UserModel.deleteOne({_id:{$eq:req.query.user}})
+            .then(()=>{
+                res.status(200).send({message:"انجام شد!"})
+            })
+            .catch(()=>{
+                res.status(500).send({message:"خطایی رخ داد!"})
+            })
+        }else{
+            res.status(409).send({message:"امکان پذیر نمی باشد!"})
+        }
+    }
 }
 
 module.exports =  new AdminController;

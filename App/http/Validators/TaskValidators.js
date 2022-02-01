@@ -1,4 +1,5 @@
 const joi = require ("joi");
+joi.objectId=require("joi-objectid")(joi)
 
 const setTaskValidator = (data)=>{
     const schema = joi.object({
@@ -48,5 +49,13 @@ const setTaskValidator = (data)=>{
     })
     return schema.validate(data);
 }
+const taskIdValidator= (data)=>
+{
+    const schema = joi.objectId()
+    return schema.validate(data);
+}
 
-module.exports = {setTaskValidator}
+module.exports = {
+    setTaskValidator,
+    taskIdValidator
+}

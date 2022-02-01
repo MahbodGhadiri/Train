@@ -28,4 +28,6 @@ router.put("/users/promote",[Auth,Admin,SuperAdmin],AdminController.promoteUser)
 
 router.put("/users/demote",[Auth,Admin,SuperAdmin],AdminController.demoteUser); //required query parameter: user(id)
 
+router.delete("/users/delete",[Auth,Admin,SuperAdmin],AdminController.deleteUser); //required query parameter: user(id)
+
 module.exports= router;
