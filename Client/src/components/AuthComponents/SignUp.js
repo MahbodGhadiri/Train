@@ -1,9 +1,9 @@
 import axios from "axios";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
-import {toast } from 'react-toastify';
+import { showInfo, showError } from "../Toast_Functions";
 
 const Signup = () => {
 
@@ -11,10 +11,11 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
+    const [rePassword, setRePassword] = useState("");
+    let talents = [];
+    ///////////////////////////////////////////////
     const [loading, setLoading] = useState(false);
     const history = useHistory();
-
-    const [, forceUpdate] = useState();
 
 
     //user validation with "SimpleReactValidator" start
@@ -22,12 +23,11 @@ const Signup = () => {
         new SimpleReactValidator({
             messages: {
                 required: "پر کردن این فیلد الزامی میباشد",
-                min: `لطفا بیشتر از 5 و کتر از 30 کاراکتر وارد کنید`,
-                max: `لطفا بیشتر از 5 و کتر از 30 کاراکتر وارد کنید`,
+                min: `لطفا بیشتر از 5 کاراکتر وارد کنید`,
+                max: `لطفا کمتر از 30 کاراکتر وارد کنید`,
                 email: "ایمیل نوشته شده صحیح نمی باشد",
-                size: "داشم فقط 11 تا",
                 phone: "لطفا شماره را صحیح وارد کنید",
-
+                in: "رمزها تطابق ندارند"
             },
             element: message => <div style={{ color: "red", textAlign: "center", fontSize: "2vh" }}>{message}</div>
         })
@@ -41,73 +41,65 @@ const Signup = () => {
         setEmail("");
         setPhoneNumber("");
         setPassword("");
+        setRePassword("")
     };
 
     const register = async event => {
+
         event.preventDefault();
+
         const user = {
             name: name,
             email: email,
             phoneNumber: phoneNumber,
-            password: password
+            password: password,
+            
         };
         try {
             if (validator.current.allValid()) {
-                console.log("user registration info all valid");
                 let status;
                 // api call begin
-                await axios.post("http://localhost:8080/api/auth/register", user).then(responce => {
-                    console.log(responce.status);
-                    status = responce.status;
-                    const showInfo = () => toast.info(responce.data.message, {
-                        position: "top-right",
-                        autoClose: false,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        });
-                    showInfo();
+                await axios.post("/auth/register", user).then(response => {
+                    status = response.status;
+                    showInfo(response);
+                
                 }).catch(error => {
-                    const showError = () => toast.error(error.response.data.message, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        });
-                    showError();
-
+                    showError(error);
                 })
-                // api call end
+
+                //api call end
 
                 if (status === 200) {
                     history.push("/login");
                     setLoading(false);
                     reset();
                 }
-                else {
-                    // toast.error("دوباره امتحان کن سیبیل", {
-                    //     position: "top-right",
-                    //     closeOnClick: true
-                    // });
-                    console.log("error");
-                }
+
+            }
+            else if (!validator.current.allValid()) {
+                console.log("invalid")
             }
         }
         catch (ex) {
             setLoading(false);
-            console.log(ex);
         }
     };
 
-
+    function AddTalents(e, talent) {
+        e.preventDefault();
+        console.log(talent);
+        if (talents.find(t => t === talent)) {
+            showError({ response: { data: { message: "مهارت مورد نظر موجود است " } } });
+        } else {
+            talents.push(talent);
+            console.log(talents);
+        }
+    }
 
     //register and reset start end
 
+
+    console.log(talents)
     return (
 
         <div className="signup">
@@ -128,8 +120,9 @@ const Signup = () => {
             </div>
 
 
-            <form action="#" onSubmit={register}>
+            <form onSubmit={e => register(e)}>
                 <input
+                    style={{ textAlign: "right" }}
                     id="name"
                     type="text"
                     name="name"
@@ -150,6 +143,7 @@ const Signup = () => {
                 )}
 
                 <input
+                    style={{ textAlign: "right" }}
                     type="email"
                     name="email"
                     required
@@ -167,10 +161,11 @@ const Signup = () => {
                 )}
 
                 <input
+                    style={{ textAlign: "right" }}
                     type="number"
                     name="phoneNumber"
                     required
-                    pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}"
+                    pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{4}-?[0-9]{4}"
                     maxLength="11" placeholder="شماره همراه (***0912)"
                     value={phoneNumber}
                     onChange={e => {
@@ -190,9 +185,8 @@ const Signup = () => {
 
 
 
-
-
                 <input
+                    style={{ textAlign: "right" }}
                     type="password"
                     name="password"
                     required
@@ -210,7 +204,24 @@ const Signup = () => {
                     `required|min: 5`
                 )}
 
-                <input type="password" required placeholder="تکرار رمز ورود" />
+                <input
+                    style={{ textAlign: "right" }}
+                    type="password"
+                    name="rePassword"
+                    required placeholder="تکرار رمز ورود"
+                    value={rePassword}
+                    onChange={e => {
+                        setRePassword(e.target.value);
+                        validator.current.showMessageFor(
+                            "rePassword"
+                        );
+                    }} />
+                {validator.current.message(
+                    "rePassword",
+                    rePassword,
+                    `required|min: 5|in:${password}`
+                )}
+             
                 <input type="submit" value="ثبت نام" className="send" />
             </form>
 

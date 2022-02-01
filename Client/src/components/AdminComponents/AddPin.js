@@ -1,5 +1,7 @@
-import React ,{useState}from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { showSuccess, showError } from '../Toast_Functions';
+
 
 function AddPin() {
 
@@ -8,22 +10,21 @@ function AddPin() {
 
     const addPin = async (event) => {
         event.preventDefault();
-
-        console.log("inside AddPin");
-
         const Pin = {
             title: title,
             message: message
         };
 
-        await axios.post("http://localhost:8080/api/admin/pin",
+        await axios.post("admin/pin",
             Pin,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-            .then(responce => {
-                console.log(responce);
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+            ).then(response => {
+                console.log(response);
+                showSuccess(response);
             })
             .catch(error => {
                 console.log(error);
+                showError(error);
             })
     }
     return (
@@ -38,12 +39,18 @@ function AddPin() {
 
                     <img src="./images/formicn.png" alt="formicn" />
 
-                    <input type="text" name="titr" placeholder="موضوع" required value={title} onChange={e =>
+                    <input list="category" type="text" name="titr" placeholder="موضوع" required value={title} onChange={e =>
                         setTitle(e.target.value)
                     } />
 
                     <input type="submit" value="ثبت" />
                 </form>
+                <datalist id="category">
+                    <option value="برنامه نویسی" />
+                    <option value="گرافیک" />
+                    <option value="مدیریت مالی" />
+                    <option value="مدیریت" />
+                </datalist>
             </div>
         </div>
     )

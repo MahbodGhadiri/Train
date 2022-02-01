@@ -5,7 +5,7 @@ const adminTaskSchema = new mongoose.Schema({
     task:{type:String,require:true},
     subjectTag: {type:String , required:true , enum:["گرافیک","برنامه نویسی","مدیریت","دیگر"]},
     executors:{type:Array,require:true},
-    assignedBy:{type:String,require:true},
+    assignedBy:{type:Object,require:true},
     done:{type:Boolean,default:false},
     delayed:{type:Boolean,default:false},
     startDate:{type:Date,required:true},

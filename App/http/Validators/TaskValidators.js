@@ -1,4 +1,5 @@
 const joi = require ("joi");
+joi.objectId=require("joi-objectid")(joi)
 
 const setTaskValidator = (data)=>{
     const schema = joi.object({
@@ -27,7 +28,12 @@ const setTaskValidator = (data)=>{
             }
         ),
         executors: joi.array().required(),
-        assignedBy: joi.string().required(), //! object id
+        assignedBy: joi.object(
+            {
+                _id: joi.objectId(), //! object id
+                name: joi.string().required().min(3).max(30)
+            }
+        ).required(), 
         startDate:joi.date().required().messages(
             {
                 "any.required":"نوشتن تاریخ شروع الزامی است!",
@@ -43,5 +49,13 @@ const setTaskValidator = (data)=>{
     })
     return schema.validate(data);
 }
+const taskIdValidator= (data)=>
+{
+    const schema = joi.objectId()
+    return schema.validate(data);
+}
 
-module.exports = {setTaskValidator}
+module.exports = {
+    setTaskValidator,
+    taskIdValidator
+}

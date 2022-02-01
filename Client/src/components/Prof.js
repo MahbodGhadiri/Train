@@ -4,27 +4,18 @@ import setUserLoginDetails from "../features/user/userSlice";
 
 async function Prof() {
     
-const dispatch = useDispatch();
-    await axios.get("http://localhost:8080/api/user/profile",
+// const dispatch = useDispatch();
+    let x;
+    await axios.get("/user/profile",
         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-    ).then(responce => {
-        // console.log(responce);
-        dispatch(
-            setUserLoginDetails({
-                name: responce.data.name,
-                phone: responce.data.phone.number,
-                email: responce.data.email.address,
-            }))
+    ).then(response => {
+        x = response.data;
 
     }).catch(error => {
         console.log(error);
     });
+    return x;
     
-    return(
-        <div>
-
-        </div>
-    )
 }
 
 

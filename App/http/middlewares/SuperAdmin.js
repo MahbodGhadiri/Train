@@ -8,7 +8,9 @@ module.exports=async function (req,res,next)
            return res.status(404).send({message:"یافت نشد"}) 
         if(user.role!=="super admin")
             return res.status(404).send({message:"یافت نشد"})
-        next()
+        if(user.activeAccount)
+            next()
+        else return res.status(403).send({message:"امکان پذیر نمی باشد!"})
     }
     else {return res.status(404).send({message:"یافت نشد"})} 
 }

@@ -9,7 +9,9 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.24.0",
+    "jquery": "^3.6.0",
     "moment": "^2.29.1",
+    "moment-jalaali": "^0.9.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.3",
@@ -17,6 +19,7 @@
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
     "react-toastify": "^8.1.0",
+    "reactjs-popup": "^2.0.5",
     "simple-react-validator": "^1.6.1"
   },
   "scripts": {

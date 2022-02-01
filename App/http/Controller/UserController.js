@@ -3,6 +3,7 @@ const userModel = require("../../Models/UserModel");
 const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
 const _ = require("lodash")
 const {deleteAccountValidator , setCustomTaskValidator , changeInfoValidator} = require("../Validators/UserValidators");
+const {changePasswordValidator}=require("../Validators/AuthValidators")
 const argon2=require("argon2");
 const { refreshTokenModel } = require("../../Models/TokenModel");
 
@@ -12,12 +13,12 @@ class UserController
   {
     const user = await userModel.findById(req.user._id);
     if (!user) return res.status(404).send({message:"یافت نشد"});
-    res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL"]));
+    res.status(200).send(_.pick(user,["name","email.address","phone.number","ability","role","avatarURL","_id"]));
   }
 
   async logout(req,res) 
   {
-    await refreshTokenModel.deleteAll({_id:req.cookies.refreshToken._id});
+    await refreshTokenModel.deleteMany({_id:req.cookies.refreshToken._id});
     res.cookie("refreshToken","",{expires: new Date(0)});
     res.cookie("accessToken","",{expires: new Date(0)});
     res.status(200).send({message:"خروچ انجام شد"})
@@ -37,7 +38,7 @@ class UserController
       timeCost: 2})
       )
     {
-      await refreshTokenModel.deleteAll({_id:req.cookies.refreshToken._id});
+      await refreshTokenModel.deleteMany({_id:req.cookies.refreshToken._id});
       res.cookie("refreshToken","",{expires: new Date(0)});
       res.cookie("accessToken","",{expires: new Date(0)});
       user.remove().then(res.status(200).send({message:"اکانت شما با موفقیت حذف شد"}));
@@ -46,15 +47,16 @@ class UserController
 
   async changeInfo(req,res)
   {
-    const { error } = registerValidator(req.body);
+    const { error } = changeInfoValidator(req.body);
     if (error) { return res.status(400).send({ message: error.message }) };
 
-    user = await userModel.findOne({_id:req.user._id})
+    const user = await userModel.findOne({_id:req.user._id})
     user.phone.number=req.body.phoneNumber;
     user.name = req.body.name;
     user.avatarURL = req.body.avatarURL;
     user.ability = req.body.ability;
-    user.save()
+    user.email.createdAt =undefined;
+    await user.save()
     res.status(200).send({message:"انجام شد"})
   }
 
@@ -79,6 +81,7 @@ class UserController
         "timeCost": 2
       });
       //saving new password
+      user.email.createdAt =undefined;
       await user.save();
       //Generating Tokens //? is it needed to remove older Tokens? or rotating tokens handle it ?
       const refreshToken=user.generateRefreshToken(req.cookie.refreshToken)
@@ -106,7 +109,19 @@ class UserController
   
   async getTasks(req,res)//optional query parameters: days , subject 
   {
-    let tasks = await adminTaskModel.find({executors:req.user._id,done:false,delayed:false})
+    let tasks = await adminTaskModel.find({"executors._id":req.user._id,done:false,delayed:false})
+    // auto delaying expired tasks
+    for (let i=0;i<tasks.length;i++)
+    {
+      const finishDate = new Date(tasks[i].finishDate).getTime();
+      const now = new Date(moment()).getTime();
+      if (Math.floor((finishDate-now)/(24*60*60*1000))<0)
+      {
+        tasks[i].delayed=true;
+        tasks[i].save();
+      }
+    }
+
     if (req.query.days||req.query.subject)
     {
       const filter = new Filter(tasks,req.query.days,req.query.subject);
@@ -119,13 +134,22 @@ class UserController
 
   async doneTask(req,res)//required query parameter : task(id)
   {
-    const task = await adminTaskModel.findByOne({_id:{$eq:req.query.task}})
+    await adminTaskModel.findOne({_id:{$eq:req.query.task}})
     .exec((err,task)=>
     {
       if (err) {return res.status(404).send({message:"یافت نشد"})}
       if (task)
       {
-        if(task.executors.includes(req.user._id))
+        let bool = false;
+        for(let i=0; i<task.executors.length;i++)
+        {
+          if (task.executors._id==req.user._id)
+          {
+          bool=true
+          }
+        }
+
+        if(bool)
         {
           if (task.done === false)
           {
@@ -145,7 +169,15 @@ class UserController
   {
     if(!req.query.task) return res.status(400).send("No taskId is provided") //TODO better messages
     const task = await adminTaskModel.findOne({_id:{$eq:req.query.task}}) ;
-    if(task.executors.includes(req.user._id))
+    let bool = false;
+    for(let i=0; i<task.executors.length;i++)
+    {
+      if (task.executors._id==req.user._id)
+      {
+        bool=true
+      }
+    }
+    if(bool)
     {
       task.delayed = true;
       await task.save().then(res.status(200).send({message:"با موفقیت انجام شد"}))
@@ -166,12 +198,15 @@ class UserController
     const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
    
-    if(req.body.finishDate>req.body.startDate) //TODO startDate > now
+    const finishDate = new Date(req.body.finishDate).getTime()
+    const startDate = new Date(req.body.startDate).getTime()
+    if(finishDate>startDate) //TODO startDate > now
     {
       const user = await userModel.findOne({_id:req.user._id})
       if(!user) {return res.status(404).send({message:"یافت نشد"})}
      
       user.customTasks.push(req.body);
+      user.email.createdAt=undefined;
       await user.save();
       res.status(200).send(user.customTasks[user.customTasks.length-1]);
     }
@@ -183,7 +218,9 @@ class UserController
     const {error}=setCustomTaskValidator(req.body); 
     if (error){ return res.status(400).send({message : error.message})};
 
-    if(req.body.finishDate>req.body.startDate) //TODO startDate > now
+    const finishDate = new Date(req.body.finishDate).getTime()
+    const startDate = new Date(req.body.startDate).getTime()
+    if(finishDate>startDate) //TODO startDate > now
     {
       const user=await userModel
       .findOneAndUpdate(

@@ -39,11 +39,11 @@ span {
     margin: 0 auto;
     padding: 15px;
     border-radius: 60px;
-    transform: translate(0, 50%);
+    transform: translate(0, 40%);
 }
 
 .signup {
-    transform: translate(0, 20%);
+    transform: translate(0, 10%);
 }
 
 
@@ -703,7 +703,7 @@ input {
         width: 85%;
     }
     .signup {
-        transform: translate(0, 30%);
+        transform: translate(0, 10%);
     }
     .links a {
         font-size: 13px;
@@ -1623,3 +1623,137 @@ input {
 .imgsbox .admin-img {
     width: 90%;
 }
+
+/* dropdown checklist for seeing users an choosing in tasks */
+
+.dropdown-check-list {
+    display: inline-block;
+    position: relative;
+    width: 25%;
+}
+
+.dropdown-check-list .anchor {
+
+    color: rgb(87, 83, 83);
+    
+    font-size: 14px;
+    cursor: pointer;
+
+
+
+}
+/* .dropdown-check-list .anchor:after {
+position: absolute;
+
+content: "";
+border-left: 2px solid #ccc;
+border-top: 2px solid #ccc;
+padding: 5px;
+border-radius: 30px;
+font-size: 18px;
+right: 10px;
+top: 20%;
+-moz-transform: rotate(-135deg);
+-ms-transform: rotate(-135deg);
+-o-transform: rotate(-135deg);
+-webkit-transform: rotate(-135deg);
+transform: rotate(-135deg);
+} */
+.dropdown-check-list .anchor:active:after { 
+right: 80px;
+top: 21%;
+
+
+}
+
+.dropdown-check-list ul.items {
+    
+padding: 10px 10px 10px 100px;
+display: none;
+margin: 2vh;
+border: 3px solid #ccc;
+background-color: white;
+border-radius: 20px;
+border-top: none;
+font-size: 18px;
+
+
+}
+
+.dropdown-check-list ul.items li {
+  list-style:none ;
+
+}
+
+.dropdown-check-list.visible .anchor {
+  color: rgb(87, 83, 83);
+ 
+
+}
+
+.dropdown-check-list.visible .items {
+  display: block;
+    color: #00af91;
+  position: fixed;
+  z-index: 10000000000;
+
+
+}
+
+.dropdown-check-list.visible .items li input {
+    display: inline-block;
+    color: #0c493f;
+    position:absolute;
+   
+  }
+
+  .dropdown-check-list.visible .items li input.checkbox {
+    display: inline-block;
+    color: #93f;
+    position:absolute;
+   
+  }
+
+  .groupbox form div {
+    display: inline-block;
+    border: 3px solid #c1c1c1;
+    box-shadow: none;
+    background-color: white;
+    border-radius: 30px;
+    padding: 0.2vh 5px 0.2vh 0;
+  
+  }
+  @media (max-width:500px){
+    .dropdown-check-list {
+   
+        width: 24%;
+    }
+    .groupbox form div {
+        display: inline-block;
+        border: 2px solid #c1c1c1;
+        box-shadow: none;
+        background-color: white;
+        border-radius: 30px;
+        
+        
+        
+        
+    
+      
+      }
+    .dropdown-check-list .anchor {
+
+        font-size: 9px;
+    
+    
+    
+    
+    }
+    .dropdown-check-list .anchor:active:after { 
+        right: 80px;
+        top: 21%;
+font-size: 9px;        
+        
+        }
+        
+  }

@@ -1,4 +1,5 @@
 const joi = require ("joi");
+joi.objectId=require("joi-objectid")(joi)
 
 const deleteAccountValidator=(data)=> //This Block looks kinda dumb
 {
@@ -75,21 +76,35 @@ const changeInfoValidator=(data)=>{
                 "string.pattern.base":"شماره وارد شده نامعتبر است!",
             }
         ),
-        ability: joi.string().min(3).max(10).messages(
+        ability: joi.array().min(1).max(3).items(
+            joi.string().min(3).max(15)
+            .messages(
             {
                 "string.base":"توانایی نامعتبر است!",
                 "string.min":"توانایی باید حداقل سه کارکتر باشد!",
-                "string.max":"توانایی باید حداکثر ده کارکتر باشد!"
+                "string.max":"توانایی باید حداکثر پانزده کارکتر باشد!"
+            }
+            )
+        ).messages(
+            {
+                "array.min":"حداقل باید یک توانایی انتخاب شود!",
+                "array.max":"حداکثر امکان انتخاب سه توانایی است!",
+                "array.requires":"فرمت توانایی ها نامناسب است!"
             }
         ),
         avatarURL: joi.string().max(40)
     })
     return schema.validate(data);
 }
-
+const userIdValidator= (data)=>
+{
+    const schema = joi.objectId()
+    return schema.validate(data);
+}
 module.exports=
 {
     deleteAccountValidator,
     setCustomTaskValidator,
-    changeInfoValidator
+    changeInfoValidator,
+    userIdValidator
 };

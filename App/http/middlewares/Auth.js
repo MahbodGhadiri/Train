@@ -12,7 +12,6 @@ module.exports = async function (req,res,next)
     {   //There is no accessToken, Cheking if a refreshToken Exist 
         if (!refreshToken) {
             //There is no refreshToken, so login is needed
-            console.log("Line 15 Error")
             return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});}
         //There is a refreshToken, Checking if its signature valid    
         try
@@ -20,7 +19,6 @@ module.exports = async function (req,res,next)
             userData = jwt.verify(refreshToken._id,process.env.secretKey);
         }
         catch{
-            console.log("line 23 Error")
             return res.status(401).send({message:"invalid credentials"});}
         //signature is valid, Cheking if user _id is valid
         let user = await userModel.findOne({_id:userData._id});
@@ -29,14 +27,14 @@ module.exports = async function (req,res,next)
         // //rotating refreshToken
         // refreshToken = await user.generateRefreshToken(refreshToken)
         // if (refreshToken===null) {return res.status(401).send({message:"لطفا وارد اکانت خود شوید"});}
-        //generating accessToken
+        // generating accessToken
         accessToken = await user.generateAccessToken()
         res.cookie("accessToken",accessToken,
             {
                 httpOnly:true,
                 maxAge:10*60*1000,
                 sameSite:"strict",
-                //secure:true
+                secure:true
             }
         )
         res.cookie("refreshToken",refreshToken,
@@ -44,7 +42,7 @@ module.exports = async function (req,res,next)
                 httpOnly:true,
                 maxAge:4*60*60*1000,
                 sameSite:"strict",
-                //secure:true
+                secure:true
             }
         )
         //saving in req.user important userData for further use in APIs

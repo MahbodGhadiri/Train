@@ -33,7 +33,7 @@ const userSchema = new Schema({
     password:{type:String,require:true},
     role:{type:String,default:"user",enum:["user","admin","super admin"]},
     customTasks:[customTaskSchema],
-    ability:{type:String,enum:["برنامه نویسی","مدیریت","گرافیک","دیگر"]},
+    ability:{type:Array},
     avatarURL:{type:String},
     activeAccount:{type:Boolean,default:false},
     activatedAt:{type:Date} //! for activateUser Api, but should this data even exist?
@@ -102,6 +102,7 @@ userSchema.methods.getEssentialData = function()
 {
     data={
         _id:this._id,
+        name:this.name,
         role:this.role
     }
     return data;

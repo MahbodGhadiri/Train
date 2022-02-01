@@ -1,4 +1,4 @@
-
+const cluster= require('cluster')
 const express = require("express");
 const app =express();
 const cookieParser=require("cookie-parser")
@@ -16,6 +16,8 @@ const errorHandler = require("./http/middlewares/ErrorHandler");
 const api = require("./Routes/api");
 const path = require("path");
 const rateLimit = require("express-rate-limit").default;
+const cors = require("cors")
+
 
 class application 
 {
@@ -35,19 +37,19 @@ class application
         httpServer.listen(process.env.httpPort,(err)=>
         {
             if (err){
-                console.log(err)
+                console.log(`\u001b[1;31m${err}\u001b[0m`)
                 winston.error(err)
             }
-            else console.log(`http server Listening on port ${process.env.httpPort}`) 
+            else console.log(`\u001b[1;32mhttp server Listening on port ${process.env.httpPort}, \u001b[1;34mworkerId:${cluster.worker.id}\u001b[0m`) //? do i have to "require" cluster here?
         });
 
         httpsServer.listen(process.env.httpsPort,(err)=>
         {
             if (err){
-                console.log(err)
+                console.log(`\u001b[1;31m${err}\u001b[0m`)
                 winston.error(err)
             }
-            else console.log(`https server Listening on port ${process.env.httpsPort}`)    
+            else console.log(`\u001b[1;32mhttps server Listening on port ${process.env.httpsPort}, \u001b[1;34mworkerId:${cluster.worker.id}\u001b[0m`)    
         });
     }
 
@@ -56,23 +58,40 @@ class application
         mongoose
         .connect(process.env.MongoDB_Adrress,{useNewUrlParser:true,useUnifiedTopology:true})
         .then(()=>{
-            console.log("Connected to DB")
+            console.log(`\u001b[1;32mConnected to DB,  \u001b[1;34mworkerId:${cluster.worker.id}\u001b[0m`)
         })
-        .catch((err)=>{console.log(`Conection to DB failed \n`,err);})
+        .catch((err)=>{console.log(`\u001b[1;31mConection to DB failed,  \u001b[1;33mworkerId:${cluster.worker.id}\u001b[0m \n`,err);})
     }
 
     setupRoutesAndMiddlewares()
     {
+        const corsOpts = 
+        {
+           origin: 'http://localhost:3000',
+           withCredentials: true,
+           methods: 
+           [
+             'GET',
+             'POST',
+             'PUT',
+             'DELETE'
+           ],
+
+           allowedHeaders: 
+           [
+             'Content-Type'
+           ],
+        };
         const apiLimiter = new rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+            max: 1000000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
             standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
             legacyHeaders: false, // Disable the `X-RateLimit-*` headers
             message: "Too many Requests",
         })
         const limiter = rateLimit({
             windowMs: 1 * 60 * 1000, // 1 minute
-            max: 10, // Limit each IP to 10 requests per `window` (here, per 1 minute)
+            max: 10000, // Limit each IP to 10 requests per `window` (here, per 1 minute)
             standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
             legacyHeaders: false, // Disable the `X-RateLimit-*` headers
             message: "Too many Requests",
@@ -81,10 +100,16 @@ class application
         app.use(express.urlencoded({extended:false}))
         app.use(express.static(path.resolve(__dirname,"../Client/build")))
         app.use(cookieParser())
+        app.use //? IS THIS NEEDED?
+        (
+            (req,res,next)=>{res.header('Access-Control-Allow-Credentials',true) ; next();}
+        )
+        app.use(cors(corsOpts)); 
+        app.set('view engine','ejs');
         app.use("/api",apiLimiter);
         app.use("/api",api);
         app.get('*',limiter,(req,res)=>{
-            res.sendFile(path.resolve(__dirname,"../Client/build","index.html"))
+            return res.sendFile(path.resolve(__dirname,"../Client/build","index.html"))
           })
         app.use(errorHandler);
     }
