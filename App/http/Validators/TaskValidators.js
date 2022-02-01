@@ -30,7 +30,7 @@ const setTaskValidator = (data)=>{
         executors: joi.array().required(),
         assignedBy: joi.object(
             {
-                _id: joi.string(), //! object id
+                _id: joi.objectId(), //! object id
                 name: joi.string().required().min(3).max(30)
             }
         ).required(), 

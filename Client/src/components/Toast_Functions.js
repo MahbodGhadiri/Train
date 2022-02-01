@@ -11,6 +11,18 @@ const toast_default_options =
     hideProgressBar: true,
 }
 
+const toast_error_options =
+{
+    position: "top-right",
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    autoClose: 5000,
+    hideProgressBar: true,
+    id:"error"
+}
+
 const toast_info_options =
 {
     position: "top-right",
@@ -34,7 +46,7 @@ export const showError = (axiosError) =>
     if(axiosError.response)
     {
         if(axiosError.response.data)
-            toast.error(axiosError.response.data.message, toast_default_options);
+            toast.error(axiosError.response.data.message, toast_error_options);
         else
             toast.error("خطایی رخ داد!", toast_default_options);
     }else

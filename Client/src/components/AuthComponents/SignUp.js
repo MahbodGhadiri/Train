@@ -165,7 +165,7 @@ const Signup = () => {
                     type="number"
                     name="phoneNumber"
                     required
-                    pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}"
+                    pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{4}-?[0-9]{4}"
                     maxLength="11" placeholder="شماره همراه (***0912)"
                     value={phoneNumber}
                     onChange={e => {
