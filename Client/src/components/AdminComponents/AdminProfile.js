@@ -40,7 +40,7 @@ function Profile() {
     const userList = useSelector(selectUserList);
     let users = [];
 
-    //user validation with "SimpleReactValidator" start
+
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -55,8 +55,6 @@ function Profile() {
             element: message => <div style={{ color: "red", textAlign: "center", fontSize: "2vh" }}>{message}</div>
         })
     );
-    //user validation with "SimpleReactValidator" end
-
     //user validation with "SimpleReactValidator" end
 
     // edit user
@@ -152,7 +150,6 @@ function Profile() {
             checklogin(error);
         });
     }
-    
     function AddTalents(e, talent) {
         e.preventDefault();
         console.log(talent);

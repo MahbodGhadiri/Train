@@ -5,7 +5,9 @@ import { setTasks, setReload, } from '../../features/task/taskSlice';
 import axios from 'axios';
 import { showError } from '../Toast_Functions';
 import { store } from '../../app/store';
-import { dateToJalali,find_diff } from '../date_functions';
+import { dateToJalali, find_diff } from '../date_functions';
+import moment from 'moment';
+
 
 function UserAdminTaskBox() {
     const dispatch = useDispatch();
@@ -52,15 +54,43 @@ function UserAdminTaskBox() {
         console.log(reload);
         //////////////
     }
-    useEffect(async () => {
+    async function delayTask(e, taskId) {
+        e.preventDefault();
 
+        console.log(taskId);
+
+        await axios.get(`/user/tasks/delay?task=${taskId}`,
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+
+
+        }).catch(error => {
+            console.log(error);
+            showError(error);
+        });
+
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+        console.log(reload);
+    }
+    useEffect(async () => {
+        setFilter();
         console.log('getting admin taskbox');
         await axios.get(`/user/tasks/?${filter}`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
             tasks = response.data.tasks;
-            console.log("HELLO");
+            console.log(filter);
             dispatch(setReload({
                 reload: true
             }));
@@ -81,7 +111,7 @@ function UserAdminTaskBox() {
 
         console.log(taskId);
 
-        await axios.delete(`/admin/tasks/delete/?task=${taskId}`,
+        await axios.delete(`/user/tasks/delete/?task=${taskId}`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
@@ -139,23 +169,30 @@ function UserAdminTaskBox() {
             <div className="right groupbox">
                 <h2>فعالیت های گروهی</h2>
 
-              
-                
+
+
                 {taskList &&
                     taskList.map(
                         (task, key) => (
-                            <div className="alonerow">
+                            <div className="alonerow" style={task.done ? { opacity: "50%" } : { opacity: "100" }}>
                                 <div className="task">
-                                    <i className="fa fa-circle circle" style={{ color: "#707070" }} aria-hidden="true"></i>
-                                    <h3>  {task.title} </h3>
-                                    <i className="fa fa-times" style={{ background: "#ff2442" }} aria-hidden="true"></i>
-                                    <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} aria-hidden="true"></i>
-                                    <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true"></i>
+                                    <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
+                                    <h3>{task.title}</h3>
+                                    <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
+                                        console.log(task.delay);
+                                       
+                                            console.log("delay");
+                                            delayTask(e, task._id);
+                                        
+                                    }}></i>
+                                    <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
+                                    {task.done ? <></> : <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}
                                     <div className="task-down">
                                         <p>
-                                        {task.task}
+                                            {task.task}
                                         </p>
-                                        <span style={{ color: "#868686" }}>توسط <span style={{ color: "#ffb830" }}>امیرعلی</span></span>
+                                        <span className="created" style={{ color: "#868686" }} >توسط <span style={{ color: "#ffb830" }} >{task.assignedBy.name}<span style={{ opacity: "0" }}>-</span></span></span>
+
                                         <div className="date">
                                             <span>
                                                 {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
@@ -164,7 +201,7 @@ function UserAdminTaskBox() {
                                     </div>
                                 </div>
                                 <div className="time">
-                                    {find_diff(task.startDate,task.finishDate)} 
+                                    {find_diff(task.startDate, moment())}
                                 </div>
                             </div>
                         ))}

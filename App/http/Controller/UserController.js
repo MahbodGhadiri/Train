@@ -109,7 +109,8 @@ class UserController
   
   async getTasks(req,res)//optional query parameters: days , subject 
   {
-    let tasks = await adminTaskModel.find({executors:req.user._id,done:false,delayed:false})
+    let tasks = await adminTaskModel.find({"executors._id":req.user._id,done:false,delayed:false})
+    console.log(tasks);
     if (req.query.days||req.query.subject)
     {
       const filter = new Filter(tasks,req.query.days,req.query.subject);
@@ -128,7 +129,16 @@ class UserController
       if (err) {return res.status(404).send({message:"یافت نشد"})}
       if (task)
       {
-        if(task.executors.includes(req.user._id))
+        let bool = false;
+        for(let i=0; i<task.length;i++)
+        {
+          if (task.executors._id==req.user._id)
+          {
+          bool=true
+          }
+        }
+
+        if(bool)
         {
           if (task.done === false)
           {
@@ -148,7 +158,15 @@ class UserController
   {
     if(!req.query.task) return res.status(400).send("No taskId is provided") //TODO better messages
     const task = await adminTaskModel.findOne({_id:{$eq:req.query.task}}) ;
-    if(task.executors.includes(req.user._id))
+    let bool = false;
+    for(let i=0; i<task.length;i++)
+    {
+      if (task.executors._id==req.user._id)
+      {
+        bool=true
+      }
+    }
+    if(bool)
     {
       task.delayed = true;
       await task.save().then(res.status(200).send({message:"با موفقیت انجام شد"}))
