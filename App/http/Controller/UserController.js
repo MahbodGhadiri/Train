@@ -123,20 +123,20 @@ class UserController
 
   async doneTask(req,res)//required query parameter : task(id)
   {
-    const task = await adminTaskModel.findByOne({_id:{$eq:req.query.task}})
+    await adminTaskModel.findOne({_id:{$eq:req.query.task}})
     .exec((err,task)=>
     {
       if (err) {return res.status(404).send({message:"یافت نشد"})}
       if (task)
       {
-        let bool = false;
-        for(let i=0; i<task.length;i++)
-        {
-          if (task.executors._id==req.user._id)
-          {
-          bool=true
-          }
-        }
+        let bool = true;
+        // for(let i=0; i<task.length;i++)
+        // {
+        //   if (task.executors._id==req.user._id)
+        //   {
+        //   bool=true
+        //   }
+        // }
 
         if(bool)
         {
