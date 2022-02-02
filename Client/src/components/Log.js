@@ -6,15 +6,15 @@ import { useDispatch } from 'react-redux';
 import { showError } from './Toast_Functions';
 function Log() {
   let logs = [];
-  const logList = useSelector(selectLog)
-  const dispatch= useDispatch();
+  const logList = useSelector(selectLog);
+  const dispatch = useDispatch();
 
   useEffect(async () => {
     await axios.get(`/admin/log`,
       { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
     ).then(response => {
-      console.log(response);
-      logs = response.data;
+
+      logs = response.data.log;
       dispatch(setLogs({
         log: logs
       }));
@@ -22,9 +22,13 @@ function Log() {
       showError(error);
     })
   }, []);
-  console.log(logList
-    );
-  return <div>{logList && logList.map(log => (<div>codsnodnvods</div>))}</div>;
+  
+  return <div style={{}}>
+    {logList && logList.map(log => (<div>
+      <div style={{backgroundColor:"white",padding:"5px 5px",textAlign:"center" , width:"70%" ,marginLeft:"auto", marginRight:"auto",border: "3px solid #c1c1c1" , borderRadius:"30px" , marginTop:"10px", marginBottom:"10px"}}>{log.message} <hr/>({log.timestamp})</div>
+    
+    </div>))}
+  </div>; 
 }
 
 export default Log;

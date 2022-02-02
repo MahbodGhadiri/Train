@@ -18,6 +18,6 @@ const logSlice = createSlice({
 
 export const { setLogs } = logSlice.actions;
 
-export const selectLog = (state) => state.log;
+export const selectLog = (state) => state.log.log;
 
 export default logSlice.reducer;
