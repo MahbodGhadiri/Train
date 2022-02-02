@@ -6,7 +6,7 @@ const {deleteAccountValidator , setCustomTaskValidator , changeInfoValidator} = 
 const {changePasswordValidator}=require("../Validators/AuthValidators")
 const argon2=require("argon2");
 const { refreshTokenModel } = require("../../Models/TokenModel");
-
+const moment = require("moment")
 class UserController
 {
   async getProfile(req,res) 
@@ -143,7 +143,7 @@ class UserController
         let bool = false;
         for(let i=0; i<task.executors.length;i++)
         {
-          if (task.executors._id==req.user._id)
+          if (task.executors[i]._id==req.user._id)
           {
           bool=true
           }
@@ -172,7 +172,7 @@ class UserController
     let bool = false;
     for(let i=0; i<task.executors.length;i++)
     {
-      if (task.executors._id==req.user._id)
+      if (task.executors[i]._id==req.user._id)
       {
         bool=true
       }
