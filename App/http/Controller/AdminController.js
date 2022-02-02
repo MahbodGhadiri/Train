@@ -229,17 +229,15 @@ class AdminController
     async getLog(req,res)
     {
         const logConnection = mongoose.createConnection(process.env.MongoDB_log_Adrress);
-        const logModel = logConnection
-            .model('log',new mongoose
-                .Schema({
-                    timestamp: {Date} ,
-                    level: {String},
-                    message: {String},
-                    meta:{ String}
-                })
-            )
+        const logSchema= new mongoose
+        .Schema({
+            timestamp: {type:Date,required:true} ,
+            level: {type:String,required:true},
+            message: {type:String,required:true},
+        })
+        const logModel =  logConnection.model('log', logSchema,'log')
         
-        const log = await logModel.find({})
+        const log = await logModel.find()
         res.status(200).send({log:log})
     }
 }
