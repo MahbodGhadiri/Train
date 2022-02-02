@@ -203,10 +203,14 @@ class AuthController {
 
   async resetPassword(req,res) //looks fine , needs to be checked for bugs
   {
+    const userId = req.query.userId;
+
     const { error } = resetPasswordValidator(req.body);
     if (error) return res.status(400).send({ message: error.message });
 
-    const userId = req.query.userId;
+    const error2 = userIdValidator(userId).error
+    if (error2) return res.status(400).send({ message: error.message });
+
     const sendedVerificationToken = req.query.token;
     if (!userId || !sendedVerificationToken)
       return res.status(400).send({ message: "لینک نامعتبر" })

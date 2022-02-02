@@ -62,9 +62,9 @@ class AdminController
 
     async editTask(req,res)//required query parameter : task (id)
     {
-        const {error1}=taskIdValidator(req.query.task);
-        if(error1){return res.status(400).send({message: error1.message})}
-        const {error2}=setTaskValidator(req.body); 
+        const {error}=taskIdValidator(req.query.task);
+        if(error){return res.status(400).send({message: error.message})}
+        const error2=setTaskValidator(req.body).error; 
         if (error2){ return res.status(400).send({message : error2.message})};
         const finishDate = new Date(req.body.finishDate).getTime()
         const startDate = new Date(req.body.startDate).getTime()
