@@ -22,21 +22,16 @@ function User() {
 
     const dispatch = useDispatch();
     let tasks = [];
-    const taskList = useSelector(selectTask);
+
     const reload = useSelector(selectReload);
     const talents = useSelector(selectUserAbility);
-    const [userList, setUserList] = useState("");
-    const [time, setTime] = useState("");
-    const [category, setCategory] = useState("");
-    let [filter, setFilter] = useState("");
-    let tempFilter = "";
+    
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
     const [executors, setExecutors] = useState([]);
     const name = useSelector(selectUserName);
-    const [transformedAbilities, setTransformedAbilities] = useState("");
 
 
 
@@ -158,7 +153,6 @@ function User() {
     // });
     
     
-
     function openAdd(){
         
 
@@ -265,22 +259,7 @@ function User() {
         });
       console.log(talents);
     }
-    const talentTransformer = ( talents) => {
-  
-        console.log(talents);
-        if (talents) {
-        let output = "";
-            // output += talents[0];
-            for (let i = 0; i < talents.length; i++) {
-                output = output + talents[i] + " "
-
-            }
-            setTransformedAbilities(output);
-        } else {
-            setTransformedAbilities("مهارتی مشخص نشده است");
-        }
-       
-    };
+   
     //setTimeout(() => talentTransformer(talents),1000);
     return (
         <div dir="rtl">

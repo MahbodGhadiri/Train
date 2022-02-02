@@ -23,7 +23,6 @@ const AdminTaskBox = () => {
     const [time, setTime] = useState("")
     const [category, setCategory] = useState("");
     let [filter, setFilter] = useState("");
-    let [GoingToBeEditedTask, setGoingToBeEditedTask] = useState({title:"",task:"",subjectTag:"",startDate:"",});
     let tempFilter = "";
 
     //const [sendRequest, setSendRequest] = useState(false);
@@ -60,6 +59,7 @@ const AdminTaskBox = () => {
         console.log(reload);
         //////////////
     }
+
     useEffect(async () => {
 
         console.log('in you (if) in hook');
@@ -85,6 +85,7 @@ const AdminTaskBox = () => {
             }));
 
     }, [store.getState().task.reload]);
+    
     async function deleteTask(e, taskId) {
         e.preventDefault();
 
@@ -112,8 +113,8 @@ const AdminTaskBox = () => {
             }))
         }
         console.log(reload);
-    }
-
+    }    
+    
     async function okTask(e, taskId) {
         e.preventDefault();
 
@@ -141,16 +142,51 @@ const AdminTaskBox = () => {
         }
         console.log(reload);
     }
+    
     async function confirmTask(e, taskId) {
         e.preventDefault();
         deleteTask(e,taskId)
     }
+    
     function editTask(e, taskik) {
         e.preventDefault();
         dispatch(setSingleTasks({singleTask: taskik}));
 
     }
     
+    async function unDoneTask(e, taskId, task) {
+        await axios.put(`/admin/tasks/edit?task=${taskId}`, {
+            _id: taskId,
+            title: task.title,
+            task: task.task,
+            startDate: task.startDate,
+            finishDate: task.finishDate,
+            subjectTag: task.subjectTag,
+            done: false,
+            delay: false,
+            executors: task.executors,
+        },
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        ).then(response => {
+            console.log(response);
+
+
+        }).catch(error => {
+            console.log(error);
+            showError(error);
+        });
+
+        if (reload === false) {
+            dispatch(setReload({
+                reload: true
+            }))
+
+        } else {
+            dispatch(setReload({
+                reload: false
+            }))
+        }
+    }
     return (
         <div>
             <h2 >فعالیت های کاربران</h2>
@@ -188,7 +224,12 @@ const AdminTaskBox = () => {
                                 <div className="task">
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
                                     <h3>{task.title}</h3>
-                                    <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => deleteTask(e, task._id)}></i>
+                                    <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
+                                            
+                                                deleteTask(e, task._id)
+                                            
+                                            
+                                        }}></i>
                                     <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
                                     {task.done ? <i className="fa fa-circle circle-topbtn" style={{ color: "green" }} aria-hidden="true" onClick={e => confirmTask(e, task._id)}></i> : <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}                                    <div className="task-down">
                                         <p>

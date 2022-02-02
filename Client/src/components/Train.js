@@ -12,40 +12,40 @@ import Log from './Log';
 
 function Train() {
     //const name = useSelector(selectUserName);
-    useEffect(async () => {
+    // useEffect(async () => {
 
-        $('.skillsbox .fa-arrow-down').click(function (e) {
-            $(this).toggleClass('active');
-            if ($(this).hasClass('active')) {
-                $('.skillsbox ul').slideDown();
-                $(this).css('transform', 'rotate(180deg)');
-            } else {
-                $('.skillsbox ul').slideUp();
-                $(this).css('transform', 'rotate(0deg)');
-            }
-        });
+    //     $('.skillsbox .fa-arrow-down').click(function (e) {
+    //         $(this).toggleClass('active');
+    //         if ($(this).hasClass('active')) {
+    //             $('.skillsbox ul').slideDown();
+    //             $(this).css('transform', 'rotate(180deg)');
+    //         } else {
+    //             $('.skillsbox ul').slideUp();
+    //             $(this).css('transform', 'rotate(0deg)');
+    //         }
+    //     });
 
-        $('.show-box .show-item i.fa-eye').click(function () {
-            $(this).toggleClass('active');
-            if ($(this).hasClass('active')) {
+    //     $('.show-box .show-item i.fa-eye').click(function () {
+    //         $(this).toggleClass('active');
+    //         if ($(this).hasClass('active')) {
 
-                $(this).removeClass('fa-eye').addClass('fa-eye-slash');
-                $('#pro-pass').attr('type', 'text');
-            } else {
-                $(this).removeClass('fa-eye-slash').addClass('fa-eye');
-                $('#pro-pass').attr('type', 'password');
-            }
-        });
+    //             $(this).removeClass('fa-eye').addClass('fa-eye-slash');
+    //             $('#pro-pass').attr('type', 'text');
+    //         } else {
+    //             $(this).removeClass('fa-eye-slash').addClass('fa-eye');
+    //             $('#pro-pass').attr('type', 'password');
+    //         }
+    //     });
 
-        // Height Window
-        var hw = ($(window).height()) - 125;
-        $('.alonebox,.groupbox').css('height', hw + 'px');
+    //     // Height Window
+    //     var hw = ($(window).height()) - 125;
+    //     $('.alonebox,.groupbox').css('height', hw + 'px');
 
-        // Height Window
-        var hw = ($(window).height()) - 130;
-        $('.alonebox,.groupbox').css('height', hw + 'px');
+    //     // Height Window
+    //     var hw = ($(window).height()) - 130;
+    //     $('.alonebox,.groupbox').css('height', hw + 'px');
 
-    });
+    // });
 
     return (
         <Switch>

@@ -84,6 +84,7 @@ function Profile() {
 
         dispatch(setUsersList({ userList: users }));
     }, []);
+    
     async function prof() {
         // event.preventDefault();
 
@@ -120,6 +121,7 @@ function Profile() {
         }
         
     }
+
     async function deleteUser(e, userId) {
         e.preventDefault();
         await axios.post(`user/delete-account?user=${userId}`,

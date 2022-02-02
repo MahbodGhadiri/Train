@@ -6,7 +6,7 @@ import axios from 'axios';
 import { showError } from '../Toast_Functions';
 import { store } from '../../app/store';
 import { dateToJalali, find_diff } from '../date_functions';
-import moment from 'moment';
+
 
 
 function UserAdminTaskBox() {
@@ -14,46 +14,11 @@ function UserAdminTaskBox() {
     let tasks = [];
     const taskList = useSelector(selectTask);
     const reload = useSelector(selectReload);
-    const [userList, setUserList] = useState("")
-    const [time, setTime] = useState("")
-    const [category, setCategory] = useState("");
     let [filter, setFilter] = useState("");
-    let tempFilter = "";
+
 
     //const [sendRequest, setSendRequest] = useState(false);
-    function filterTask(event) {
-        event.preventDefault();
 
-        if (category) {
-            // console.log(category);
-            tempFilter = `subject=${category}&`;
-
-        }
-        if (time) {
-
-            tempFilter += `days=${time}&`;
-            // console.log(filter)
-        }
-        // if(userList)
-        // {
-        //     setFilter(filter+`userList=${userList}&`)
-        // }
-
-        setFilter(tempFilter)
-        console.log(tempFilter);
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
-        //////////////
-    }
     async function delayTask(e, taskId) {
         e.preventDefault();
 
@@ -106,41 +71,41 @@ function UserAdminTaskBox() {
             }));
 
     }, [store.getState().task.reload]);
-    async function deleteTask(e, taskId) {
-        e.preventDefault();
+    // async function deleteTask(e, taskId) {
+    //     e.preventDefault();
 
-        console.log(taskId);
+    //     console.log(taskId);
 
-        await axios.delete(`/user/tasks/delete/?task=${taskId}`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
+    //     await axios.delete(`/user/tasks/delete/?task=${taskId}`,
+    //         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+    //     ).then(response => {
+    //         console.log(response);
 
 
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-        });
+    //     }).catch(error => {
+    //         console.log(error);
+    //         showError(error);
+    //     });
 
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
+    //     if (reload === false) {
+    //         dispatch(setReload({
+    //             reload: true
+    //         }))
 
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
-    }
+    //     } else {
+    //         dispatch(setReload({
+    //             reload: false
+    //         }))
+    //     }
+    //     console.log(reload);
+    // }
     async function okTask(e, taskId) {
         e.preventDefault();
 
         console.log("ncvdovnnnlskdvnkfvmd;fkbm");
 
         await axios.get(`/user/tasks/done?task=${taskId}`,
-          
+
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             console.log(response);
@@ -180,13 +145,13 @@ function UserAdminTaskBox() {
                                     <h3>{task.title}</h3>
                                     <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
                                         console.log(task.delayed);
-                                       
-                                            console.log("delayed");
-                                            delayTask(e, task._id);
-                                        
+
+                                        console.log("delayed");
+                                        delayTask(e, task._id);
+
                                     }}></i>
                                     <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
-                                    {task.done ? <i className="fa fa-circle circle-topbtn" style={{ color: "green" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>: <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}
+                                    {task.done ? <i className="fa fa-circle circle-topbtn" style={{ color: "green" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i> : <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}
                                     <div className="task-down">
                                         <p>
                                             {task.task}
