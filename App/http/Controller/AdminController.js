@@ -71,7 +71,7 @@ class AdminController
         if(finishDate>startDate)
         {
             req.body.delayed=false;
-           await adminTaskModel.findOneAndUpdate({_id:{eq:req.query.task}},req.body).then(res.status(200).send({message:"انجام شد"}));
+           await adminTaskModel.findOneAndUpdate({_id:{$eq:req.query.task}},req.body).then(res.status(200).send({message:"انجام شد"}));
            //TODO add a callback , wrong _id can cause a bug 
         }
         else return res.status(400).send({message:"Invalid Date"})

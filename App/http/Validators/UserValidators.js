@@ -19,20 +19,20 @@ const setCustomTaskValidator=(data)=>
 {
     const schema = joi.object(
     {
-        title: joi.string().min(3).max(30).required().messages(
+        title: joi.string().min(3).max(70).required().messages(
             {
                 "any.required":"نوشتن موضوع الزامی است!",
                 "string.base":"موضوع نامعتبر است!",
                 "string.min":"موضوع باید حداقل سه کارکتر باشد!",
-                "string.max":"موضوع باید حداکثر سی کارکتر باشد!"
+                "string.max":"موضوع باید حداکثر هفتاد کارکتر باشد!"
             }
         ),
-        task: joi.string().min(10).max(100).required().messages(
+        task: joi.string().min(10).max(250).required().messages(
             {
                 "any.required":"نوشتن توضیحات الزامی است!",
                 "string.base":"توضیحات نامعتبر است!",
                 "string.min":"توضیحات باید حداقل پنچ کارکتر باشد!",
-                "string.max":"توضیحات باید حداکثر صد کارکتر باشد!"
+                "string.max":"توضیحات باید حداکثر دویست و پنجاه کارکتر باشد!"
             }
         ),
         subjectTag: joi.string().min(3).max(30).required().messages(
@@ -60,7 +60,7 @@ const setCustomTaskValidator=(data)=>
 }
 const changeInfoValidator=(data)=>{
     const schema = joi.object({
-        name: joi.string().required().min(3).max(30).messages(
+        name: joi.string().required().min(3).max(50).messages(
             {
                 "any.required":"نوشتن نام الزامی است!",
                 "string.base":"اسم نامعتبر است!",
@@ -92,7 +92,7 @@ const changeInfoValidator=(data)=>{
                 "array.requires":"فرمت توانایی ها نامناسب است!"
             }
         ),
-        avatarURL: joi.string().max(40)
+        avatarURL: joi.string().max(70)
     })
     return schema.validate(data);
 }

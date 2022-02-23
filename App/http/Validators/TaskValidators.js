@@ -3,20 +3,20 @@ joi.objectId=require("joi-objectid")(joi)
 
 const setTaskValidator = (data)=>{
     const schema = joi.object({
-        title:joi.string().required().min(3).max(30).messages(
+        title:joi.string().required().min(3).max(70).messages(
             {
                 "any.required":"نوشتن موضوع الزامی است!",
                 "string.base":"موضوع نامعتبر است!",
                 "string.min":"موضوع باید حداقل سه کارکتر باشد!",
-                "string.max":"موضوع باید حداکثر سی کارکتر باشد!"
+                "string.max":"موضوع باید حداکثر هفتاد کارکتر باشد!"
             }
         ),
-        task:joi.string().required().min(5).max(100).messages(
+        task:joi.string().required().min(5).max(250).messages(
             {
                 "any.required":"نوشتن توضیحات الزامی است!",
                 "string.base":"توضیحات نامعتبر است!",
                 "string.min":"توضیحات باید حداقل پنچ کارکتر باشد!",
-                "string.max":"توضیحات باید حداکثر صد کارکتر باشد!"
+                "string.max":"توضیحات باید حداکثر دویست و پنجاه کارکتر باشد!"
             }
         ),
         subjectTag: joi.string().required().min(3).max(30).messages(

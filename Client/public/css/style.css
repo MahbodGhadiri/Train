@@ -246,7 +246,7 @@ input {
 .show-box {
     position: relative;
     padding: 30px 40px;
-    margin-top: 25px;
+    margin-top: 0;
     background: linear-gradient(50deg, rgba(203, 223, 254, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 

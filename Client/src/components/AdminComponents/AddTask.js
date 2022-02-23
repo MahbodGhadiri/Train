@@ -59,7 +59,8 @@ function AddTask() {
             };
 
         if (singleTask !== null) {
-            await axios.put("/admin/tasks/edit",
+            Task.assignedBy= singleTask.assignedBy;
+            await axios.put(`/admin/tasks/edit?task=${singleTask._id}`,
             Task,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
             .then(response => {

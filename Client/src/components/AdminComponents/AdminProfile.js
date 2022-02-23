@@ -77,6 +77,7 @@ function Profile() {
             showSuccess(response)
         }).catch(error => {
             showError(error);
+            checklogin(error)
         });
         
         if (newPassword) {
@@ -87,6 +88,7 @@ function Profile() {
                 showSuccess(response)
             }).catch(error => {
                 showError(error);
+                checklogin(error)
             });
         }
 
@@ -103,6 +105,7 @@ function Profile() {
             window.location.reload();
         }).catch((error) => {
             showError(error)
+            checklogin(error)
         });
     }
     // profile
@@ -116,6 +119,7 @@ function Profile() {
         }).catch(error => {
             console.log(error);
             showError(error);
+            checklogin(error)
         });
 
         dispatch(setUsersList({ userList: users }));
