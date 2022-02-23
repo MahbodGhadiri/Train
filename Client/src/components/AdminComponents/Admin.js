@@ -11,7 +11,6 @@ import { showError } from '../Toast_Functions';
 import { checklogin } from "../CheckLogin";
 import $ from 'jquery';
 import { setUserId } from '../SessionStorage';
-import { Link } from 'react-router-dom';
 
 function Admin() {
     const dispatch = useDispatch();
@@ -25,8 +24,6 @@ function Admin() {
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             setUserId(response.data._id)
-            console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-            console.log(response)
             dispatch(
                 setUserLoginDetails({
                     name: response.data.name,
@@ -37,8 +34,6 @@ function Admin() {
             )
         }).catch(error => {
             showError(error);
-
-            console.log(error);
             checklogin(error)
         });
     }

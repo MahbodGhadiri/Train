@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserAbility, selectUserId } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-
+import {Link}from "react-router-dom"
 function Profile() {
     const dispatch = useDispatch();
 
@@ -104,15 +104,12 @@ function Profile() {
         }).catch(error => {
             showError(error);
 
-            console.log(error);
             checklogin(error);
         });
     }
 
     function AddTalents(e, talent) {
         e.preventDefault();
-        console.log(talent);
-        console.log(perTalents);
         if (perTalents.find(epr => epr === talent) === undefined) {
             talents.push(talent);
 
@@ -129,7 +126,6 @@ function Profile() {
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true },
 
         ).then(response => {
-            console.log(response);
             showSuccess(response);
             window.sessionStorage.removeItem("isUserAuthenticated");
             window.sessionStorage.removeItem("role");
@@ -149,7 +145,11 @@ function Profile() {
 
                         <div className="signup" style={{marginBottom:"5px" , marginTop:"-20px"}}>
                             <div className="edit-box">
-                                <div className="edit-imgbox"><img src="../images/logo-min.png" alt="Train-logo" /></div>
+                                <div className="edit-imgbox">
+                                    <Link to={`/home`}>
+                                        <img src="../images/logo-min.png" alt="Train-logo" />
+                                    </Link>
+                                </div>
 
                                 <form onSubmit={event => editUser(event)}  >
                                     <input type="text" placeholder={perName} value={name}

@@ -20,17 +20,17 @@ function changeTitle(wantedIndex, pinArray) {
             // console.log("گرافیک");
             break;
 
-        case "مدیریت ":
+        case "مدیریت":
             // console.log("مدیریت");
             subjectTag = "#ff2442";
             break;
 
-        case "دیگر ":
+        case "مدیریت مالی":
             // console.log("دیگر");
-            subjectTag = "#ff2442";
+            subjectTag = "#3E2C41";
             break;
         default:
-
+            subjectTag = "#FFEDDA";
             break;
     }
 

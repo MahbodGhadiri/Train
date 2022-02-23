@@ -31,7 +31,6 @@ export function getUserAuthorization()
 export function setUserId(userId)
 {
     sessionStorage.setItem("id",userId)
-    console.log(userId)
 }
 
 export function getUserId()

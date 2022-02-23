@@ -19,7 +19,6 @@ function AddPin() {
             Pin,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
             ).then(response => {
-                console.log(response);
                 showSuccess(response);
             })
             .catch(error => {

@@ -80,7 +80,6 @@ userSchema.methods.generateRefreshToken = async function (oldRefreshToken)
         oldToken.nextToken=refreshToken;
         oldToken.invalidSince=Date.now();
         oldToken.save();
-        console.log(`line 88 , Token : ${refreshToken}`)
         if (!await refreshTokenModel.findOne({_id:refreshToken})) //? is this if helpful?
         {
             refreshToken =await new refreshTokenModel({_id:refreshToken,userId:this._id});

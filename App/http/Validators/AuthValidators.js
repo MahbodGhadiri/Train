@@ -11,11 +11,11 @@ const registerValidator = (data)=>
                 "string.max":"اسم باید حداکثر پنجاه کارکتر باشد!"
             }
         ),
-        email: joi.string().required().max(50).email().messages(
+        email: joi.string().required().max(100).email().messages(
             {
                 "any.required":"نوشتن ایمیل الزامی است!",
                 "string.base":"ایمیل نامعتبر است!",
-                "string.max":"ایمیل باید حداکثر پنجاه کارکتر باشد!",
+                "string.max":"ایمیل باید حداکثر صد کارکتر باشد!",
                 "string.email":"ایمیل نامعتبر است!"
             }
         ),
@@ -59,15 +59,15 @@ const registerValidator = (data)=>
 const loginValidator = (data)=>
 {
     const schema = joi.object({
-        email: joi.string().required().max(30).email().messages(
+        email: joi.string().required().max(100).email().messages(
             {
                 "any.required":"نوشتن ایمیل الزامی است!",
                 "string.base":"ایمیل نامعتبر است!",
-                "string.max":"ایمیل باید حداکثر سی کارکتر باشد!",
+                "string.max":"ایمیل باید حداکثر صد کارکتر باشد!",
                 "string.email":"ایمیل نامعتبر است!"
             }
         ),
-        password : joi.string().required().min(8).max(30).messages(
+        password : joi.string().required().min(8).max(32).messages(
             {
                 "any.required":"نوشتن رمز الزامی است!",
                 "string.base":"رمز نامعتبر است!",

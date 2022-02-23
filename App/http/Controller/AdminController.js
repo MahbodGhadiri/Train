@@ -123,7 +123,7 @@ class AdminController
 
     async deletePin(req,res)//required query parameter: pin(id)
     {
-        await pinModel.findOneAndDelete({_id:{eq:req.query.pin}})
+        await pinModel.findOneAndDelete({_id:{$eq:req.query.pin}})
         .exec(function(error,pin)
         {
             if(error) return res.status(400).send({message:"عملیات ناموفق"})
@@ -228,7 +228,7 @@ class AdminController
 
     async getLog(req,res)
     {
-        const logConnection = mongoose.createConnection(process.env.MongoDB_log_Adrress);
+        const logConnection = mongoose.createConnection(process.env.MongoDB_Address);
         const logSchema= new mongoose
         .Schema({
             timestamp: {type:Date,required:true} ,

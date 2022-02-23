@@ -49,11 +49,12 @@ class AuthController {
     
     sendEmail(user._id);
   
-    res.status(200).send({message:" عملیات با موفقیت انجام شد . جهت فعالسازی به ایمیل خود مراجعه کنید.",_id:user._id});
+    return res.status(200).send({message:" عملیات با موفقیت انجام شد . جهت فعالسازی به ایمیل خود مراجعه کنید.",_id:user._id});
   }
 
   async  login(req, res)
   {
+    req.body.email=req.body.email.trim().toLocaleLowerCase()
     const { error } = loginValidator(req.body);
     if (error) { return res.status(400).send({ message: error.message }) }
 
@@ -82,7 +83,7 @@ class AuthController {
       }
       
     }
-    else{res.status(400).send({message:"رمز یا نام کاربری نامعتبر است!"})};
+    else{return res.status(400).send({message:"رمز یا نام کاربری نامعتبر است!"})};
     }
 
   async resendActivationEmail(req,res)
@@ -130,7 +131,7 @@ class AuthController {
       const {error} = forgotPasswordUsingEmailValidator(req.body.email);
       if (error) 
       {
-        res.status(400).send({message:`خطایی رخ داد! اطمینان حاصل کنید که ایمیل شما به درستی وارد شده باشد. \n ${error} `})
+        return res.status(400).send({message:`خطایی رخ داد! اطمینان حاصل کنید که ایمیل شما به درستی وارد شده باشد. \n ${error} `})
       }
       const user = await userModel.findOne({"email.address":req.body.email});
       //Check if account is activated
@@ -159,17 +160,17 @@ class AuthController {
         sendEmail(user._id , loginLink);
         res.status(200).send({message:"به ایمیل خود مراجعه کرده و از آنجا مراحل را ادامه دهید"});
       }
-      else { res.status(404).send({message:"با این ایمیل اکانت معتبری وجود ندارد"})}
+      else { return res.status(404).send({message:"با این ایمیل اکانت معتبری وجود ندارد"})}
       
     }
     else if (req.body.phoneNumber)
     {
       //TODO reset password with Phone Number!!!
-      res.status(503) //Just to avoid getting stuck
+      return res.status(503).send() //Just to avoid getting stuck
     }
     else
     {
-      res.status(400).send("وارد کردن ایمیل یا شماره تلفن الزامی است")
+      return res.status(400).send("وارد کردن ایمیل یا شماره تلفن الزامی است")
     }
   }
   
@@ -196,7 +197,7 @@ class AuthController {
         maxAge:4*60*60*1000,
         sameSite:"strict",
         //secure:true //TODO uncomment when deployed
-      }).status(200).redirect(`${process.env.Domain}/reset-password?userId=${userId}&token=${sendedVerificationToken}`);
+      }).status(200).redirect(`${process.env.DOMAIN}/reset-password?userId=${userId}&token=${sendedVerificationToken}`);
     }
     else { res.status(400).send({message:"لینک نامعتبر"});}
   }

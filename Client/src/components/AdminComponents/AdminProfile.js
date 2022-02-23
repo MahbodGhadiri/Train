@@ -7,6 +7,7 @@ import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
 import {getUserId, setUserId} from "../SessionStorage"
 import { selectReload, setReload } from '../../features/task/taskSlice';
+import { Link } from 'react-router-dom';
 import { store } from '../../app/store';
 
 
@@ -46,7 +47,7 @@ function Profile() {
         new SimpleReactValidator({
             messages: {
                 required: "پر کردن این فیلد الزامی میباشد",
-                min: `لطفا بیشتر از 5 کاراکتر وارد کنید`,
+                min: `لطفا حداقل 8 کاراکتر وارد کنید`,
                 max: `لطفا کمتر از 30 کاراکتر وارد کنید`,
                 email: "ایمیل نوشته شده صحیح نمی باشد",
                 phone: "لطفا شماره را صحیح وارد کنید",
@@ -74,23 +75,18 @@ function Profile() {
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
             showSuccess(response)
-            console.log(response)
         }).catch(error => {
             showError(error);
-            console.log(error);
         });
-        console.log(newPassword);
-        console.log(password);
+        
         if (newPassword) {
             await axios.post("/user/change-password",
                 { newPassword: newPassword, oldPassword: password },
                 { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
             ).then(response => {
                 showSuccess(response)
-                console.log(response)
             }).catch(error => {
                 showError(error);
-                console.log(error);
             });
         }
 
@@ -102,7 +98,6 @@ function Profile() {
         await axios.get(`/user/logout`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then((response) => {
-            console.log(response);
             window.sessionStorage.removeItem("isUserAuthenticated");
             window.sessionStorage.removeItem("role");
             window.location.reload();
@@ -163,14 +158,12 @@ function Profile() {
 
     }
     function showInfo(e, name, email, phone, role, id) {
-        console.log("hi");
         e.preventDefault();
         setPerUserEmail(email);
         setPerUserName(name);
         setPerUserPhoneNumber(phone);
         setPerUserRole(role);
         setPerUserId(id);
-        console.log(perUserName);
     }
     async function activeUser(e, userId) {
         e.preventDefault();
@@ -228,7 +221,6 @@ function Profile() {
         await axios.put(`admin/users/promote?user=${userId}`,
             {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
-            console.log(response);
             showSuccess(response);
             setPerUserRole("admin");
 
@@ -243,7 +235,6 @@ function Profile() {
         await axios.put(`admin/users/demote?user=${userId}`,
             {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
-            console.log(response);
             showSuccess(response);
             setPerUserRole("user");
         }).catch(error => {
@@ -258,7 +249,6 @@ function Profile() {
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true },
 
         ).then(response => {
-            console.log(response);
             showSuccess(response);
             window.sessionStorage.removeItem("isUserAuthenticated");
             window.sessionStorage.removeItem("role");
@@ -277,7 +267,11 @@ function Profile() {
 
                     <div className="right">
                         <div className="edit-box">
-                            <div className="edit-imgbox"><img src="../images/logo-min.png" alt="Train-logo" /></div>
+                            <div className="edit-imgbox">
+                                <Link to={`/home`}>
+                                    <img src="../images/logo-min.png" alt="Train-logo" />
+                                </Link>
+                            </div>
 
                             <form onSubmit={event => editUser(event)}  >
                                 <input type="text" placeholder={perName} value={name}
@@ -305,7 +299,7 @@ function Profile() {
 
 
 
-                                <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autoComplete="off" value={phoneNumber}
+                                <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autocomplete="off" value={phoneNumber}
                                     onChange={e => {
                                         setPhoneNumber(e.target.value);
 
@@ -336,9 +330,9 @@ function Profile() {
                                 {validator.current.message(
                                     "password",
                                     newPassword,
-                                    `min: 5`
+                                    `min: 8`
                                 )}
-                                <div className="skillsbox">{!perTalents || perTalents?.length == 0 ? "مهارتی نیست" : perTalents.toString()}
+                                <div className="skillsbox">{!perTalents || perTalents?.length === 0 ? "مهارتی نیست" : perTalents.toString()}
                                     <i className="fa fa-arrow-down" aria-hidden="true"></i>
                                     <ul>
                                         <li>
@@ -358,7 +352,7 @@ function Profile() {
                                     style={{ textAlign: "right" }}
                                     type="password"
                                     name="password"
-
+                                    autocomplete="off"
                                     placeholder="رمز ورود"
                                     value={password}
                                     onChange={e => {
@@ -370,7 +364,7 @@ function Profile() {
                                 {validator.current.message(
                                     "password",
                                     password,
-                                    `min: 5`
+                                    `min: 8`
                                 )}
 
                                 <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perUserId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "-20px" }} id="edit-btn" />
