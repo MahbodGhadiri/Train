@@ -272,8 +272,8 @@ function User() {
 
                 <div className="right shapebox">
                     <div className="imgsbox">
-                        <img src="./images/t-logo.png" alt="Train" />
-                        <img src="./images/shape-1-min.png" alt="" />
+                        <img src="/images/t-logo.png" alt="Train" />
+                        <img src="/images/shape-1-min.png" alt="" />
                     </div>
                     <h2>{name}</h2>
                     <div className="img-sortby">

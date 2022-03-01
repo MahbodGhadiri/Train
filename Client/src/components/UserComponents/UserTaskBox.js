@@ -180,7 +180,7 @@ function UserTaskBox() {
                 <div>
 
                     <form onSubmit={event => filterTask(event)}>
-                        <img src="./images/formicn.png" alt="formicn" />
+                        <img src="/images/formicn.png" alt="formicn" />
                         <input list="category" name="titr" placeholder="موضوع" value={category} onChange={e => setCategory(e.target.value)} />
 
                         <input type="text" list="userslist" name="username" placeholder="کاربر" onChange={e => setUserList(e.target.value)} />

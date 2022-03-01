@@ -3,9 +3,9 @@ import { Redirect, Switch, Route } from "react-router-dom";
 import Login from './AuthComponents/Login';
 import SignUp from './AuthComponents/SignUp';
 import Home from "./Home";
+import User from "./UserComponents/User"
 import { PrivateRoute, LoginRoute } from "./Routes";
 import Profile from './Profile';
-import $ from 'jquery';
 import ForgotPassword from './AuthComponents/ForgotPassword';
 import ResetPassword from './AuthComponents/ResetPassword';
 import Log from './Log';
@@ -55,6 +55,7 @@ function Train() {
             <Route exact path="/forgot-password"> <ForgotPassword /> </Route>
             <Route exact path="/reset-password"> <ResetPassword /> </Route>
             <PrivateRoute path="/home" exact> <Home /> </PrivateRoute>
+            <PrivateRoute path={"/home/user"} exact > <User /> </PrivateRoute>
             <PrivateRoute path="/log" exact> <Log /> </PrivateRoute>
             <PrivateRoute path={`/home/profile`} exact > <Profile /> </PrivateRoute>
             <Route path="*"> <Redirect to="/" /> </Route>
