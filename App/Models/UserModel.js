@@ -36,7 +36,8 @@ const userSchema = new Schema({
     ability:{type:Array},
     avatarURL:{type:String},
     activeAccount:{type:Boolean,default:false},
-    activatedAt:{type:Date} //! for activateUser Api, but should this data even exist?
+    activatedAt:{type:Date}, //! for activateUser Api, but should this data even exist?
+    lastActivity: {type:Date}
 })
 
 
@@ -104,6 +105,9 @@ userSchema.methods.getEssentialData = function()
         name:this.name,
         role:this.role
     }
+    this.lastActivity=Date.now();
+    this.email.createdAt=undefined;
+    this.save();
     return data;
 }
 
