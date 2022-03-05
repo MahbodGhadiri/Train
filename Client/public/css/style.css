@@ -25,6 +25,12 @@
     background-repeat: no-repeat;
     background-size: contain;
 }
+.showavatarboxuser{
+    width: 350px;
+    height: 350px;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
 .avatarsbox{
     margin: 10px;
     display:flex;
