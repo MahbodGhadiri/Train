@@ -273,14 +273,14 @@ function User() {
 
                 <div className="right shapebox">
                     <div className="imgsbox">
-                        <img src="/images/t-logo.png" alt="Train" />
+                        <img src="/images/header_logo.png" alt="Train" />
                         <Link to="/home/avatar">
                                 {/* <div style={{
                                     height: "350px", width: "200px", backgroundImage: "url(../avatars/boy1.png)", backgroundRepeat: "no-repeat",
                                     backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
                                 }} className="admin-img"> 
                                 </div>*/}
-                                 <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px"}}></div>
+                                 <div className='showavatarboxuser admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px",marginLeft:"-5px"}}></div>
                                     {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
                                     style={{
                                         height: "65%", width: "65%"}}/> */}
