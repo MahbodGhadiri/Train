@@ -12,17 +12,17 @@ import { store } from '../../app/store';
 import $ from 'jquery';
 import { showSuccess } from '../Toast_Functions';
 import moment from 'moment';
-import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList } from '../../features/user/userSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList , selectUserAvatarURL } from '../../features/user/userSlice';
 import { checklogin } from '../CheckLogin';
 import Prof from '../Prof';
 import { setUserId } from '../SessionStorage';
-
+import { Link } from 'react-router-dom';
 
 function User() {
 
     const dispatch = useDispatch();
     let tasks = [];
-
+    const avatarURL = useSelector(selectUserAvatarURL);
     const reload = useSelector(selectReload);
     const talents = useSelector(selectUserAbility);
     
@@ -247,6 +247,7 @@ function User() {
                     phone: response.data.phone.number,
                     email: response.data.email.address,
                     ability: response.data.ability,
+                    avatarURL: response.data.avatarURL,
                 })
 
             )
@@ -273,7 +274,18 @@ function User() {
                 <div className="right shapebox">
                     <div className="imgsbox">
                         <img src="/images/t-logo.png" alt="Train" />
-                        <img src="/images/shape-1-min.png" alt="" />
+                        <Link to="/home/avatar">
+                                {/* <div style={{
+                                    height: "350px", width: "200px", backgroundImage: "url(../avatars/boy1.png)", backgroundRepeat: "no-repeat",
+                                    backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
+                                }} className="admin-img"> 
+                                </div>*/}
+                                 <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px"}}></div>
+                                    {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
+                                    style={{
+                                        height: "65%", width: "65%"}}/> */}
+                                
+                            </Link>
                     </div>
                     <h2>{name}</h2>
                     <div className="img-sortby">

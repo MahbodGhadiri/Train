@@ -9,6 +9,7 @@ import Profile from './Profile';
 import ForgotPassword from './AuthComponents/ForgotPassword';
 import ResetPassword from './AuthComponents/ResetPassword';
 import Log from './Log';
+import Avatars from './Avatars';
 
 function Train() {
     //const name = useSelector(selectUserName);
@@ -58,7 +59,9 @@ function Train() {
             <PrivateRoute path={"/home/user"} exact > <User /> </PrivateRoute>
             <PrivateRoute path="/log" exact> <Log /> </PrivateRoute>
             <PrivateRoute path={`/home/profile`} exact > <Profile /> </PrivateRoute>
+            <PrivateRoute path={`/home/avatar`} exact > <Avatars /> </PrivateRoute>
             <Route path="*"> <Redirect to="/" /> </Route>
+
         </Switch>
     )
 }

@@ -85,7 +85,7 @@ class application
         (
             (req,res,next)=>{res.header('Access-Control-Allow-Credentials',true) ; next();}
         )
-        //app.use(cors(corsOpts)); 
+        app.use(cors(corsOpts)); 
         app.set('view engine','ejs');
         //app.use("/api",apiLimiter);
         app.use("/api",api);

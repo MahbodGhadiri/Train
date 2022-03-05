@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Header from '../Header';
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginDetails, selectUserName, selectUserAbility } from '../../features/user/userSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility ,selectUserAvatarURL} from '../../features/user/userSlice';
 import axios from 'axios';
 import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
@@ -11,12 +11,12 @@ import { showError } from '../Toast_Functions';
 import { checklogin } from "../CheckLogin";
 import $ from 'jquery';
 import { setUserId } from '../SessionStorage';
-
+import { Link } from 'react-router-dom';
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
     const talents = useSelector(selectUserAbility);
-
+    const avatarURL = useSelector(selectUserAvatarURL);
     async function prof() {
         // event.preventDefault();
 
@@ -30,6 +30,7 @@ function Admin() {
                     phone: response.data.phone.number,
                     email: response.data.email.address,
                     ability: response.data.ability,
+                    avatarURL: response.data.avatarURL,
                 })
             )
         }).catch(error => {
@@ -97,10 +98,23 @@ function Admin() {
                 <div className="right shapebox">
                     <div className="imgsbox">
                         <div className="borderc">
-                            <img src="./images/t-logo.png" alt="Train" />
+
+                            <img src="./images/header_logo.png" alt="Train" />
+
                         </div>
                         <div className="borderc" style={{ width: '90%', margin: '0 auto' }}>
-                            <img src="./images/shape-2-min.png" className="admin-img" alt="" />
+                            <Link to="/home/avatar">
+                                {/* <div style={{
+                                    height: "350px", width: "200px", backgroundImage: "url(../avatars/boy1.png)", backgroundRepeat: "no-repeat",
+                                    backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
+                                }} className="admin-img"> 
+                                </div>*/}
+                                 <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px"}}></div>
+                                    {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
+                                    style={{
+                                        height: "65%", width: "65%"}}/> */}
+                                
+                            </Link>
                             <h2>{name}</h2>
                             <div className="img-sortby">
                                 <span style={{ color: "#ff2442" }}>{"" + talents + ""}</span>
@@ -122,7 +136,7 @@ function Admin() {
                 <div style={{ clear: 'both' }} ></div>
 
                 <UserPinBox />
-                
+
 
 
             </div>
