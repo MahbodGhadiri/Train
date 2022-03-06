@@ -1,5 +1,5 @@
 
-export function checklogin(error)
+export function checkLogin(error)
 {
     if (error.status===401)
     {
