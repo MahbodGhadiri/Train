@@ -7,8 +7,8 @@ const transport = nodemailer.createTransport({
     port:465,
     secure:true,
     auth: {
-      user: process.env.transport_mail,
-      pass: process.env.trasport_pass
+      user: process.env.TRANSPORT_MAIL,
+      pass: process.env.TRANSPORT_PASS
     },
   });
 
@@ -26,7 +26,7 @@ async function sendEmail(userId,loginLink)
 
     mailOptions = 
     {
-        from: `Train <${process.env.transport_mail}>`,
+        from: `Train <${process.env.TRANSPORT_MAIL}>`,
         to: user.email.address,
         subject: "Confirm your account",
         html: `<div>
@@ -76,7 +76,7 @@ async function sendEmail(userId,loginLink)
   {
     mailOptions = 
     {
-        from: `Train <${process.env.transport_mail}>`,
+        from: `Train <${process.env.TRANSPORT_MAIL}>`,
         to: user.email.address,
         subject: "Reset Your Password",
         html: `<div>

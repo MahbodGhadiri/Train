@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const idValidator = require("../Validators/UserValidators").userIdValidator
 
-const logConnection = mongoose.createConnection(process.env.MongoDB_Address);
+const logConnection = mongoose.createConnection(process.env.MONGODB_ADDRESS);
 const logSchema= new mongoose
     .Schema({
         timestamp: {type:Date,required:true} ,

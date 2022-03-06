@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { selectLog, setLogs } from '../features/log/logSlice';
 import { useDispatch } from 'react-redux';
 import { showError, showSuccess } from './Toast_Functions';
-import {checkLogin} from './CheckLogin';
+import {checklogin} from './CheckLogin';
 
 function Log() {
   let logs = [];
@@ -22,7 +22,7 @@ function Log() {
       }));
     }).catch(error => {
       showError(error);
-      checkLogin()
+      checklogin()
     })
   }, []);
   
@@ -34,7 +34,7 @@ function Log() {
       })
       .catch(error=>{
         showError(error);
-        checkLogin(error);
+        checklogin(error);
       })
   }
   return(
