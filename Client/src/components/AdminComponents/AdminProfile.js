@@ -5,10 +5,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserRole, selectUserAbility } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import {getUserId, setUserId} from "../SessionStorage"
+import { getUserId, setUserId } from "../SessionStorage"
 import { selectReload, setReload } from '../../features/task/taskSlice';
 import { Link } from 'react-router-dom';
 import { store } from '../../app/store';
+import { findLastActivity } from "../date_functions"
 
 
 function Profile() {
@@ -33,15 +34,15 @@ function Profile() {
     const [talents, setTalents] = useState([]);
     const [password, setPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
-
     //-------------------------------------------
     const reload = useSelector(selectReload);
     const [activated, setActivated] = useState(false);
     //-------------------------------------------
     const userList = useSelector(selectUserList);
     let users = [];
-
-
+    const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
+    const [showChangePasswordBox, setShowChangePasswordBox] = useState(false);
+    console.log(userList);
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -79,7 +80,7 @@ function Profile() {
             showError(error);
             checklogin(error)
         });
-        
+
         if (newPassword) {
             await axios.post("/user/change-password",
                 { newPassword: newPassword, oldPassword: password },
@@ -93,7 +94,6 @@ function Profile() {
         }
 
     }
-
     // log out
     async function logOut(event) {
         event.preventDefault();
@@ -157,7 +157,7 @@ function Profile() {
 
         } else {
             console.log("مهارت قبلا وجود داشت ");
-            showError({response:{data:{message:"مهارت قبلا وجود داشت"}}})
+            showError({ response: { data: { message: "مهارت قبلا وجود داشت" } } })
         }
 
     }
@@ -303,7 +303,7 @@ function Profile() {
 
 
 
-                                <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autocomplete="off" value={phoneNumber}
+                                <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autocomplete="new-password" value={phoneNumber}
                                     onChange={e => {
                                         setPhoneNumber(e.target.value);
 
@@ -318,24 +318,7 @@ function Profile() {
                                     phoneNumber,
                                     `phone`
                                 )}
-                                <input
-                                    style={{ textAlign: "right" }}
-                                    type="password"
-                                    name="password"
 
-                                    placeholder="رمز جدید"
-                                    value={newPassword}
-                                    onChange={e => {
-                                        setNewPassword(e.target.value);
-                                        validator.current.showMessageFor(
-                                            "password"
-                                        );
-                                    }} />
-                                {validator.current.message(
-                                    "password",
-                                    newPassword,
-                                    `min: 8`
-                                )}
                                 <div className="skillsbox">{!perTalents || perTalents?.length === 0 ? "مهارتی نیست" : perTalents.toString()}
                                     <i className="fa fa-arrow-down" aria-hidden="true"></i>
                                     <ul>
@@ -350,28 +333,110 @@ function Profile() {
                                         </li>
                                     </ul>
                                 </div>
-                                <input type="submit" value="ویرایش" id="edit-btn" />
-                                <hr style={{ marginTop: "20px", margin: "20px" }} />
-                                <input
-                                    style={{ textAlign: "right" }}
-                                    type="password"
-                                    name="password"
-                                    autocomplete="off"
-                                    placeholder="رمز ورود"
-                                    value={password}
-                                    onChange={e => {
-                                        setPassword(e.target.value);
-                                        validator.current.showMessageFor(
-                                            "password"
-                                        );
-                                    }} />
-                                {validator.current.message(
-                                    "password",
-                                    password,
-                                    `min: 8`
-                                )}
+                                <input type="submit" value="ویرایش" id="edit-btn" style={{ marginTop: "10px" }} />
 
-                                <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perUserId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "-20px" }} id="edit-btn" />
+                                <div>
+                                    <h4 style={{ cursor:"pointer",color: "black", marginBottom: "-20px", width: "80%", textAlign: "center", marginLeft: "auto", marginRight: "auto" }} onClick={() => { setShowDeleteAccountBox(!showDeleteAccountBox); setShowChangePasswordBox(false) }}> پاک کردن اکانت {showDeleteAccountBox === false ? <span> &#8595; </span> : <span> &#8593; </span>}</h4>
+                                    {showDeleteAccountBox === true ?
+                                        <div>
+                                            <br />
+                                            <div>
+
+                                                <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                                <input
+                                                    style={{ textAlign: "right" }}
+                                                    type="password"
+                                                    name="password"
+                                                    autocomplete="new-password"
+                                                    placeholder="رمز ورود"
+                                                    value={password}
+                                                    onChange={e => {
+                                                        setPassword(e.target.value);
+                                                        validator.current.showMessageFor(
+                                                            "password"
+                                                        );
+                                                    }} />
+                                                {validator.current.message(
+                                                    "password",
+                                                    password,
+                                                    `min: 8`
+                                                )}
+                                                
+                                                
+                                                <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perUserId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "-20px", width: "80%" }} id="edit-btn" />
+                                                <br />
+                                                <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                            </div>
+                                        </div> : <></>}
+                                </div>
+
+                                <div style={{ marginTop: "20px" }}>
+                                    <h4 style={{ cursor:"pointer",color: "black", marginBottom: "-20px", width: "80%", textAlign: "center", marginLeft: "auto", marginRight: "auto" }} onClick={() => { setShowDeleteAccountBox(false); setShowChangePasswordBox(!showChangePasswordBox) }}>تغییر رمز {showChangePasswordBox === false ? <span> &#8595; </span> : <span> &#8593; </span>}</h4>
+                                    {showChangePasswordBox === true ? <div>
+                                        <br />
+                                        <div>
+
+                                            <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                            <input
+                                                style={{ textAlign: "right" }}
+                                                type="password"
+                                                name="password"
+                                                autocomplete="off"
+                                                placeholder="رمز ورود"
+                                                value={password}
+                                                onChange={e => {
+                                                    setPassword(e.target.value);
+                                                    validator.current.showMessageFor(
+                                                        "password"
+                                                    );
+                                                }} />
+                                            {validator.current.message(
+                                                "password",
+                                                password,
+                                                `min: 8`
+                                            )}
+                                            <input
+                                                style={{ textAlign: "right" }}
+                                                type="password"
+                                                name="password"
+                                                autoComplete="new-password"
+                                                placeholder="رمز جدید"
+                                                value={newPassword}
+                                                onChange={e => {
+                                                    setNewPassword(e.target.value);
+                                                    validator.current.showMessageFor(
+                                                        "password"
+                                                    );
+                                                }} />
+                                            {validator.current.message(
+                                                "password",
+                                                newPassword,
+                                                `min: 8`
+                                            )}
+                                            <input
+                                                style={{ textAlign: "right" }}
+                                                type="password"
+                                                name="password"
+                                                autoComplete="new-password"
+                                                placeholder="تکرار رمز جدید"
+                                                value={newPassword}
+                                                onChange={e => {
+                                                    setNewPassword(e.target.value);
+                                                    validator.current.showMessageFor(
+                                                        "password"
+                                                    );
+                                                }} />
+                                            {validator.current.message(
+                                                "password",
+                                                newPassword,
+                                                `min: 8`
+                                            )}
+                                            <input type="submit" value="تغییر رمز" onClick={e => deleteUser(e, perUserId)} style={{ color: "white", backgroundColor: "#3E2C41", marginBottom: "-20px", width: "80%" }} id="edit-btn" />
+                                            <br />
+                                            <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                        </div>
+                                    </div> : <></>}
+                                </div>
 
                             </form>
                         </div>
@@ -409,35 +474,42 @@ function Profile() {
                             {userList &&
                                 userList.map(
                                     (user) => {
-                                        if (user._id!=getUserId())
-                                        {    return (<div className="user" style={user.activeAccount === true ? { opacity: "100%" } : { opacity: "50%" }} >
+                                        if (user._id != getUserId()) {
+                                            return (<div className="user" style={user.activeAccount === true ? { opacity: "100%" } : { opacity: "50%" }} >
 
-                                        <i className="fa fa-times"
-                                            style={{ background: "#ff2442" }}
-                                            aria-hidden="true"
-                                            onClick={e => deActiveUser(e, user._id)}></i>
+                                                <i className="fa fa-times"
+                                                    style={{ background: "#ff2442" }}
+                                                    aria-hidden="true"
+                                                    onClick={e => deActiveUser(e, user._id)}></i>
 
-                                        <i
-                                            className="fa fa-arrow-down active"
-                                            style={{ transform: 'rotate(180deg)' }}
-                                            aria-hidden="true"
-                                            onClick={e => showInfo(e, user.name, user.email.address, user.phone.number, user.role, user._id)}></i>
 
-                                        <i
-                                            className="fa fa-circle circle-topbtn"
-                                            style={{ color: "#00af91" }}
-                                            aria-hidden="true"
-                                            onClick={e => activeUser(e, user._id)}
-                                        ></i>
 
-                                        <i
-                                            className="fa fa-circle"
-                                            style={{ color: "#707070" }}
-                                            aria-hidden="true"
-                                        ></i> {user.name}({user.role}{user.activeAccount})
-                                    </div>
+                                                <i
+                                                    className="fa fa-arrow-down active"
+                                                    style={{ transform: 'rotate(180deg)' }}
+                                                    aria-hidden="true"
+                                                    onClick={e => showInfo(e, user.name, user.email.address, user.phone.number, user.role, user._id)}></i>
 
-                                    )
+                                                <i
+                                                    className="fa fa-circle circle-topbtn"
+                                                    style={{ color: "#00af91" }}
+                                                    aria-hidden="true"
+                                                    onClick={e => activeUser(e, user._id)}
+                                                ></i>
+
+                                                <i
+                                                    className="fa fa-circle"
+                                                    style={{ color: "#707070" }}
+                                                    aria-hidden="true"
+                                                ></i> {user.name}({user.role}{user.activeAccount})
+
+                                                {user.lastActivity && user.lastActivity ? <span> <span > ( </span>
+                                                    <span> {findLastActivity(user.lastActivity) ? `${findLastActivity(user.lastActivity)[1]} ${findLastActivity(user.lastActivity)[0]} پیش` : " "} </span>
+                                                    <span >) </span></span> : <></>}
+
+                                            </div>
+
+                                            )
                                         }
                                     }
                                 )

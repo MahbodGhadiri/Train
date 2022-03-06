@@ -9,6 +9,7 @@ const initialState = {
     isUserAuthenticated:false,
     userList:[],
     customTasks:null,
+    avatarURL:"",
    
 }
 const userSlice = createSlice({
@@ -22,6 +23,7 @@ const userSlice = createSlice({
             state.phone = action.payload.phone;
             state.ability = action.payload.ability;
             state.id = action.payload.id;
+            state.avatarURL= action.payload.avatarURL;
         },
         setUserAuthenticationStatus: (state, action)=>{
             state.isUserAuthenticated = action.payload;
@@ -57,5 +59,5 @@ export const selectUserAuthenticationStatus = (state)=> state.user.isUserAuthent
 export const selectUserList = (state) => state.user.userList;
 export const selectUserAbility = (state) => state.user.ability;
 export const selectUserId = (state) => state.user.id;
-
+export const selectUserAvatarURL = (state) => state.user.avatarURL;
 export default userSlice.reducer;

@@ -18,7 +18,8 @@ const AdminTaskBox = () => {
     let tasks = [];
     const taskList = useSelector(selectTask);
     const reload = useSelector(selectReload);
-    const [userList, setUserList] = useState("")
+    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState("");
     const [time, setTime] = useState("")
     const [category, setCategory] = useState("");
     let [filter, setFilter] = useState("");
@@ -38,10 +39,19 @@ const AdminTaskBox = () => {
             tempFilter += `days=${time}&`;
             // console.log(filter)
         }
-        // if(userList)
-        // {
-        //     setFilter(filter+`userList=${userList}&`)
-        // }
+        if(user)
+        {
+            let index = users.findIndex(singleUser => singleUser.name === user);
+            if (index === -1){
+               alert("متاسفانه چنین کاربری وجود ندارد ")
+               //TODO use tostify instead of alert
+            }else{
+                tempFilter += `user=${users[index]._id}&`;
+            }
+
+            
+            
+        }
 
         setFilter(tempFilter)
         console.log(tempFilter);
@@ -60,8 +70,12 @@ const AdminTaskBox = () => {
     }
 
     useEffect(async () => {
-
-        console.log('in you (if) in hook');
+        await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+        .then((response) => {
+            setUsers(response.data);
+        }).catch((err) => {
+            showError(err)
+        })
         await axios.get(`/admin/tasks/?${filter}`,
             { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
         ).then(response => {
@@ -186,6 +200,7 @@ const AdminTaskBox = () => {
             }))
         }
     }
+    
     return (
         <div>
             <h2 >فعالیت های کاربران</h2>
@@ -199,10 +214,12 @@ const AdminTaskBox = () => {
                         <option value="مدیریت مالی" />
                         <option value="مدیریت" />
                     </datalist>
-                    <input type="text" list="userslist" name="username" placeholder="کاربر " onChange={e => setUserList(e.target.value)} />
-                    <datalist id="userslist" >
-                        <option value=" احمد" />
-                        <option value="امین" />
+                    <input type="text" list="userslist1" name="username" placeholder="کاربر " onChange={e => setUser(e.target.value)} />
+                    <datalist id="userslist1" >
+                        {users && users.map((user, key)=>{
+                            <option value={user.name} key={key} />
+                        })}
+                        
                     </datalist>
 
                     <input type="number" name="time" placeholder="زمان(روز)" value={time} onChange={e => setTime(e.target.value)} />

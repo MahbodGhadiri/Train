@@ -23,7 +23,7 @@ class AdminController
         res.status(200).send(users); 
     }
 
-    async getTasks(req,res)//optional query parameters for filtering : days , subject 
+    async getTasks(req,res)//optional query parameters for filtering : days , subject , user
     {
         const tasks = await adminTaskModel.find({});
         for (let i=0;i<tasks.length;i++)
@@ -36,14 +36,15 @@ class AdminController
                 tasks[i].save();
             }
         }
-        if(req.query.days||req.query.subject)
+        if(req.query.days||req.query.subject||req.query.user)
         {
-            const filter = new Filter(tasks,req.query.days,req.query.subject);
+            const filter = new Filter(tasks,req.query.days,req.query.subject,req.query.user);
             filter.byDays();
             filter.bySubject();
-            res.status(200).send({message:"با موفقیت انجام شد","tasks":filter.tasks}).json();
+            filter.byUserId();
+            return res.status(200).send({message:"با موفقیت انجام شد","tasks":filter.tasks}).json();
         }
-        else res.status(200).send({message:"انجام شد",tasks:tasks});
+        else return res.status(200).send({message:"انجام شد",tasks:tasks});
     }
 
     async setTask(req,res)

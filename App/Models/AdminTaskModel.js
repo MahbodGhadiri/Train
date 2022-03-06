@@ -17,11 +17,12 @@ const adminTaskModel = new mongoose.model("tasks",adminTaskSchema);
 
 class Filter
 {
-  constructor(tasks,days,subject)
+  constructor(tasks,days,subject,userId)
   {
     this.tasks=tasks
     this.days=days
     this.subject=subject
+    this.userId=userId
   }
 
   byDays ()
@@ -63,6 +64,31 @@ class Filter
       return this.tasks = filteredTasks;
     }
     else return
+  }
+
+  byUserId()
+  {
+    let tasks= this.tasks;
+    let userId = this.userId;
+    if(!tasks) return this.tasks=[]
+
+    if (userId)
+    {
+      let filteredTasks=[];
+      for(let i=0; i<tasks.length;i++)
+      {
+        for(let j=0; j<tasks[i].executors.length;j++)
+        {
+          if (tasks[i].executors[j]._id===userId)
+          {
+            filteredTasks.push(tasks[i]);
+          }
+        }
+      }
+      return this.tasks=filteredTasks;
+    }
+    else return
+
   }
 }
 
