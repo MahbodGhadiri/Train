@@ -12,7 +12,7 @@ import { store } from '../../app/store';
 import $ from 'jquery';
 import { showSuccess } from '../Toast_Functions';
 import moment from 'moment';
-import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList , selectUserAvatarURL } from '../../features/user/userSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList, selectUserAvatarURL } from '../../features/user/userSlice';
 import { checklogin } from '../CheckLogin';
 import Prof from '../Prof';
 import { setUserId } from '../SessionStorage';
@@ -25,7 +25,7 @@ function User() {
     const avatarURL = useSelector(selectUserAvatarURL);
     const reload = useSelector(selectReload);
     const talents = useSelector(selectUserAbility);
-    
+
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
@@ -151,10 +151,10 @@ function User() {
     //         $('.alert-b').hide(100);
     //     });
     // });
-    
-    
-    function openAdd(){
-        
+
+
+    function openAdd() {
+
 
         $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
@@ -225,14 +225,14 @@ function User() {
         $('.alert-b i.fa-times').click(function (e) {
             $('.alert-b').hide(100);
         });
-    } 
-    
+    }
+
     useEffect(async () => {
         console.log("first");
         await prof();
         console.log("second");
-       
-    },[]);
+
+    }, []);
 
     async function prof() {
         // event.preventDefault();
@@ -251,16 +251,16 @@ function User() {
                 })
 
             )
-             
+
         }).catch(error => {
             showError(error);
 
             console.log(error);
             checklogin(error)
         });
-      console.log(talents);
+        console.log(talents);
     }
-   
+
     //setTimeout(() => talentTransformer(talents),1000);
     return (
         <div dir="rtl">
@@ -275,17 +275,21 @@ function User() {
                     <div className="imgsbox">
                         <img src="/images/header_logo.png" alt="Train" />
                         <Link to="/home/avatar">
-                                {/* <div style={{
+                            {/* <div style={{
                                     height: "350px", width: "200px", backgroundImage: "url(../avatars/boy1.png)", backgroundRepeat: "no-repeat",
                                     backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
                                 }} className="admin-img"> 
                                 </div>*/}
-                                 <div className='showavatarboxuser admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px",marginLeft:"-5px"}}></div>
-                                    {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
+                            {avatarURL && avatarURL ? <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)`, marginBottom: "10px" }}></div>
+                                :
+
+                                <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/boy1.png)`, marginBottom: "10px" }}></div>
+                            }
+                            {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
                                     style={{
                                         height: "65%", width: "65%"}}/> */}
-                                
-                            </Link>
+
+                        </Link>
                     </div>
                     <h2>{name}</h2>
                     <div className="img-sortby">

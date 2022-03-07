@@ -78,6 +78,7 @@ span {
     padding: 15px;
     border-radius: 60px;
     transform: translate(0, 40%);
+    opacity: 90%;
 }
 
 .signup {

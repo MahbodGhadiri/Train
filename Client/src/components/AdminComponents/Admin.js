@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Header from '../Header';
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginDetails, selectUserName, selectUserAbility ,selectUserAvatarURL} from '../../features/user/userSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility, selectUserAvatarURL } from '../../features/user/userSlice';
 import axios from 'axios';
 import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
@@ -109,11 +109,13 @@ function Admin() {
                                     backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
                                 }} className="admin-img"> 
                                 </div>*/}
-                                 <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px"}}></div>
-                                    {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
-                                    style={{
-                                        height: "65%", width: "65%"}}/> */}
-                                
+                                {avatarURL !== "" ? <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)`, marginBottom: "10px" }}></div>
+                                :
+               
+                                <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/boy1.png)`, marginBottom: "10px" }}></div>
+                                        }
+
+
                             </Link>
                             <h2>{name}</h2>
                             <div className="img-sortby">
