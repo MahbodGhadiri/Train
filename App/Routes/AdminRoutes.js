@@ -30,6 +30,4 @@ router.put("/users/demote",[Auth,Admin,SuperAdmin],AdminController.demoteUser); 
 
 router.delete("/users/delete",[Auth,Admin,SuperAdmin],AdminController.deleteUser); //required query parameter: user(id)
 
-router.get("/log",[Auth,Admin,SuperAdmin],AdminController.getLog)
-
 module.exports= router;

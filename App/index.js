@@ -24,12 +24,12 @@ class application
 
     setupExpressServer()
     {
-        app.listen(8233,(err)=>{
+        app.listen(process.env.PORT,(err)=>{
             if (err){
                 console.log(`\u001b[1;31m${err}\u001b[0m`)
                 winston.error(err)
             }
-            else console.log(`\u001b[1;32mserver Listening on port 8233,\u001b[0m`)
+            else console.log(`\u001b[1;32mserver Listening on port ${process.env.PORT},\u001b[0m`)
         }
         )
     }
@@ -37,32 +37,15 @@ class application
     setupMongoose()
     {    
         mongoose
-        .connect(process.env.MongoDB_Address,{useNewUrlParser:true,useUnifiedTopology:true})
+        .connect(process.env.MONGODB_ADDRESS,{useNewUrlParser:true,useUnifiedTopology:true})
         .then(()=>{
-            console.log(`\u001b[1;32mConnected to DB,  \u001b[1;34m\u001b[0m`)
+            console.log(`\u001b[1;32mConnected to DB  \u001b[1;34m\u001b[0m`)
         })
-        .catch((err)=>{console.log(`\u001b[1;31mConection to DB failed,  \u001b[1;33m\u001b[0m \n`,err);})
+        .catch((err)=>{console.log(`\u001b[1;31mConection to DB failed  \u001b[1;33m\u001b[0m \n`,err);})
     }
 
     setupRoutesAndMiddlewares()
     {
-        const corsOpts = 
-        {
-           origin: 'http://localhost:3000',
-           withCredentials: true,
-           methods: 
-           [
-             'GET',
-             'POST',
-             'PUT',
-             'DELETE'
-           ],
-
-           allowedHeaders: 
-           [
-             'Content-Type'
-           ],
-        };
         //const apiLimiter = new rateLimit({
         //    windowMs: 15 * 60 * 1000, // 15 minutes
         //    max: 1000000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -84,8 +67,28 @@ class application
         app.use //? IS THIS NEEDED?
         (
             (req,res,next)=>{res.header('Access-Control-Allow-Credentials',true) ; next();}
-        )
-        app.use(cors(corsOpts)); 
+        ) 
+        if (process.env.DEVELOPMENT==="true")
+        {
+            const corsOpts = 
+            {
+            origin: 'http://localhost:3000',
+            withCredentials: true,
+            methods: 
+            [
+                'GET',
+                'POST',
+                'PUT',
+                'DELETE'
+            ],
+
+            allowedHeaders: 
+            [
+                'Content-Type'
+            ],
+            };
+            app.use(cors(corsOpts));
+        }
         app.set('view engine','ejs');
         //app.use("/api",apiLimiter);
         app.use("/api",api);
@@ -98,7 +101,7 @@ class application
     setupConfigs()
     {
         winston.add(new winston.transports.File({filename : "Error-log.log"}))
-        winston.add(new winston.transports.MongoDB({db:process.env.MongoDB_Address}))
+        winston.add(new winston.transports.MongoDB({db:process.env.MONGODB_ADDRESS}))
 
         process.on("uncaughtExeption",(err)=>
         {

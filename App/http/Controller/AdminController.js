@@ -4,7 +4,7 @@ const UserModel = require("../../Models/UserModel")
 const {adminTaskModel,Filter} = require("../../Models/AdminTaskModel")
 const {setTaskValidator,taskIdValidator} = require("../Validators/TaskValidators")
 const {userIdValidator}=require("../Validators/UserValidators");
-const mongoose = require("mongoose");
+
 class AdminController 
 {
     async getUsers (req,res)
@@ -227,20 +227,6 @@ class AdminController
         }
     }
 
-    async getLog(req,res)
-    {
-        const logConnection = mongoose.createConnection(process.env.MongoDB_Address);
-        const logSchema= new mongoose
-        .Schema({
-            timestamp: {type:Date,required:true} ,
-            level: {type:String,required:true},
-            message: {type:String,required:true},
-        })
-        const logModel =  logConnection.model('log', logSchema,'log')
-        
-        const log = await logModel.find()
-        res.status(200).send({log:log})
-    }
 }
 
 
