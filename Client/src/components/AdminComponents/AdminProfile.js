@@ -447,7 +447,7 @@ function Profile() {
                             } */}
                             {perUserRole === "admin" || perUserRole === "user" ? <div>
                                 <input type="submit" value="ترفیع" onClick={e => promoteUser(e, perUserId)} style={{ color: "green", width: "45%", backgroundColor: "white" }} />
-                                <input type="submit" value="نه ترفیع" onClick={e => demoteUser(e, perUserId)} style={{ color: "red", width: "45%", backgroundColor: "white" }} />
+                                <input type="submit" value="تنزیل" onClick={e => demoteUser(e, perUserId)} style={{ color: "red", width: "45%", backgroundColor: "white" }} />
                             </div> : <></>
                             }
                             <h2>مشاهده کاربران</h2>

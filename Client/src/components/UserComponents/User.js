@@ -131,8 +131,8 @@ function User() {
         $('.alert-b i.fa-times').click(function (e) {
             $('.alert-b').hide(100);
         });
-    } 
-    
+    }
+
     useEffect(async () => {
         await prof();
     },[]);
@@ -172,17 +172,21 @@ function User() {
                     <div className="imgsbox">
                         <img src="/images/header_logo.png" alt="Train" />
                         <Link to="/home/avatar">
-                                {/* <div style={{
+                            {/* <div style={{
                                     height: "350px", width: "200px", backgroundImage: "url(../avatars/boy1.png)", backgroundRepeat: "no-repeat",
                                     backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
                                 }} className="admin-img"> 
                                 </div>*/}
-                                 <div className='showavatarboxuser admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)` ,marginBottom:"10px",marginLeft:"-5px"}}></div>
-                                    {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
+                            {avatarURL && avatarURL ? <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)`, marginBottom: "10px" }}></div>
+                                :
+
+                                <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/boy1.png)`, marginBottom: "10px" }}></div>
+                            }
+                            {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
                                     style={{
                                         height: "65%", width: "65%"}}/> */}
-                                
-                            </Link>
+
+                        </Link>
                     </div>
                     <h2>{name}</h2>
                     <div className="img-sortby">
