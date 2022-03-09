@@ -6,6 +6,7 @@ import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectU
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
 import {Link}from "react-router-dom"
+import { emptySessionStrage } from '../SessionStorage';
 function Profile() {
     const dispatch = useDispatch();
 
@@ -23,7 +24,6 @@ function Profile() {
     const [password, setPassword] = useState("");
 
     //-------------------------------------------
-    const userList = useSelector(selectUserList);
     let users = [];
 
     //user validation with "SimpleReactValidator" start
@@ -50,30 +50,25 @@ function Profile() {
             phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
             ability: talents ?  editTalents : perTalents
         }
-        await axios.put("/user/change-info",
-            user,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
+        await axios.put("/user/change-info",user)
+        .then(response => {
             showSuccess(response)
-            console.log(response)
         }).catch(error => {
             showError(error);
-            console.log(error);
+            checklogin(error)
         });
 
     }
 
     async function logOut(event) {
         event.preventDefault();
-        await axios.get(`/user/logout`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then((response) => {
-            console.log(response);
-            window.sessionStorage.removeItem("isUserAuthenticated");
-            window.sessionStorage.removeItem("role");
+        await axios.get(`/user/logout`)
+        .then(() => {
+            emptySessionStrage();
             window.location.reload();
         }).catch((error) => {
             showError(error)
+            checklogin(error);
         });
     }
 
@@ -88,10 +83,8 @@ function Profile() {
     async function prof() {
         // event.preventDefault();
 
-        await axios.get("/user/profile",
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response)
+        await axios.get("/user/profile")
+        .then(response => {
             dispatch(
                 setUserLoginDetails({
                     name: response.data.name,
@@ -103,7 +96,6 @@ function Profile() {
             )
         }).catch(error => {
             showError(error);
-
             checklogin(error);
         });
     }
@@ -115,6 +107,7 @@ function Profile() {
 
         } else {
             console.log("مهارت قبلا وجود داشت ");
+            //TODO throw error 
         }
         
     }
@@ -122,13 +115,10 @@ function Profile() {
     async function deleteUser(e, userId) {
         e.preventDefault();
         await axios.post(`user/delete-account?user=${userId}`,
-            { password: password },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true },
-
+            { password: password }
         ).then(response => {
             showSuccess(response);
-            window.sessionStorage.removeItem("isUserAuthenticated");
-            window.sessionStorage.removeItem("role");
+            emptySessionStrage();
             window.location.reload();
 
         }).catch(error => {

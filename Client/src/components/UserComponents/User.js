@@ -3,34 +3,28 @@ import Header from "../Header";
 import UserAdminTaskBox from './UserAdminTaskBox';
 import UserPinBox from "./UserPinBox";
 import UserTaskBox from './UserTaskBox';
-import { selectTask, selectReload, } from '../../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, } from '../../features/task/taskSlice';
+import { setUserLoginDetails, selectUserName, selectUserAbility , selectUserAvatarURL } from '../../features/user/userSlice';
+import { setCustomTasksStatus } from '../../features/task/customTasksSlice';
 import axios from 'axios';
-import { showError } from '../Toast_Functions';
-import { store } from '../../app/store';
 import $ from 'jquery';
-import { showSuccess } from '../Toast_Functions';
 import moment from 'moment';
-import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList , selectUserAvatarURL } from '../../features/user/userSlice';
-import { checklogin } from '../CheckLogin';
-import Prof from '../Prof';
-import { setUserId } from '../SessionStorage';
 import { Link } from 'react-router-dom';
+import { checklogin } from '../CheckLogin';
+import { setUserId } from '../SessionStorage';
+import { showError, showSuccess } from '../Toast_Functions';
+
 
 function User() {
 
     const dispatch = useDispatch();
-    let tasks = [];
     const avatarURL = useSelector(selectUserAvatarURL);
-    const reload = useSelector(selectReload);
     const talents = useSelector(selectUserAbility);
-    
+
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
-    const [executors, setExecutors] = useState([]);
     const name = useSelector(selectUserName);
 
 
@@ -40,14 +34,12 @@ function User() {
         setTask("");
         setDays("");
         setSubjectTag("");
-        setExecutors([]);
-
     };
 
     const addTask = async (event) => {
         event.preventDefault();
 
-        const Task = {
+        const Task = { //TODO rename to payload
             title: title,
             task: task,
             startDate: moment().format('YYYY-MM-D '),
@@ -56,106 +48,20 @@ function User() {
         };
 
         await axios.post("/user/custom-tasks",
-            Task,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+            Task)
             .then(response => {
                 showSuccess(response);
                 reset();
-                /////////////
-                if (reload === false) {
-                    dispatch(setReload({
-                        reload: true
-                    }))
-
-                } else {
-                    dispatch(setReload({
-                        reload: false
-                    }))
-                }
-                ////////////
+                dispatch(setCustomTasksStatus({status:"idle"}))
             })
             .catch(error => {
                 showError(error);
-                console.log(error.response.message)
+                checklogin();
             })
     }
-    // useEffect(async () => {
 
-    //     $('.skillsbox .fa-arrow-down').click(function (e) {
-    //         $(this).toggleClass('active');
-    //         if ($(this).hasClass('active')) {
-    //             $('.skillsbox ul').slideDown();
-    //             $(this).css('transform', 'rotate(180deg)');
-    //         } else {
-    //             $('.skillsbox ul').slideUp();
-    //             $(this).css('transform', 'rotate(0deg)');
-    //         }
-    //     });
-
-    //     $('.show-box .show-item i.fa-eye').click(function () {
-    //         $(this).toggleClass('active');
-    //         if ($(this).hasClass('active')) {
-
-    //             $(this).removeClass('fa-eye').addClass('fa-eye-slash');
-    //             $('#pro-pass').attr('type', 'text');
-    //         } else {
-    //             $(this).removeClass('fa-eye-slash').addClass('fa-eye');
-    //             $('#pro-pass').attr('type', 'password');
-    //         }
-    //     });
-
-
-
-    //     // Height Window
-    //     var hw = ($(window).height()) - 125;
-    //     $('.alonebox,.groupbox').css('height', hw + 'px');
-
-    //     // Post
-    //     $('.post-btn').click(function (e) {
-    //         $('.post').show(200);
-    //     });
-    //     $('.post .fa-times').click(function (e) {
-    //         $('.post').hide(200);
-    //     });
-
-    //     // Alert Close
-    //     $('.alert-b i.fa-times').click(function (e) {
-    //         $('.alert-b').hide(100);
-    //     });
-
-    //     // AloneRow
-    //     $('.alonerow i.fa-arrow-down').on('click', function () {
-    //         $(this).closest('.task').find('.task-down').toggle(350);
-    //         $(this).toggleClass('active');
-    //         if ($(this).hasClass('active')) {
-    //             $(this).closest('.alonerow').find('.time').hide(200);
-    //         } else {
-    //             $(this).closest('.alonerow').find('.time').show(200);
-    //         }
-    //     });
-
-    //     // Height Window
-    //     var hw = ($(window).height()) - 130;
-    //     $('.alonebox,.groupbox').css('height', hw + 'px');
-
-    //     // Post
-    //     $('.post-btn').click(function (e) {
-    //         $('.post').show(200);
-    //     });
-    //     $('.post .fa-times').click(function (e) {
-    //         $('.post').hide(200);
-    //     });
-
-    //     // Alert Close
-    //     $('.alert-b i.fa-times').click(function (e) {
-    //         $('.alert-b').hide(100);
-    //     });
-    // });
-    
-    
     function openAdd(){
         
-
         $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
@@ -228,40 +134,31 @@ function User() {
     } 
     
     useEffect(async () => {
-        console.log("first");
         await prof();
-        console.log("second");
-       
     },[]);
 
     async function prof() {
         // event.preventDefault();
 
-        await axios.get("/user/profile",
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(async response => {
-            setUserId(response.data._id)
-            await dispatch(
-                setUserLoginDetails({
-                    name: response.data.name,
-                    phone: response.data.phone.number,
-                    email: response.data.email.address,
-                    ability: response.data.ability,
-                    avatarURL: response.data.avatarURL,
-                })
-
-            )
-             
-        }).catch(error => {
-            showError(error);
-
-            console.log(error);
-            checklogin(error)
-        });
-      console.log(talents);
+        await axios.get("/user/profile")
+            .then(response => {
+                setUserId(response.data._id)
+                dispatch(
+                    setUserLoginDetails({
+                        name: response.data.name,
+                        phone: response.data.phone.number,
+                        email: response.data.email.address,
+                        ability: response.data.ability,
+                        avatarURL: response.data.avatarURL,
+                    })
+                )
+            })
+            .catch(error => {
+                showError(error);
+                checklogin(error);
+            });
     }
    
-    //setTimeout(() => talentTransformer(talents),1000);
     return (
         <div dir="rtl">
             <div className="content">

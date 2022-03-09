@@ -1,177 +1,88 @@
 import React, { useEffect, useState } from 'react'
-import { selectTask, selectReload } from '../../features/task/taskSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, } from '../../features/task/taskSlice';
-import { setCustomTasks, selectCustomTasks } from '../../features/user/userSlice';
+import { Link } from 'react-router-dom';
+import { selectCustomTasks, selectCustomTasksFilter, fetchCustomTasks } from '../../features/task/customTasksSlice';
+import { setCustomTasksStatus, setCustomTasksFilter } from '../../features/task/customTasksSlice';
 import axios from 'axios';
-import { showError } from '../Toast_Functions';
-import { store } from '../../app/store';
-import $ from 'jquery';
+import { showError, showSuccess } from '../Toast_Functions';
 import { dateToJalali, find_diff } from "../date_functions";
-import moment from 'moment';
-import AddTask from "../AdminComponents/AddTask";
-import { setUserLoginDetails, selectUserName, selectUserAbility, setUsersList } from '../../features/user/userSlice';
+import { checklogin } from '../CheckLogin';
+
 function UserTaskBox() {
 
     const dispatch = useDispatch();
-    let tasks = [];
     const taskList = useSelector(selectCustomTasks);
-    const reload = useSelector(selectReload);
-    const [userList, setUserList] = useState("")
-    const [time, setTime] = useState("")
+    const taskStatus = useSelector(state=>state.customTasks.status);
+    const filter = useSelector(selectCustomTasksFilter);
+    const [userList, setUserList] = useState(""); //TODO filter using users
+    const [time, setTime] = useState("");
     const [category, setCategory] = useState("");
-    let [filter, setFilter] = useState("");
-    let tempFilter = "";
-    let [taskDone, setTaskDone] = useState(false);
-    //const [sendRequest, setSendRequest] = useState(false);
 
     useEffect(async () => {
+        if(taskStatus==="idle"){
+            dispatch(fetchCustomTasks(filter));
+        }
+    }, [taskStatus,dispatch]);
 
-        console.log('getting user taskbox');
-        await axios.get(`/user/custom-tasks/?${filter}`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-            tasks = response.data;
-            console.log(tasks);
-            console.log("HELLO1");
-            dispatch(setReload({
-                reload: true
-            }));
-            console.log(reload);
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-        });
-
-        dispatch(
-            setCustomTasks({
-                customTasks: tasks
-            }));
-
-
-    }, [store.getState().task.reload]);
     async function deleteTask(e, taskId) {
         e.preventDefault();
 
-        console.log(taskId);
-
-        await axios.delete(`/user/custom-tasks/delete?task=${taskId}`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-
-
+        await axios.delete(`/user/custom-tasks/delete?task=${taskId}`)
+        .then(response => {
+            showSuccess(response);
+            dispatch(setCustomTasksStatus({status:"idle"}))
         }).catch(error => {
-            console.log(error);
+            checklogin(error);
             showError(error);
         });
-
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
     }
 
     function filterTask(event) {
         event.preventDefault();
-        console.log("gd");
+        let tempFilter = "";
         if (category) {
-            // console.log(category);
             tempFilter = `subject=${category}&`;
-
         }
         if (time) {
-
             tempFilter += `days=${time}&`;
-            // console.log(filter)
         }
         // if(userList)
         // {
         //     setFilter(filter+`userList=${userList}&`)
         // }
-
-        setFilter(tempFilter)
-        console.log(tempFilter);
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
-        //////////////
+        dispatch(setCustomTasksFilter({filter:tempFilter}))
     }
+
     async function unDoneTask(e, taskId, task) {
+        //TODO after fixing api, just edit "done"
         await axios.put(`/user/custom-tasks/edit?task=${taskId}`, {
             title: task.title,
             task: task.task,
             startDate: task.startDate,
             finishDate: task.finishDate,
             subjectTag: task.subjectTag
-        },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-
-
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-        });
-
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
+        })
+            .then(response => {
+                showSuccess(response);
+                dispatch(setCustomTasksStatus({status:"idle"}));
+            })
+            .catch(error => {
+                checklogin(error);
+                showError(error);
+            });
     }
     async function okTask(e, taskId) {
         e.preventDefault();
 
-        console.log(taskId);
-
-        await axios.get(`/user/custom-tasks/done?task=${taskId}`,
-
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-
-
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-        });
-
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
+        await axios.get(`/user/custom-tasks/done?task=${taskId}`)
+            .then(response => {
+                showSuccess(response);
+                dispatch(setCustomTasksStatus({status:"idle"}))
+            }).catch(error => {
+                checklogin(error)
+                showError(error);
+            });
     }
-
 
     return (
         <div>
@@ -197,6 +108,7 @@ function UserTaskBox() {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
+                            <Link to={`/home/custom-task/${task._id}`}>
                             <div>
 
                                 <div className="alonerow" style={task.done ? { opacity: "50%" } : { opacity: "100" }}>
@@ -237,6 +149,7 @@ function UserTaskBox() {
 
                                 </div>
                             </div>
+                            </Link>
                         )
                     )}
 

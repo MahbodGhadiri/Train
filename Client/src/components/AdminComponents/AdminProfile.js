@@ -5,8 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserRole, selectUserAbility } from '../../features/user/userSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import { getUserId, setUserId } from "../SessionStorage"
-import { selectReload, setReload } from '../../features/task/taskSlice';
+import { emptySessionStrage, getUserId, setUserId } from "../SessionStorage"
+import { selectReload, setReload } from '../../features/task/adminTasksSlice';
 import { Link } from 'react-router-dom';
 import { store } from '../../app/store';
 import { findLastActivity } from "../date_functions"
@@ -42,7 +42,6 @@ function Profile() {
     let users = [];
     const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
     const [showChangePasswordBox, setShowChangePasswordBox] = useState(false);
-    console.log(userList);
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -71,10 +70,8 @@ function Profile() {
             ability: talents !== [] ? editTalents : ["دیگر"],
         }
 
-        await axios.put("/user/change-info",
-            user,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
+        await axios.put("/user/change-info",user)
+        .then(response => {
             showSuccess(response)
         }).catch(error => {
             showError(error);
@@ -97,11 +94,10 @@ function Profile() {
     // log out
     async function logOut(event) {
         event.preventDefault();
-        await axios.get(`/user/logout`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then((response) => {
-            window.sessionStorage.removeItem("isUserAuthenticated");
-            window.sessionStorage.removeItem("role");
+        
+        await axios.get(`/user/logout`)
+        .then((response) => {
+            emptySessionStrage();
             window.location.reload();
         }).catch((error) => {
             showError(error)
@@ -112,9 +108,8 @@ function Profile() {
     useEffect(async () => {
 
         prof();
-        await axios.get(`/admin/users`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
+        await axios.get(`/admin/users`,)
+        .then(response => {
             users = response.data
         }).catch(error => {
             console.log(error);
@@ -123,13 +118,12 @@ function Profile() {
         });
 
         dispatch(setUsersList({ userList: users }));
-    }, [store.getState().task.reload]);
+    }, [store.getState().adminTasks.reload]);
     async function prof() {
         // event.preventDefault();
 
-        await axios.get("/user/profile",
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
+        await axios.get("/user/profile")
+        .then(response => {
             setUserId(response.data._id)
             dispatch(
                 setUserLoginDetails({
@@ -144,19 +138,14 @@ function Profile() {
             )
         }).catch(error => {
             showError(error);
-
-            console.log(error);
             checklogin(error);
         });
     }
     function AddTalents(e, talent) {
         e.preventDefault();
-        console.log(talent);
         if (talents.find(e => e === talent) === undefined) {
             talents.push(talent);
-
         } else {
-            console.log("مهارت قبلا وجود داشت ");
             showError({ response: { data: { message: "مهارت قبلا وجود داشت" } } })
         }
 
@@ -171,13 +160,10 @@ function Profile() {
     }
     async function activeUser(e, userId) {
         e.preventDefault();
-        await axios.put(`admin/users/activate?user=${userId}`,
-            {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
+        await axios.put(`admin/users/activate?user=${userId}`)
+        .then(response => {
             showSuccess(response);
             setActivated(true);
-
         }).catch(error => {
             showError(error);
             checklogin(error);
@@ -197,10 +183,8 @@ function Profile() {
     }
     async function deActiveUser(e, userId) {
         e.preventDefault();
-        await axios.put(`admin/users/deactivate?user=${userId}`,
-            {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
+        await axios.put(`admin/users/deactivate?user=${userId}`)
+        .then(response => {
             showSuccess(response);
             setActivated(false);
         }).catch(error => {
@@ -222,9 +206,8 @@ function Profile() {
     }
     async function promoteUser(e, userId) {
         e.preventDefault();
-        await axios.put(`admin/users/promote?user=${userId}`,
-            {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
+        await axios.put(`admin/users/promote?user=${userId}`)
+        .then(response => {
             showSuccess(response);
             setPerUserRole("admin");
 
@@ -254,10 +237,8 @@ function Profile() {
 
         ).then(response => {
             showSuccess(response);
-            window.sessionStorage.removeItem("isUserAuthenticated");
-            window.sessionStorage.removeItem("role");
+            emptySessionStrage();
             window.location.reload();
-
         }).catch(error => {
             showError(error);
             checklogin(error);
