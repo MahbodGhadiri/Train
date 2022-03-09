@@ -5,7 +5,7 @@ import { useHistory } from "react-router";
 const Header = () => {
     const role = getUserAuthorization();
     const history = useHistory();
-    console.log(history.location.pathname)
+        
     return (
         <div >
             <a href="./profile.html" className="usericn">

@@ -42,3 +42,10 @@ export function getUserId()
     }
     return role
 }
+
+export function emptySessionStrage()
+{
+    window.sessionStorage.removeItem("isUserAuthenticated");
+    window.sessionStorage.removeItem("role");
+    window.sessionStorage.removeItem("id");
+}

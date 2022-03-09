@@ -6,7 +6,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'https://trainapp.org/api';
+axios.defaults.baseURL = 'http://localhost:8233/api';
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Content-Type']='application/json' //? is this needed?
 
 function App() {
   

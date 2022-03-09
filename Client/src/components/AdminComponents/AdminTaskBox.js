@@ -1,43 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import { selectTask, selectReload } from '../../features/task/taskSlice';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, setReload, } from '../../features/task/taskSlice';
+import { selectAdminTasks, selectAdminTasksFilter, fetchAdminTasks } from '../../features/task/adminTasksSlice';
+import { setTasksStatus, setTasksFilter, setToBeEditedTask } from '../../features/task/adminTasksSlice';
 import axios from 'axios';
-import { showError } from '../Toast_Functions';
-import { store } from '../../app/store';
+import { showError, showSuccess } from '../Toast_Functions';
 import { dateToJalali, find_diff } from '../date_functions';
-import { setSingleTasks } from '../../features/task/singleTaskSlice';
+import { Link , useRouteMatch} from 'react-router-dom';
+import { checklogin } from '../CheckLogin';
 
 
 
 const AdminTaskBox = () => {
-
-
-
     const dispatch = useDispatch();
-    let tasks = [];
-    const taskList = useSelector(selectTask);
-    const reload = useSelector(selectReload);
+    const taskList = useSelector(selectAdminTasks);
+    const filter = useSelector(selectAdminTasksFilter);
+    const taskStatus = useSelector(state => state.adminTasks.status);
     const [users, setUsers] = useState([]);
     const [user, setUser] = useState("");
     const [time, setTime] = useState("")
     const [category, setCategory] = useState("");
-    let [filter, setFilter] = useState("");
-    let tempFilter = "";
+    let {url} = useRouteMatch()
 
-    //const [sendRequest, setSendRequest] = useState(false);
     function filterTask(event) {
-        event.preventDefault();
+        event.preventDefault(); //? is this needed?
 
+        let tempFilter = "";
         if (category) {
-            // console.log(category);
             tempFilter = `subject=${category}&`;
-
         }
         if (time) {
-
             tempFilter += `days=${time}&`;
-            // console.log(filter)
         }
         if(user)
         {
@@ -47,158 +39,60 @@ const AdminTaskBox = () => {
                //TODO use tostify instead of alert
             }else{
                 tempFilter += `user=${users[index]._id}&`;
-            }
-
-            
-            
+            }   
         }
-
-        setFilter(tempFilter)
-        console.log(tempFilter);
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
-        //////////////
+        dispatch(setTasksFilter({filter:tempFilter}))
     }
 
+    useEffect(()=>{
+        if(taskStatus==="idle"){
+            dispatch(fetchAdminTasks(filter));
+        }
+    },[taskStatus, dispatch])
+
     useEffect(async () => {
-        await axios.get("/admin/users", { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+        await axios.get("/admin/users")
         .then((response) => {
             setUsers(response.data);
         }).catch((err) => {
             showError(err)
         })
-        await axios.get(`/admin/tasks/?${filter}`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            // console.log(response);
-            tasks = response.data.tasks;
-
-            dispatch(setReload({
-                reload: true
-            }));
-            console.log(reload);
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-        });
-
-        // console.log(tasks);
-        dispatch(
-            setTasks({
-                task: tasks
-            }));
-
-    }, [store.getState().task.reload]);
+    }, []);
     
     async function deleteTask(e, taskId) {
-        e.preventDefault();
+        e.preventDefault(); //? is this needed?
 
-        console.log(taskId);
-
-        await axios.delete(`/admin/tasks/delete/?task=${taskId}`,
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-
-
+        await axios.delete(`/admin/tasks/delete/?task=${taskId}`)
+        .then(response => {
+            showSuccess(response);
+            dispatch(setTasksStatus({status:"idle"}));
         }).catch(error => {
-            console.log(error);
+            checklogin(error);
             showError(error);
         });
-
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
     }    
     
     async function okTask(e, taskId) {
-        e.preventDefault();
+        e.preventDefault(); //? is this needed?
 
-        console.log(taskId);
-
-        await axios.put(`/admin/tasks/done?task=${taskId}`,
-            {},{ headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-
+        await axios.put(`/admin/tasks/done?task=${taskId}`)
+        .then(response => {
+            showSuccess(response);
+            dispatch(setTasksStatus({status:"idle"})) ; 
         }).catch(error => {
-            console.log(error);
+            checklogin(error);
             showError(error);
         });
-
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        console.log(reload);
     }
     
-    async function confirmTask(e, taskId) {
-        e.preventDefault();
+    async function confirmTask(e, taskId) { //? whats the point of this?
+        e.preventDefault(); 
         deleteTask(e,taskId)
     }
     
-    function editTask(e, taskik) {
+    function editTask(e, task) {
         e.preventDefault();
-        dispatch(setSingleTasks({singleTask: taskik}));
-
-    }
-    
-    async function unDoneTask(e, taskId, task) {
-        await axios.put(`/admin/tasks/edit?task=${taskId}`, {
-            _id: taskId,
-            title: task.title,
-            task: task.task,
-            startDate: task.startDate,
-            finishDate: task.finishDate,
-            subjectTag: task.subjectTag,
-            done: false,
-            delay: false,
-            executors: task.executors,
-        },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            console.log(response);
-
-
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-        });
-
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
+        dispatch(setToBeEditedTask({toBeEditedTask: task}));
     }
     
     return (
@@ -236,6 +130,7 @@ const AdminTaskBox = () => {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
+                            <Link to={`${url}/task/${task._id}?role=admin`}>
                             <div className="alonerow" style={task.done || task.delayed ? { opacity: "50%" } : { opacity: "100" }}>
                                 <div className="task">
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
@@ -248,9 +143,11 @@ const AdminTaskBox = () => {
                                         }}></i>
                                     <i className="fa fa-arrow-down" style={{ background: "#ffb830" }} ariaHidden="true" ></i>
                                     {task.done ? <i className="fa fa-circle circle-topbtn" style={{ color: "green" }} aria-hidden="true" onClick={e => confirmTask(e, task._id)}></i> : <i className="fa fa-circle circle-topbtn" style={{ color: "#5c527f" }} aria-hidden="true" onClick={e => okTask(e, task._id)}></i>}                                    <div className="task-down">
+                                       
                                         <p>
                                             {task.task}
                                         </p>
+                                       
                                         <span className="created" style={{ color: "#868686" }} >توسط <span style={{ color: "#ffb830" }} >{task.assignedBy.name}<span style={{ opacity: "0" }}>-</span></span></span>
 
                                         <span className="created" style={{ color: "#868686" }} > <span >برای</span> {task.executors[0] === undefined ? <span >همه</span> : <></>} <span style={{ color: "#ffb830" }} >
@@ -278,8 +175,11 @@ const AdminTaskBox = () => {
                                     {find_diff(task.finishDate)} 
                                 </div>
                             </div>
+                            </Link>  
                         )
-                    )}
+                        
+                    )
+                }
             </div>
         </div>
     )

@@ -1,11 +1,9 @@
-
+import { emptySessionStrage } from "./SessionStorage";
 export function checklogin(error)
 {
     if (error?.response.status===401)
     {
-        window.sessionStorage.removeItem("isUserAuthenticated");
-        window.sessionStorage.removeItem("role");
-        window.sessionStorage.removeItem("id")
+        emptySessionStrage();
         window.location.reload();
     }
 }
