@@ -2,19 +2,29 @@ import React, { useEffect, useState, useRef } from 'react'
 import { showError, showSuccess } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserRole, selectUserAbility } from '../../features/user/userSlice';
+import { 
+    selectUserEmail,
+    selectUserName, 
+    selectUserPhone,  
+    setProfileStatus, 
+    selectUserRole, 
+    selectUserAbility,
+    fetchProfile 
+} from '../../features/user/ProfileSlice';
+import {selectUserList, setUsersStatus ,fetchUsers} from "../../features/user/userSlice";
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import { emptySessionStrage, getUserId, setUserId } from "../SessionStorage"
-import { selectReload, setReload } from '../../features/task/adminTasksSlice';
+import { emptySessionStrage, getUserId } from "../SessionStorage"
 import { Link } from 'react-router-dom';
-import { store } from '../../app/store';
 import { findLastActivity } from "../date_functions"
 
 
 function Profile() {
     const dispatch = useDispatch();
 
+    //TODO add selectors
+    const profileStatus= useSelector(state=>state.profile.status);
+    const usersStatus= useSelector(state=>state.users.status);
     //----------------------------------------------
     const perName = useSelector(selectUserName);
     const perEmail = useSelector(selectUserEmail);
@@ -35,11 +45,7 @@ function Profile() {
     const [password, setPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     //-------------------------------------------
-    const reload = useSelector(selectReload);
-    const [activated, setActivated] = useState(false);
-    //-------------------------------------------
     const userList = useSelector(selectUserList);
-    let users = [];
     const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
     const [showChangePasswordBox, setShowChangePasswordBox] = useState(false);
     //user validation with "SimpleReactValidator" start
@@ -57,6 +63,20 @@ function Profile() {
         })
     );
     //user validation with "SimpleReactValidator" end
+  
+    //fetch profile
+    useEffect(()=>{
+        if(profileStatus==="idle"){
+            dispatch(fetchProfile());
+        }
+    },[profileStatus,dispatch])
+
+    //fetch users
+    useEffect(() => {
+        if(usersStatus==="idle"){
+            dispatch(fetchUsers())
+        }
+    }, [usersStatus, dispatch]);
 
     // edit user
     async function editUser(event) {
@@ -71,23 +91,23 @@ function Profile() {
         }
 
         await axios.put("/user/change-info",user)
-        .then(response => {
-            showSuccess(response)
-        }).catch(error => {
-            showError(error);
-            checklogin(error)
-        });
-
-        if (newPassword) {
-            await axios.post("/user/change-password",
-                { newPassword: newPassword, oldPassword: password },
-                { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-            ).then(response => {
+            .then(response => {
                 showSuccess(response)
-            }).catch(error => {
+                dispatch(setProfileStatus({status:"idle"}));
+            })
+            .catch(error => {
                 showError(error);
                 checklogin(error)
             });
+
+        if (newPassword) {
+            await axios.post("/user/change-password",{ newPassword: newPassword, oldPassword: password })
+                .then(response => {
+                    showSuccess(response)
+                }).catch(error => {
+                    showError(error);
+                    checklogin(error)
+                });
         }
 
     }
@@ -104,53 +124,18 @@ function Profile() {
             checklogin(error)
         });
     }
-    // profile
-    useEffect(async () => {
-
-        prof();
-        await axios.get(`/admin/users`,)
-        .then(response => {
-            users = response.data
-        }).catch(error => {
-            console.log(error);
-            showError(error);
-            checklogin(error)
-        });
-
-        dispatch(setUsersList({ userList: users }));
-    }, [store.getState().adminTasks.reload]);
-    async function prof() {
-        // event.preventDefault();
-
-        await axios.get("/user/profile")
-        .then(response => {
-            setUserId(response.data._id)
-            dispatch(
-                setUserLoginDetails({
-
-                    name: response.data.name,
-                    phone: response.data.phone.number,
-                    email: response.data.email.address,
-                    ability: response.data.ability,
-                    role: response.data.role,
-
-                })
-            )
-        }).catch(error => {
-            showError(error);
-            checklogin(error);
-        });
-    }
+    
     function AddTalents(e, talent) {
         e.preventDefault();
         if (talents.find(e => e === talent) === undefined) {
             talents.push(talent);
         } else {
-            showError({ response: { data: { message: "مهارت قبلا وجود داشت" } } })
+            showError({ response: { data: { message: "مهارت قبلا وجود داشت" } } }) //TODO improve this
         }
 
     }
-    function showInfo(e, name, email, phone, role, id) {
+
+    function showInfo(e, name, email, phone, role, id) { //TODO improve
         e.preventDefault();
         setPerUserEmail(email);
         setPerUserName(name);
@@ -158,52 +143,31 @@ function Profile() {
         setPerUserRole(role);
         setPerUserId(id);
     }
+
     async function activeUser(e, userId) {
         e.preventDefault();
         await axios.put(`admin/users/activate?user=${userId}`)
         .then(response => {
             showSuccess(response);
-            setActivated(true);
+            dispatch(setUsersStatus({status:"idle"}));
         }).catch(error => {
             showError(error);
             checklogin(error);
         })
-        ///////////////
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        //////////////
     }
+
     async function deActiveUser(e, userId) {
         e.preventDefault();
         await axios.put(`admin/users/deactivate?user=${userId}`)
         .then(response => {
             showSuccess(response);
-            setActivated(false);
+            dispatch(setUsersStatus({status:"idle"}));
         }).catch(error => {
             showError(error);
             checklogin(error);
         })
-        ///////////////
-        if (reload === false) {
-            dispatch(setReload({
-                reload: true
-            }))
-
-        } else {
-            dispatch(setReload({
-                reload: false
-            }))
-        }
-        //////////////
     }
+
     async function promoteUser(e, userId) {
         e.preventDefault();
         await axios.put(`admin/users/promote?user=${userId}`)
@@ -217,32 +181,32 @@ function Profile() {
         })
 
     }
+
     async function demoteUser(e, userId) {
         e.preventDefault();
-        await axios.put(`admin/users/demote?user=${userId}`,
-            {}, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            showSuccess(response);
-            setPerUserRole("user");
-        }).catch(error => {
-            showError(error);
-            checklogin(error);
-        })
+        await axios.put(`admin/users/demote?user=${userId}`)
+            .then(response => {
+                showSuccess(response);
+                setPerUserRole("user");
+            })
+            .catch(error => {
+                showError(error);
+                checklogin(error);
+            })
     }
+
     async function deleteUser(e, userId) {
         e.preventDefault();
-        await axios.post(`user/delete-account?user=${userId}`,
-            { password: password },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true },
-
-        ).then(response => {
-            showSuccess(response);
-            emptySessionStrage();
-            window.location.reload();
-        }).catch(error => {
-            showError(error);
-            checklogin(error);
-        })
+        await axios.post(`user/delete-account?user=${userId}`,{ password: password })
+            .then(response => {
+                showSuccess(response);
+                emptySessionStrage();
+                window.location.reload();
+            })
+            .catch(error => {
+                showError(error);
+                checklogin(error);
+            })
     }
 
     return (

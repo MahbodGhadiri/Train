@@ -60,7 +60,7 @@ const setCustomTaskValidator=(data)=>
 }
 const changeInfoValidator=(data)=>{
     const schema = joi.object({
-        name: joi.string().required().min(3).max(50).messages(
+        name: joi.string().min(3).max(50).messages(
             {
                 "any.required":"نوشتن نام الزامی است!",
                 "string.base":"اسم نامعتبر است!",
@@ -68,7 +68,7 @@ const changeInfoValidator=(data)=>{
                 "string.max":"اسم باید حداکثر پنجاه کارکتر باشد!"
             }
         ),
-        phoneNumber: joi.string().required().length(11).pattern(/^[0-9]+$/).messages(
+        phoneNumber: joi.string().length(11).pattern(/^[0-9]+$/).messages(
             {
                 "any.required":"نوشتن شماره الزامی است!",
                 "string.base":"شماره نامعتبر است!",

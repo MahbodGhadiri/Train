@@ -51,10 +51,15 @@ class UserController
     if (error) { return res.status(400).send({ message: error.message }) };
 
     const user = await userModel.findOne({_id:req.user._id})
-    user.phone.number=req.body.phoneNumber;
-    user.name = req.body.name;
-    user.avatarURL = req.body.avatarURL;
-    user.ability = req.body.ability;
+    for(const field in req.body){
+      if(field!=="phoneNumber")
+      {
+        user[field]=req.body[field];
+      }
+      else if (field=="phoneNumber"){
+        user.phone.number=req.body.phoneNumber;
+      }
+    }
     user.email.createdAt =undefined;
     await user.save()
     res.status(200).send({message:"انجام شد"})

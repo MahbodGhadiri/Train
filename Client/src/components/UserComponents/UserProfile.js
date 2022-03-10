@@ -2,14 +2,22 @@ import React, { useEffect, useState, useRef } from 'react'
 import { showError, showSuccess } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserAbility, selectUserId } from '../../features/user/userSlice';
+import { 
+    selectUserEmail,
+    selectUserName, 
+    selectUserPhone, 
+    selectUserAbility, 
+    selectUserId,
+    fetchProfile,
+    setProfileStatus
+} from '../../features/user/ProfileSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import {Link}from "react-router-dom"
+import {Link}from "react-router-dom";
 import { emptySessionStrage } from '../SessionStorage';
 function Profile() {
     const dispatch = useDispatch();
-
+    const profileStatus = useSelector(state=>state.profile.status);
     //----------------------------------------------
     const perName = useSelector(selectUserName);
     const perEmail = useSelector(selectUserEmail);
@@ -24,7 +32,6 @@ function Profile() {
     const [password, setPassword] = useState("");
 
     //-------------------------------------------
-    let users = [];
 
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
@@ -40,6 +47,12 @@ function Profile() {
             element: message => <div style={{ color: "red", textAlign: "center", fontSize: "2vh" }}>{message}</div>
         })
     );
+    // fetch profile
+    useEffect(()=>{
+        if(profileStatus==="idle"){
+            dispatch(fetchProfile());
+        }
+    },[profileStatus,dispatch])
 
     //user validation with "SimpleReactValidator" end
     async function editUser(event) {
@@ -53,11 +66,11 @@ function Profile() {
         await axios.put("/user/change-info",user)
         .then(response => {
             showSuccess(response)
+            dispatch(setProfileStatus({status:"idle"}));
         }).catch(error => {
             showError(error);
-            checklogin(error)
+            checklogin(error);
         });
-
     }
 
     async function logOut(event) {
@@ -67,40 +80,12 @@ function Profile() {
             emptySessionStrage();
             window.location.reload();
         }).catch((error) => {
-            showError(error)
-            checklogin(error);
-        });
-    }
-
-    useEffect(async () => {
-
-        prof();
-
-
-        dispatch(setUsersList({ userList: users }));
-    }, []);
-    
-    async function prof() {
-        // event.preventDefault();
-
-        await axios.get("/user/profile")
-        .then(response => {
-            dispatch(
-                setUserLoginDetails({
-                    name: response.data.name,
-                    phone: response.data.phone.number,
-                    email: response.data.email.address,
-                    ability: response.data.ability,
-                    id: response.data._id,
-                })
-            )
-        }).catch(error => {
             showError(error);
             checklogin(error);
         });
     }
 
-    function AddTalents(e, talent) {
+    function AddTalents(e, talent) { //TODO improve this
         e.preventDefault();
         if (perTalents.find(epr => epr === talent) === undefined) {
             talents.push(talent);
@@ -114,17 +99,16 @@ function Profile() {
 
     async function deleteUser(e, userId) {
         e.preventDefault();
-        await axios.post(`user/delete-account?user=${userId}`,
-            { password: password }
-        ).then(response => {
-            showSuccess(response);
-            emptySessionStrage();
-            window.location.reload();
-
-        }).catch(error => {
-            showError(error);
-            checklogin(error);
-        })
+        await axios.post(`user/delete-account?user=${userId}`,{ password: password })
+            .then(response => {
+                showSuccess(response);
+                emptySessionStrage();
+                window.location.reload();
+            })
+            .catch(error => {
+                showError(error);
+                checklogin(error);
+            })
     }
     return (
         <div>

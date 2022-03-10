@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Header from "../Header";
 import UserAdminTaskBox from './UserAdminTaskBox';
 import UserPinBox from "./UserPinBox";
 import UserTaskBox from './UserTaskBox';
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginDetails, selectUserName, selectUserAbility , selectUserAvatarURL } from '../../features/user/userSlice';
+import { selectUserName, selectUserAbility , selectUserAvatarURL } from '../../features/user/ProfileSlice';
 import { setCustomTasksStatus } from '../../features/task/customTasksSlice';
 import axios from 'axios';
 import $ from 'jquery';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { checklogin } from '../CheckLogin';
-import { setUserId } from '../SessionStorage';
 import { showError, showSuccess } from '../Toast_Functions';
 
 
@@ -39,7 +38,7 @@ function User() {
     const addTask = async (event) => {
         event.preventDefault();
 
-        const Task = { //TODO rename to payload
+        const payload = { //TODO rename to payload
             title: title,
             task: task,
             startDate: moment().format('YYYY-MM-D '),
@@ -47,8 +46,7 @@ function User() {
             subjectTag: subjectTag
         };
 
-        await axios.post("/user/custom-tasks",
-            Task)
+        await axios.post("/user/custom-tasks",payload)
             .then(response => {
                 showSuccess(response);
                 reset();
@@ -131,32 +129,6 @@ function User() {
         $('.alert-b i.fa-times').click(function (e) {
             $('.alert-b').hide(100);
         });
-    }
-
-    useEffect(async () => {
-        await prof();
-    },[]);
-
-    async function prof() {
-        // event.preventDefault();
-
-        await axios.get("/user/profile")
-            .then(response => {
-                setUserId(response.data._id)
-                dispatch(
-                    setUserLoginDetails({
-                        name: response.data.name,
-                        phone: response.data.phone.number,
-                        email: response.data.email.address,
-                        ability: response.data.ability,
-                        avatarURL: response.data.avatarURL,
-                    })
-                )
-            })
-            .catch(error => {
-                showError(error);
-                checklogin(error);
-            });
     }
    
     return (

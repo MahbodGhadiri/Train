@@ -1,70 +1,37 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { showError, showSuccess } from './Toast_Functions';
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from './Header';
-import { getUserId, setUserId } from "./SessionStorage"
-import { selectUserEmail, selectUserName, selectUserPhone, setUsersList, selectUserList, setUserLoginDetails, selectUserRole, selectUserAbility } from '../features/user/userSlice';
 import { checklogin } from './CheckLogin';
-import { store } from '../app/store';
 import { useHistory } from "react-router-dom";
+import { fetchProfile, setProfileStatus } from '../features/user/ProfileSlice';
 
 function Avatars() {
   const avatarsList = ["boy1", "boy2", "boy3", "boy4", "boy5", "girl1", "girl2"];
-  const [user, setUser] = useState({});
   const dispatch = useDispatch();
+  const profileStatus=useSelector(state=>state.profile.status);
   const history = useHistory();
 
-  async function prof() {
-    
-    await axios.get("/user/profile",
-      { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-    ).then(response => {
-      setUserId(response.data._id);
-      dispatch(
-        setUserLoginDetails({
-
-          name: response.data.name,
-          phone: response.data.phone.number,
-          email: response.data.email.address,
-          ability: response.data.ability,
-          role: response.data.role,
-
-        })
-      )
-      setUser(response.data)
-    }).catch(error => {
-      showError(error);
-      checklogin(error);
-    });
-  }
-  useEffect(async () => {
-
-    prof();
-  }, [store.getState().task.reload]);
-
-  async function chooseAvatar(e, fileName) {
-    e.preventDefault();
-   
-
-    const editUser = {
-      name: user.name,
-      phoneNumber: user.phone.number,
-      ability: user.ability,
-      avatarURL : fileName,
+  useEffect(()=>{
+    if(profileStatus==="idle"){
+      dispatch(fetchProfile());
     }
-    
-    await axios.put("/user/change-info",
-      editUser,
-      { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-    ).then(response => {
-      showSuccess(response)
-    }).catch(error => {
-      showError(error);
-      checklogin(error)
-    });
+  },[profileStatus,dispatch])
 
-    history.push("/home");
+    async function chooseAvatar(e, fileName) {
+    e.preventDefault();
+  
+    await axios.put("/user/change-info",{avatarURL : fileName,})
+      .then(response => {
+        showSuccess(response);
+        dispatch(setProfileStatus({status:"idle"}));
+      })
+      .catch(error => {
+        showError(error);
+        checklogin(error);
+      });
+      history.push("/home");
   }
   return (
     <div dir="rtl">

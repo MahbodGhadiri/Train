@@ -1,11 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import SimpleReactValidator from "simple-react-validator";
-//import {useHistory} from 'react-router';
-import { useSelector } from 'react-redux';
-import {
-    selectUserName,
-} from '../../features/user/userSlice';
 import axios from "axios";
 import { showError } from '../Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,67 +24,24 @@ function Login() {
     );
     //user validation with "SimpleReactValidator" end
 
-    // const dispatch = useDispatch();
-    // const history = useHistory();
-    const name = useSelector(selectUserName);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-
-    const reset = () => {
-        setEmail("");
-        setPassword("");
-    };
 
     const login = async (event) => {
         if (validator.current.allValid()) {
             event.preventDefault();
 
             const user = { email, password };
-            let status; let role;
-
-            if (!name) {
-                await axios
-                .post(`/auth/login`,
-                    user,
-                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-                )
+            await axios.post(`/auth/login`,user)
                 .then((response) => {
-                    status = response.status;
-                    role = response.data.role;
                     setUserAuthorization(response.data.role);
                     setUserAuthenticationStatus("true");
-                    window.location.reload();
-                    //reset();
-                  
-                     
-                }).catch((error) => {
+                    window.location.reload();    
+                })
+                .catch((error) => {
                     showError(error)
                 });
 
-
-            //     if (status === 200) {
-            //         switch (role) {
-            //             case "admin":
-            //                 history.push("/admin");
-            //                 console.log("logged in")
-            //                 break;
-            //             case "user":
-            //                 history.push("/user");
-            //                 break;
-            //             case "super admin":
-            //                 history.push("/admin");
-            //                 break;
-            //             default:
-            //                 break;
-            //         }
-
-            //     reset();
-            // }
-            }
-        //  else if (name) {
-        //     history.push("/signup")
-        // }
         }
     }
 
