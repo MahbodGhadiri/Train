@@ -90,8 +90,8 @@ function UserPinBox() {
             <div className="alert-b" style={{ background: `${titleColor}`, }}>
 
 
-                <i className="fa fa-circle"
-                    style={{ color: "#ff2442", right: "-20px", cursor: 'pointer' }}
+                <i className="fa fa-forward"
+                    style={{ color: "#ff2442", right: "-30px", cursor: 'pointer' , backgroundColor:"white",paddingTop:"4px",paddingRight:"3px",paddingBottom:"4px",paddingLeft:"5px" , borderRadius:"20px", fontSize:"12px"}}
                     ariaHidden="true"
                     onClick={(event) => ReloadPinBack(event, pinArrIndex)}></i>
 
@@ -102,11 +102,9 @@ function UserPinBox() {
 
                 <p >{pinList[pinArrIndex]?.message}</p>
 
+                <i className="fa fa-backward"
+                                       style={{ color: "#ff2442", left: "-29px", cursor: 'pointer' , backgroundColor:"white",paddingTop:"4px",paddingRight:"5px",paddingBottom:"4px",paddingLeft:"3px" , borderRadius:"20px", fontSize:"12px"}}
 
-                <i className="fa fa-circle"
-                    style={{
-                        color: '#3db2ff', left: '-20px', cursor: 'pointer'
-                    }}
                     ariaHidden="true"
                     onClick={(event) => ReloadPinFront(event, pinArrIndex)}></i>
 

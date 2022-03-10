@@ -51,10 +51,10 @@ function Log() {
       <div>
         <div
           style={{ backgroundColor: "white", padding: "5px 5px", textAlign: "center", width: "70%", marginLeft: "auto", marginRight: "auto", border: "3px solid #c1c1c1", borderRadius: "30px", marginTop: "10px", marginBottom: "10px" }}>
-          {log.message}
+          {log.message}<span style={{opacity:"0"}}>sd</span>
           <i
             className="fa fa-times"
-            style={{ background: '#ff2442' }}
+            style={{ background: '#ff2442'  , padding:"2px 3px", borderRadius:"50px"}}
             ariaHidden="true"
             onClick={() => {
               deleteLog(log._id);
