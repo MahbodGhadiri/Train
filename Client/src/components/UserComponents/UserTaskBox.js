@@ -18,7 +18,7 @@ function UserTaskBox() {
     const [time, setTime] = useState("");
     const [category, setCategory] = useState("");
 
-    useEffect(async () => {
+    useEffect(() => {
         if(taskStatus==="idle"){
             dispatch(fetchCustomTasks(filter));
         }

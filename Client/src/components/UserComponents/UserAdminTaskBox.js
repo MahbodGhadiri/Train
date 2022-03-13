@@ -41,7 +41,7 @@ function UserAdminTaskBox() {
         });
     }
 
-    useEffect(async () => {
+    useEffect(() => {
         if (tasksStatus==="idle"){
             dispatch(fetchUserTasks(filter));
         }

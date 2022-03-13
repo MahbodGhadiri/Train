@@ -6,7 +6,7 @@ import $ from 'jquery';
 
 function Profile() {
 
-    useEffect(async () => {
+    useEffect(() => {
 
         $('.skillsbox .fa-arrow-down').click(function(e) {
             $(this).toggleClass('active');

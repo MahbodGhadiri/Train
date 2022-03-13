@@ -1,47 +1,25 @@
 import React, { useEffect } from 'react'
 import Header from '../Header';
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginDetails, selectUserName, selectUserAbility, selectUserAvatarURL } from '../../features/user/userSlice';
-import axios from 'axios';
+import { fetchProfile, selectUserName, selectUserAbility, selectUserAvatarURL } from '../../features/user/ProfileSlice';
 import AdminTaskBox from './AdminTaskBox';
 import AddTask from './AddTask';
 import AddPin from './AddPin';
 import UserPinBox from "../UserComponents/UserPinBox"
-import { showError } from '../Toast_Functions';
-import { checklogin } from "../CheckLogin";
 import $ from 'jquery';
-import { setUserId } from '../SessionStorage';
 import { Link } from 'react-router-dom';
 function Admin() {
     const dispatch = useDispatch();
     const name = useSelector(selectUserName);
     const talents = useSelector(selectUserAbility);
     const avatarURL = useSelector(selectUserAvatarURL);
-    async function prof() {
-        // event.preventDefault();
-
-        await axios.get("/user/profile",
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        ).then(response => {
-            setUserId(response.data._id)
-            dispatch(
-                setUserLoginDetails({
-                    name: response.data.name,
-                    phone: response.data.phone.number,
-                    email: response.data.email.address,
-                    ability: response.data.ability,
-                    avatarURL: response.data.avatarURL,
-                })
-            )
-        }).catch(error => {
-            showError(error);
-            checklogin(error)
-        });
-    }
-    useEffect(async () => {
-        prof();
-    }, [])
-
+    const profileStatus = useSelector(state=>state.profile.status);
+    
+    useEffect(()=>{
+        if(profileStatus==="idle"){
+            dispatch(fetchProfile());
+        }
+    },[profileStatus,dispatch])
     //Jquery useEffect
     useEffect(() => {
 
