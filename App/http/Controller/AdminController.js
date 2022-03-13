@@ -98,7 +98,26 @@ class AdminController
             else res.status(404).send({message:"یافت نشد"})
         }) ;
     }
-
+    async unDoneTask(req,res)//required query parameter: task(id)
+    {
+        const {error}=taskIdValidator(req.query.task);
+        if(error){return res.status(400).send({message: error.message})}
+        await adminTaskModel.findOne({_id:{$eq:req.query.task}})
+        .exec((err,task)=>
+        {
+            if (err) {return res.status(404).send({message:"یافت نشد"})}
+            if (task)
+            {
+                if (task.done === true)
+                {
+                    task.done = false;
+                    task.save().then(res.status(200).send({message:"با موفقیت انجام شد"}));
+                }
+                else return res.status(200).send({meassage:"قبلا انجام شده"});  
+            }
+            else res.status(404).send({message:"یافت نشد"})
+        }) ;
+    }
     async deleteTask(req,res)//required query parameter: task(id)
     {
         const {error}=taskIdValidator(req.query.task);

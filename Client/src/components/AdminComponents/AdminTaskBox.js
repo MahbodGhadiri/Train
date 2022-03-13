@@ -130,11 +130,14 @@ const AdminTaskBox = () => {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
-                            <Link to={`${url}/task/${task._id}?role=admin`}>
+                           
                             <div className="alonerow" style={task.done || task.delayed ? { opacity: "50%" } : { opacity: "100" }}>
                                 <div className="task">
+                                    
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
+                                    <Link to={`${url}/task/${task._id}?role=admin`}>
                                     <h3>{task.title}</h3>
+                                    </Link>
                                     <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
                                             
                                                 deleteTask(e, task._id)
@@ -175,7 +178,7 @@ const AdminTaskBox = () => {
                                     {find_diff(task.finishDate)} 
                                 </div>
                             </div>
-                            </Link>  
+                             
                         )
                         
                     )

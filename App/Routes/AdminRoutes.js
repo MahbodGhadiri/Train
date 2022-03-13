@@ -14,6 +14,8 @@ router.put("/tasks/edit",[Auth,Admin],AdminController.editTask); //required quer
 
 router.put("/tasks/done",[Auth,Admin],AdminController.doneTask); //required query parameter: task(id)
 
+router.put("/tasks/unDone",[Auth,Admin],AdminController.unDoneTask);
+
 router.delete("/tasks/delete",[Auth,Admin],AdminController.deleteTask); //required query parameter: task(id)
 
 router.post("/pin",[Auth,Admin],AdminController.setPin);

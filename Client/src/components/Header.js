@@ -5,7 +5,7 @@ import { useHistory } from "react-router";
 const Header = () => {
     const role = getUserAuthorization();
     const history = useHistory();
-        
+    
     return (
         <div >
             <a href="./profile.html" className="usericn">
@@ -27,11 +27,12 @@ const Header = () => {
                         <></>
                 }
 
-
+                
                 {role === "super admin" ?
+                    history.location.pathname === "/home" ? 
                     <Link to={`/log`} >
                         <h3 style={{ marginLeft: "-50px", marginRight: "12px", color: "rgb(255, 36, 66)", backgroundColor: "white", padding: "5px 10px", borderRadius: "30px" }}>لاگ</h3>
-                    </Link> :
+                    </Link>:<></> :
                     <></>}
 
             </a>

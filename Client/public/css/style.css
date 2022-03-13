@@ -1685,23 +1685,7 @@ input {
 
 
 }
-/* .dropdown-check-list .anchor:after {
-position: absolute;
 
-content: "";
-border-left: 2px solid #ccc;
-border-top: 2px solid #ccc;
-padding: 5px;
-border-radius: 30px;
-font-size: 18px;
-right: 10px;
-top: 20%;
--moz-transform: rotate(-135deg);
--ms-transform: rotate(-135deg);
--o-transform: rotate(-135deg);
--webkit-transform: rotate(-135deg);
-transform: rotate(-135deg);
-} */
 .dropdown-check-list .anchor:active:after { 
 right: 80px;
 top: 21%;
@@ -1736,7 +1720,7 @@ font-size: 18px;
 
 .dropdown-check-list.visible .items {
   display: block;
-    color: #00af91;
+  color: #00af91;
   position: fixed;
   z-index: 10000000000;
 
