@@ -12,12 +12,12 @@ import ForgotPassword from './AuthComponents/ForgotPassword';
 import ResetPassword from './AuthComponents/ResetPassword';
 import Log from './Log';
 import Avatars from './Avatars';
-
+import IntroPage from './IntroPage';
 function Train() {
     
     return (
         <Switch>
-            <Route exact path="/"> <Redirect to="/home" /> </Route>
+            <Route exact path="/"><IntroPage/> </Route>
             <Route path="/signup" exact> <SignUp /> </Route>
             <LoginRoute path="/login" exact> <Login /> </LoginRoute>
             <Route exact path="/forgot-password"> <ForgotPassword /> </Route>
@@ -29,7 +29,7 @@ function Train() {
             <PrivateRoute path={`/home/avatar`} exact > <Avatars /> </PrivateRoute>
             <PrivateRoute path={`/home/task/:id`} exact> <TaskPage/></PrivateRoute>
             <PrivateRoute path={`/home/custom-task/:id`} exact><CustomTaskPage/></PrivateRoute>
-            <Route path="*"> <Redirect to="/" /> </Route>
+            <Route path="*"> <Redirect to="/home" /> </Route>
 
         </Switch>
     )

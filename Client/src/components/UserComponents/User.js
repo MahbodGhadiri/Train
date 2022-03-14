@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from "../Header";
 import UserAdminTaskBox from './UserAdminTaskBox';
 import UserPinBox from "./UserPinBox";
 import UserTaskBox from './UserTaskBox';
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserName, selectUserAbility , selectUserAvatarURL } from '../../features/user/ProfileSlice';
+import { selectUserName, selectUserAbility , selectUserAvatarURL, fetchProfile } from '../../features/user/ProfileSlice';
 import { setCustomTasksStatus } from '../../features/task/customTasksSlice';
 import axios from 'axios';
 import $ from 'jquery';
@@ -19,14 +19,18 @@ function User() {
     const dispatch = useDispatch();
     const avatarURL = useSelector(selectUserAvatarURL);
     const talents = useSelector(selectUserAbility);
-
+    const profileStatus = useSelector(state=>state.profile.status);
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
     const name = useSelector(selectUserName);
 
-
+    useEffect(()=>{
+        if(profileStatus==="idle"){
+            dispatch(fetchProfile());
+        }
+    },[profileStatus,dispatch])
 
     const reset = () => {
         setTitle("");
@@ -58,8 +62,8 @@ function User() {
             })
     }
 
-    function openAdd(){
-        
+    function openAdd(e){
+        e.preventDefault()
         $('.skillsbox .fa-arrow-down').click(function (e) {
             $(this).toggleClass('active');
             if ($(this).hasClass('active')) {
@@ -175,7 +179,7 @@ function User() {
 
                 <UserPinBox />
 
-                <div className="post-btn" onClick={openAdd()}>
+                <div className="post-btn" onClick={e => openAdd(e)}>
                     <span>جدید</span>
                 </div>
 
