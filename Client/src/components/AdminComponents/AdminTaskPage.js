@@ -9,7 +9,7 @@ import { checklogin } from "../CheckLogin";
 import { showSuccess, showError } from "../Toast_Functions";
 import axios from "axios";
 import {  setToBeEditedTask, setTasksStatus } from '../../features/task/adminTasksSlice'
-
+import moment from "moment-jalaali";
 function TaskPage() {
     const dispatch = useDispatch();
     const tasks = useSelector(selectAdminTasks);
@@ -71,7 +71,19 @@ function TaskPage() {
         }
     },[isEditing])
 
-
+    const reset = () => { 
+        setTaskId(undefined);
+        setTitle("");
+        setTaskDescription("");
+        setDays(null);
+        setSubjectTag("");
+        setAssignedBy(undefined);
+        setIsEditing(false);
+        // removing ckeckmarks from checkboxes
+        for (let i = 0; i < users.length; i++) {
+            document.querySelector(`#cb${users[i]._id}`).checked = false;
+        }
+    };
     const setExecutors = () => {
         //user must be an object with name and _id
         for (let i = 0; i < users.length; i++) {
@@ -89,10 +101,39 @@ function TaskPage() {
         }
     }
 
-    function editTask(e, task) {
+
+    function showEditTaskBox(e, task){
         e.preventDefault();
         setIsEditing(true);
         dispatch(setToBeEditedTask({ toBeEditedTask: task }));
+    }
+
+    async function editTask(e, task) {
+        e.preventDefault();
+        setExecutors();
+    
+        const payload = {
+            title: title,
+            task: taskDescription,
+            startDate: moment().format('YYYY-MM-D '),
+            finishDate: moment().add(days, 'days').format('YYYY-MM-D '),
+            executors: executors,
+            subjectTag: subjectTag
+        };
+
+       
+            payload.assignedBy= assignedBy;
+            await axios.put(`/admin/tasks/edit?task=${taskId}`,payload)
+            .then(response => {
+                showSuccess(response);
+                reset();
+                dispatch(setTasksStatus({status:"idle"}));
+            })
+            .catch(error => {
+                showError(error);
+                checklogin(error);
+            })
+       
     }
 
     async function deleteTask(e, taskId) {
@@ -223,7 +264,7 @@ function TaskPage() {
 
                                                 }
                                                 <i onClick={e => {
-                                                    editTask(e, task)
+                                                    showEditTaskBox(e, task)
 
                                                 }} style={{ margin: "5px", cursor: "pointer", padding: "8px 7px 8px 9px", backgroundColor: "#ffaa0e", borderRadius: "100px", color: "white" }} class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                                 <i onClick={e => deleteTask(e, task._id)} style={{ margin: "5px", cursor: "pointer", padding: "8px 10px 8px 10px", backgroundColor: "#ff2442", borderRadius: "100px", color: "white" }} class="fa fa-trash-o" aria-hidden="true"></i>
@@ -241,7 +282,7 @@ function TaskPage() {
                                 <div className="signup" style={{ marginBottom: "5px", marginTop: "-20px" }}>
                                     <div className="edit-box">
                                         <form style={{ maxWidth: "100%" }}>
-                                            <div 
+                                            <div onClick={e=> setIsEditing(false)}
                                                 style={{ marginRight: "auto", marginLeft: "auto", borderRadius: "200px", textAlign: "center", cursor: "pointer", color: "black", }}>
                                                 <h4 style={{ textAlign: "center", cursor: "pointer", color: "black", padding: "5px 10px" }}> بازگشت <span> &#8592; </span> </h4>
                                             </div>
@@ -281,7 +322,7 @@ function TaskPage() {
                                             <input type="number" name="time" placeholder={"زمان"} value={days} onChange={e =>
                                                 setDays(e.target.value)
                                             } />
-                                            <input type="submit" style={{ backgroundColor: "#00af91", color: "white" }} value="ثبت" />
+                                            <input type="submit"  onClick={e=>editTask(e,task)} style={{ backgroundColor: "#00af91", color: "white" }} value="ویرایش" />
 
                                         </form>
 
