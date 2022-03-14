@@ -5,10 +5,10 @@ import axios from "axios";
 import { showError } from '../Toast_Functions';
 import 'react-toastify/dist/ReactToastify.css';
 import { setUserAuthenticationStatus, setUserAuthorization } from "../SessionStorage"
-
+import { useHistory } from 'react-router';
 function Login() {
 
-
+    const history = useHistory();
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -36,13 +36,14 @@ function Login() {
                 .then((response) => {
                     setUserAuthorization(response.data.role);
                     setUserAuthenticationStatus("true");
-                    window.location.reload();    
+                    window.location.reload();     
+                    history.push("/home");
                 })
                 .catch((error) => {
                     showError(error)
                 });
-
-        }
+            }
+       
     }
 
     return (
