@@ -44,6 +44,7 @@ function Profile() {
     const [talents, setTalents] = useState([]);
     const [password, setPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [renewPassword, setreNewPassword] = useState("");
     //-------------------------------------------
     const userList = useSelector(selectUserList);
     const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
@@ -208,7 +209,7 @@ function Profile() {
                 checklogin(error);
             })
     }
-
+    
     return (
         <div>
             <body dir="rtl">
@@ -364,17 +365,17 @@ function Profile() {
                                                 name="password"
                                                 autoComplete="new-password"
                                                 placeholder="تکرار رمز جدید"
-                                                value={newPassword}
+                                                value={renewPassword}
                                                 onChange={e => {
-                                                    setNewPassword(e.target.value);
+                                                    setreNewPassword(e.target.value);
                                                     validator.current.showMessageFor(
-                                                        "password"
+                                                        "repassword"
                                                     );
                                                 }} />
                                             {validator.current.message(
-                                                "password",
-                                                newPassword,
-                                                `min: 8`
+                                                "repassword",
+                                                renewPassword,
+                                                `min: 8|in:${newPassword}`
                                             )}
                                             <input type="submit" value="تغییر رمز" onClick={e => deleteUser(e, perUserId)} style={{ color: "white", backgroundColor: "#3E2C41", marginBottom: "-20px", width: "80%" }} id="edit-btn" />
                                             <br />
