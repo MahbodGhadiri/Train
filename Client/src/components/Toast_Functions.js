@@ -42,7 +42,7 @@ export const showSuccess = (axiosResponse) =>
         toast.success("انجام شد", toast_default_options);
 }
 export const showError = (axiosError) => 
-{
+{   console.log(axiosError)
     if(axiosError.response)
     {
         if(axiosError.response.data)

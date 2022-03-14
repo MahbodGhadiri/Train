@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams , useHistory } from "react-router";
+import { useParams, useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
-import { selectCustomTasks, selectToBeEditedTask, setCustomTasksStatus,setToBeEditedTask, fetchCustomTasks } from '../features/task/customTasksSlice';
+import { selectCustomTasks, selectToBeEditedTask, setCustomTasksStatus, setToBeEditedTask, fetchCustomTasks } from '../features/task/customTasksSlice';
 import Page404 from "./404";
-import { dateToJalali , find_diff } from "./date_functions";
+import { dateToJalali, find_diff } from "./date_functions";
 import { checklogin } from "./CheckLogin";
 import { showSuccess, showError } from "./Toast_Functions";
 import axios from "axios";
-
+import moment from "moment-jalaali";
 function AdminTaskPage() {
     const dispatch = useDispatch();
     const tasks = useSelector(selectCustomTasks);
@@ -15,20 +15,19 @@ function AdminTaskPage() {
     const toBeEditedTask = useSelector(selectToBeEditedTask)
     const history = useHistory();
     let { id } = useParams();
-    
-    
+
+
     //? is this part needed?
     const [title, setTitle] = useState("");
     const [taskDescription, setTaskDescription] = useState("");
     const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
-    const [assignedBy, setAssignedBy] = useState(undefined); //server handle this on post but not put //TODO server completly handle assignedBy
     const [isEditing, setIsEditing] = useState(false);
     const [taskId, setTaskId] = useState(undefined);
     //?
 
-    
-    useEffect (()=>{
+
+    useEffect(() => {
         if (toBeEditedTask) {
             setTaskId(toBeEditedTask._id);
             setTitle(toBeEditedTask.title);
@@ -37,7 +36,7 @@ function AdminTaskPage() {
             setSubjectTag(toBeEditedTask.subjectTag);
             dispatch(setToBeEditedTask({ toBeEditedTask: undefined }));
         }
-    },[toBeEditedTask])
+    }, [toBeEditedTask])
 
     useEffect(() => {
         if (taskStatus === "idle") {
@@ -51,7 +50,6 @@ function AdminTaskPage() {
         setIsEditing(true);
         dispatch(setToBeEditedTask({ toBeEditedTask: task }));
     }
-
     async function deleteTask(e, taskId) {
         e.preventDefault(); //? is this needed?
 
@@ -82,8 +80,9 @@ function AdminTaskPage() {
     async function unOkTask(e, taskId) {
         e.preventDefault(); //? is this needed?
 
-        await axios.get(`/admin/custom-tasks/unDone?task=${taskId}`)
+        await axios.get(`/user/custom-tasks/unDone?task=${taskId}`)
             .then(response => {
+                console.log(response)
                 showSuccess(response);
                 dispatch(setCustomTasksStatus({ status: "idle" }));
             })
@@ -92,11 +91,45 @@ function AdminTaskPage() {
                 showError(error);
             });
     }
-    
-    
+    const reset = () => {
+        setTaskId(undefined);
+        setTitle("");
+        setTaskDescription("");
+        setDays(null);
+        setSubjectTag("");
+
+        setIsEditing(false);
+        // removing ckeckmarks from checkboxes
+
+    };
+    async function editTask(e, task) {
+        e.preventDefault();
+        console.log("editing task")
+
+        const payload = {
+            title: title,
+            task: taskDescription,
+            startDate: moment().format('YYYY-MM-D '),
+            finishDate: moment().add(days, 'days').format('YYYY-MM-D '),
+            subjectTag: subjectTag
+        };
+
+        
+        await axios.put(`/user/custom-tasks/edit?task=${taskId}`, payload)
+            .then(response => {
+                showSuccess(response);
+                reset();
+                dispatch(setCustomTasksStatus({ status: "idle" }));
+            })
+            .catch(error => {
+                showError(error);
+                checklogin(error);
+            })
+
+    }
     if (taskStatus === "succeed") {
         const task = tasks.find(task => task._id === id);
-
+console.log(task)
         if (task) {
             return (
 
@@ -135,7 +168,7 @@ function AdminTaskPage() {
                                                     color: "black", opacity: "100"
                                                 }} >
                                                 {task.task}</p>
-                                            
+
                                             <div style={{ display: "flex", textAlign: "center", justifyContent: "center", alignItems: "center" }}>
                                                 <h3 style={{ cursor: "pointer", textAlign: "center", margin: "5px" }}>
                                                     <span style={{ cursor: "pointer", textAlign: "center", }}>
@@ -182,7 +215,7 @@ function AdminTaskPage() {
                                 <div className="signup" style={{ marginBottom: "5px", marginTop: "-20px" }}>
                                     <div className="edit-box">
                                         <form style={{ maxWidth: "100%" }}>
-                                            <div 
+                                            <div onClick={e => setIsEditing(false)}
                                                 style={{ marginRight: "auto", marginLeft: "auto", borderRadius: "200px", textAlign: "center", cursor: "pointer", color: "black", }}>
                                                 <h4 style={{ textAlign: "center", cursor: "pointer", color: "black", padding: "5px 10px" }}> بازگشت <span> &#8592; </span> </h4>
                                             </div>
@@ -209,7 +242,7 @@ function AdminTaskPage() {
                                             <input type="number" name="time" placeholder={"زمان"} value={days} onChange={e =>
                                                 setDays(e.target.value)
                                             } />
-                                            <input type="submit" style={{ backgroundColor: "#00af91", color: "white" }} value="ثبت" />
+                                            <input type="submit" onClick={e => editTask(e, task)} style={{ backgroundColor: "#00af91", color: "white" }} value="ویرایش" />
 
                                         </form>
 

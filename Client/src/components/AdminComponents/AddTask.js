@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectToBeEditedTask,  setToBeEditedTask, setTasksStatus } from '../../features/task/adminTasksSlice'
+import { setUserTasksStatus } from '../../features/task/userTasksSlice';
 import moment from 'moment';
 import axios from 'axios';
 import { showSuccess, showError } from '../Toast_Functions';
@@ -97,6 +98,7 @@ function AddTask() {
                 showSuccess(response);
                 reset();
                 dispatch(setTasksStatus({status:"idle"}));
+                dispatch(setUserTasksStatus({status:"idle"}));
             })
             .catch(error => {
                 showError(error);

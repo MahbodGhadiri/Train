@@ -2,7 +2,7 @@ import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 import { selectUserTasks, selectuserTasksFilter,  fetchUserTasks } from '../../features/task/userTasksSlice';
-import { setTasksStatus } from '../../features/task/userTasksSlice';
+import { setUserTasksStatus } from '../../features/task/userTasksSlice';
 import axios from 'axios';
 import { showError, showSuccess } from '../Toast_Functions';
 import { dateToJalali, find_diff } from '../date_functions';
@@ -21,7 +21,7 @@ function UserAdminTaskBox() {
         await axios.get(`/user/tasks/delay?task=${taskId}`)
         .then(response => {
             showSuccess(response);
-            dispatch(setTasksStatus({status:"idle"}));
+            dispatch(setUserTasksStatus({status:"idle"}));
         }).catch(error => {
             showError(error);
             checklogin(error);
@@ -34,7 +34,7 @@ function UserAdminTaskBox() {
         await axios.get(`/user/tasks/done?task=${taskId}`)
         .then(response => {
             showSuccess(response);
-            dispatch(setTasksStatus({status:"idle"}));
+            dispatch(setUserTasksStatus({status:"idle"}));
         }).catch(error => {
             showError(error);
             checklogin();
@@ -58,11 +58,13 @@ function UserAdminTaskBox() {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
-                            <Link to={`/home/task/${task._id}?role=user`}>
+                          
                             <div className="alonerow" style={task.done ? { opacity: "50%" } : { opacity: "100" }}>
                                 <div className="task">
                                     <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
+                                    <Link to={`/home/task/${task._id}?role=user`}>
                                     <h3>{task.title}</h3>
+                                    </Link>
                                     <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
                                         delayTask(e, task._id);
                                     }}></i>
@@ -74,18 +76,23 @@ function UserAdminTaskBox() {
                                         </p>
                                         <span className="created" style={{ color: "#868686" }} >توسط <span style={{ color: "#ffb830" }} >{task.assignedBy.name}<span style={{ opacity: "0" }}>-</span></span></span>
 
-                                        <div className="date">
-                                            <span>
-                                                {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
-                                            </span>
+                                        <div className="date" style={find_diff(task.finishDate) < 0 ? { backgroundColor: "rgb(255, 36, 66)" } : {}}>
+                                                <span>
+                                                    {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="time">
-                                    {find_diff(task.finishDate)}
-                                </div>
+                                    {find_diff(task.finishDate) < 0 ?
+                                        <div className="time" style={{ backgroundColor: "rgb(255, 36, 66)" }}>
+                                            تمام
+                                        </div> :
+                                        <div className="time">
+                                            {find_diff(task.finishDate)}
+                                        </div>
+                                    }
                             </div>
-                            </Link>
+                            
                         ))}
 
             </div>

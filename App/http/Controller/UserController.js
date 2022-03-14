@@ -231,9 +231,16 @@ class UserController
     {
       const user=await userModel
       .findOneAndUpdate(
-      {_id:req.user._id,"customTasks._id":{$eq:req.query.task}},
-      {$set : {"customTasks.$":req.body}},
-      {new: true}
+        {_id:req.user._id,"customTasks._id":{$eq:req.query.task}},
+        {$set : 
+          {
+            "customTasks.$.title":req.body.title,
+            "customTasks.$.task":req.body.task,
+            "customTasks.$.startDate":req.body.startDate,
+            "customTasks.$.finishDate":req.body.finishDate,
+            "customTasks.$.subjectTag":req.body.subjectTag
+          }
+        }
       )
       if (!user){return res.status(404).send({message:"یافت نشد"})};
       res.status(200).send(user.customTasks);  
@@ -255,7 +262,7 @@ class UserController
 
   async unDoneCustomTask(req,res)
   {
-    const task = await userModel.findOneAndUpdate(
+    await userModel.findOneAndUpdate(
       {_id:req.user._id,"customTasks._id":{$eq : req.query.task}},
       {$set : {"customTasks.$.done":false}},
       {new: true}
