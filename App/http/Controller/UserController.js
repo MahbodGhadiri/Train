@@ -251,6 +251,18 @@ class UserController
     })
   }
 
+  async unDoneCustomTask(req,res)
+  {
+    const task = await userModel.findOneAndUpdate(
+      {_id:req.user._id,"customTasks._id":{$eq : req.query.task}},
+      {$set : {"customTasks.$.done":false}},
+      {new: true}
+      ).exec(function(error){
+      if(error) return res.status(400).send({message:"عملیات ناموفق"})
+      else return res.status(200).send({message:"باموفقیت انجام شد"})
+    })
+  }
+
   async deleteCustomTask(req,res)
   {
     await userModel

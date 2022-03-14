@@ -8,7 +8,7 @@ import { checklogin } from "../CheckLogin";
 import { showSuccess, showError } from "../Toast_Functions";
 import axios from "axios";
 
-function TaskPage() {
+function UserTaskPage() {
     const dispatch = useDispatch();
     const tasks = useSelector(selectUserTasks);
     const taskStatus = useSelector(state => state.userTasks.status);
@@ -173,4 +173,4 @@ function TaskPage() {
 
 }
 
-export default TaskPage;
+export default UserTaskPage;

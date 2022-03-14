@@ -26,6 +26,8 @@ router.put("/custom-tasks/edit",Auth,UserController.editCustomTask);
 
 router.get("/custom-tasks/done",Auth,UserController.doneCustomTask);
 
+router.get("/custom-tasks/done",Auth,UserController.unDoneCustomTask);
+
 router.delete("/custom-tasks/delete",Auth,UserController.deleteCustomTask);
 
 router.get("/pins",Auth,UserController.getPins);
