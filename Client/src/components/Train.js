@@ -28,7 +28,7 @@ function Train() {
             <PrivateRoute path={`/home/profile`} exact > <Profile /> </PrivateRoute>
             <PrivateRoute path={`/home/avatar`} exact > <Avatars /> </PrivateRoute>
             <PrivateRoute path={`/home/task/:id`} exact> <TaskPage/></PrivateRoute>
-            <PrivateRoute path={`/home/custom-task/:id`} exact>CustomTaskPage</PrivateRoute>
+            <PrivateRoute path={`/home/custom-task/:id`} exact><CustomTaskPage/></PrivateRoute>
             <Route path="*"> <Redirect to="/" /> </Route>
 
         </Switch>

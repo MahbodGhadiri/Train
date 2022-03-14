@@ -2,22 +2,22 @@ import React, { useEffect, useState, useRef } from 'react'
 import { showError, showSuccess } from '../Toast_Functions';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
+import {
     selectUserEmail,
-    selectUserName, 
-    selectUserPhone, 
-    selectUserAbility, 
+    selectUserName,
+    selectUserPhone,
+    selectUserAbility,
     selectUserId,
     fetchProfile,
     setProfileStatus
 } from '../../features/user/ProfileSlice';
 import SimpleReactValidator from "simple-react-validator";
 import { checklogin } from '../CheckLogin';
-import {Link}from "react-router-dom";
+import { Link } from "react-router-dom";
 import { emptySessionStrage } from '../SessionStorage';
 function Profile() {
     const dispatch = useDispatch();
-    const profileStatus = useSelector(state=>state.profile.status);
+    const profileStatus = useSelector(state => state.profile.status);
     //----------------------------------------------
     const perName = useSelector(selectUserName);
     const perEmail = useSelector(selectUserEmail);
@@ -32,7 +32,10 @@ function Profile() {
     const [password, setPassword] = useState("");
 
     //-------------------------------------------
-
+    const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
+    const [showChangePasswordBox, setShowChangePasswordBox] = useState(false);
+    const [newPassword, setNewPassword] = useState("");
+    const [renewPassword, setreNewPassword] = useState("");
     //user validation with "SimpleReactValidator" start
     const validator = useRef(
         new SimpleReactValidator({
@@ -48,11 +51,11 @@ function Profile() {
         })
     );
     // fetch profile
-    useEffect(()=>{
-        if(profileStatus==="idle"){
+    useEffect(() => {
+        if (profileStatus === "idle") {
             dispatch(fetchProfile());
         }
-    },[profileStatus,dispatch])
+    }, [profileStatus, dispatch])
 
     //user validation with "SimpleReactValidator" end
     async function editUser(event) {
@@ -61,28 +64,37 @@ function Profile() {
         const user = {
             name: name ? name : perName,
             phoneNumber: phoneNumber ? phoneNumber : perPhoneNumber,
-            ability: talents ?  editTalents : perTalents
+            ability: talents ? editTalents : perTalents
         }
-        await axios.put("/user/change-info",user)
-        .then(response => {
-            showSuccess(response)
-            dispatch(setProfileStatus({status:"idle"}));
-        }).catch(error => {
-            showError(error);
-            checklogin(error);
-        });
+        await axios.put("/user/change-info", user)
+            .then(response => {
+                showSuccess(response)
+                dispatch(setProfileStatus({ status: "idle" }));
+            }).catch(error => {
+                showError(error);
+                checklogin(error);
+            });
+        if (newPassword) {
+            await axios.post("/user/change-password", { newPassword: newPassword, oldPassword: password })
+                .then(response => {
+                    showSuccess(response)
+                }).catch(error => {
+                    showError(error);
+                    checklogin(error)
+                });
+        }
     }
 
     async function logOut(event) {
         event.preventDefault();
         await axios.get(`/user/logout`)
-        .then(() => {
-            emptySessionStrage();
-            window.location.reload();
-        }).catch((error) => {
-            showError(error);
-            checklogin(error);
-        });
+            .then(() => {
+                emptySessionStrage();
+                window.location.reload();
+            }).catch((error) => {
+                showError(error);
+                checklogin(error);
+            });
     }
 
     function AddTalents(e, talent) { //TODO improve this
@@ -94,12 +106,12 @@ function Profile() {
             console.log("مهارت قبلا وجود داشت ");
             //TODO throw error 
         }
-        
+
     }
 
     async function deleteUser(e, userId) {
         e.preventDefault();
-        await axios.post(`user/delete-account?user=${userId}`,{ password: password })
+        await axios.post(`user/delete-account?user=${userId}`, { password: password })
             .then(response => {
                 showSuccess(response);
                 emptySessionStrage();
@@ -117,7 +129,7 @@ function Profile() {
                     <div className="pro-content">
 
 
-                        <div className="signup" style={{marginBottom:"5px" , marginTop:"-20px"}}>
+                        <div className="signup" style={{ marginBottom: "5px", marginTop: "-20px" }}>
                             <div className="edit-box">
                                 <div className="edit-imgbox">
                                     <Link to={`/home`}>
@@ -147,8 +159,8 @@ function Profile() {
                                         onChange={e => {
                                             setEmail(e.target.value);
                                             validator.current.showMessageFor("email");
-                                        }} readOnly/>
-                                    
+                                        }} readOnly />
+
 
 
                                     <input type="text" pattern="09(0[0-9]|1[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}" maxlength="11" placeholder={perPhoneNumber} autoComplete="off" value={phoneNumber}
@@ -183,30 +195,119 @@ function Profile() {
                                     </div>
                                     <input type="submit" value="ویرایش" id="edit-btn" />
                                     <hr style={{ marginTop: "20px", margin: "20px" }} />
-                                <input
-                                    style={{ textAlign: "right" }}
-                                    type="password"
-                                    name="password"
-                                    required
-                                    placeholder="رمز ورود"
-                                    value={password}
-                                    onChange={e => {
-                                        setPassword(e.target.value);
-                                        validator.current.showMessageFor(
-                                            "password"
-                                        );
-                                    }} />
-                                {validator.current.message(
-                                    "password",
-                                    password,
-                                    `required|min: 5`
-                                )}
-                               
-                                <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "5px" ,marginTop: "5px" }} id="edit-btn" />
 
-                                    <h2 style={{ cursor: "pointer", textAlign: "center" ,marginBottom: "-40px"}}>
-                                        <a style={{ cursor: "pointer", textAlign: "center"  }} onClick={event => logOut(event)} >خروج</a>
+                                    {/* delete account box */}
+                                    <div>
+                                        <h4 style={{ cursor: "pointer", color: "black", marginBottom: "-20px", width: "80%", textAlign: "center", marginLeft: "auto", marginRight: "auto" }} onClick={() => { setShowDeleteAccountBox(!showDeleteAccountBox); setShowChangePasswordBox(false) }}> پاک کردن اکانت {showDeleteAccountBox === false ? <span> &#8595; </span> : <span> &#8593; </span>}</h4>
+                                        {showDeleteAccountBox === true ?
+                                            <div>
+                                                <br />
+                                                <div>
+
+                                                    <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                                    <input
+                                                        style={{ textAlign: "right" }}
+                                                        type="password"
+                                                        name="password"
+                                                        autocomplete="new-password"
+                                                        placeholder="رمز ورود"
+                                                        value={password}
+                                                        onChange={e => {
+                                                            setPassword(e.target.value);
+                                                            validator.current.showMessageFor(
+                                                                "password"
+                                                            );
+                                                        }} />
+                                                    {validator.current.message(
+                                                        "password",
+                                                        password,
+                                                        `min: 8`
+                                                    )}
+
+
+                                                    <input type="submit" value="پاک کردن اکانت" onClick={e => deleteUser(e, perId)} style={{ color: "white", backgroundColor: "#ff2442", marginBottom: "-20px", width: "80%" }} id="edit-btn" />
+                                                    <br />
+                                                    <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                                </div>
+                                            </div> : <></>}
+                                    </div>
+                                    {/* delete account box */}
+
+                                    {/* change passsword box */}
+                                    <div style={{ marginTop: "20px" }}>
+                                        <h4 style={{ cursor: "pointer", color: "black", marginBottom: "-20px", width: "80%", textAlign: "center", marginLeft: "auto", marginRight: "auto" }} onClick={() => { setShowDeleteAccountBox(false); setShowChangePasswordBox(!showChangePasswordBox) }}>تغییر رمز {showChangePasswordBox === false ? <span> &#8595; </span> : <span> &#8593; </span>}</h4>
+                                        {showChangePasswordBox === true ? <div>
+                                            <br />
+                                            <div>
+
+                                                <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                                <input
+                                                    style={{ textAlign: "right" }}
+                                                    type="password"
+                                                    name="password"
+                                                    autocomplete="off"
+                                                    placeholder="رمز ورود"
+                                                    value={password}
+                                                    onChange={e => {
+                                                        setPassword(e.target.value);
+                                                        validator.current.showMessageFor(
+                                                            "password"
+                                                        );
+                                                    }} />
+                                                {validator.current.message(
+                                                    "password",
+                                                    password,
+                                                    `min: 8`
+                                                )}
+                                                <input
+                                                    style={{ textAlign: "right" }}
+                                                    type="password"
+                                                    name="password"
+                                                    autoComplete="new-password"
+                                                    placeholder="رمز جدید"
+                                                    value={newPassword}
+                                                    onChange={e => {
+                                                        setNewPassword(e.target.value);
+                                                        validator.current.showMessageFor(
+                                                            "password"
+                                                        );
+                                                    }} />
+                                                {validator.current.message(
+                                                    "password",
+                                                    newPassword,
+                                                    `min: 8`
+                                                )}
+                                                <input
+                                                    style={{ textAlign: "right" }}
+                                                    type="password"
+                                                    name="password"
+                                                    autoComplete="new-password"
+                                                    placeholder="تکرار رمز جدید"
+                                                    value={renewPassword}
+                                                    onChange={e => {
+                                                        setreNewPassword(e.target.value);
+                                                        validator.current.showMessageFor(
+                                                            "repassword"
+                                                        );
+                                                    }} />
+                                                {validator.current.message(
+                                                    "repassword",
+                                                    renewPassword,
+                                                    `min: 8|in:${newPassword}`
+                                                )}
+                                                <input type="submit" value="تغییر رمز" onClick={e => editUser(e, perId)} style={{ color: "white", backgroundColor: "#3E2C41", marginBottom: "-20px", width: "80%" }} id="edit-btn" />
+                                                <br />
+                                                <hr style={{ marginTop: "20px", margin: "20px" }} />
+                                            </div>
+                                        </div> : <></>}
+                                    </div>
+                                    {/* change passsword box */}
+
+                                    <h2 style={{ cursor: "pointer", textAlign: "center", marginBottom: "-20px", marginTop: "20px" }}>
+                                        <a style={{ cursor: "pointer", textAlign: "center" }} onClick={event => logOut(event)} >خروج</a>
                                     </h2>
+
+
                                 </form>
                             </div>
                         </div>
