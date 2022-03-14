@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams , useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserTasks, selectToBeEditedTask, setTasksStatus, fetchUserTasks } from '../../features/task/userTasksSlice';
+import { selectUserTasks, selectToBeEditedTask, setUserTasksStatus, fetchUserTasks } from '../../features/task/userTasksSlice';
 import Page404 from "../404";
 import { dateToJalali , find_diff } from "../date_functions"; //? is this needed?
 import { checklogin } from "../CheckLogin";
@@ -25,12 +25,12 @@ function UserTaskPage() {
 
     async function okTask(e, taskId) {
         e.preventDefault(); //? is this needed?
-        console.log(taskId)
         await axios.get(`/user/tasks/done?task=${taskId}`)
             .then(response => {
                 showSuccess(response);
-                dispatch(setTasksStatus({ status: "idle" }));
+                dispatch(setUserTasksStatus({ status: "idle" }));
                 history.push("/home")
+               
             }).catch(error => {
                 checklogin(error);
                 showError(error);
@@ -43,7 +43,8 @@ function UserTaskPage() {
         await axios.put(`/admin/tasks/unDone?task=${taskId}`)
             .then(response => {
                 showSuccess(response);
-                dispatch(setTasksStatus({ status: "idle" }));
+                dispatch(setUserTasksStatus({ status: "idle" }));
+                history.push("/home/user")
             }).catch(error => {
                 checklogin(error);
                 showError(error);

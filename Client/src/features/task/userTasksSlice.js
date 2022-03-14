@@ -23,7 +23,7 @@ const userTasksSlice = createSlice({
     name: "userTasks",
     initialState,
     reducers: {
-        setTasksStatus: (state, action) => {
+        setUserTasksStatus: (state, action) => {
             state.status = action.payload.status;
         },
         setTasksFilter: (state, action) => {
@@ -52,7 +52,7 @@ const userTasksSlice = createSlice({
     }
 })
 
-export const { setTasksStatus, setTasksFilter } = userTasksSlice.actions;
+export const { setUserTasksStatus, setTasksFilter } = userTasksSlice.actions;
 
 export const selectUserTasks = (state) => state.userTasks.tasks;
 export const selectuserTasksFilter = (state)=> state.userTasks.filter;

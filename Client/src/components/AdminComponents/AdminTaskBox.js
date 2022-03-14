@@ -167,16 +167,21 @@ const AdminTaskBox = () => {
 
 
                                         <div className="edit" onClick={e=>editTask(e,task)}>ویرایش</div>
-                                        <div className="date">
-                                            <span>
-                                                {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
-                                            </span>
+                                        <div className="date" style={find_diff(task.finishDate) < 0 ? { backgroundColor: "rgb(255, 36, 66)" } : {}}>
+                                                <span>
+                                                    {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="time">
-                                    {find_diff(task.finishDate)} 
-                                </div>
+                                    {find_diff(task.finishDate) < 0 ?
+                                        <div className="time" style={{ backgroundColor: "rgb(255, 36, 66)" }}>
+                                             {find_diff(task.finishDate)}
+                                        </div> :
+                                        <div className="time">
+                                            {find_diff(task.finishDate)}
+                                        </div>
+                                    }
                             </div>
                              
                         )

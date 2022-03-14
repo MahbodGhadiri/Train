@@ -82,8 +82,9 @@ function AdminTaskPage() {
     async function unOkTask(e, taskId) {
         e.preventDefault(); //? is this needed?
 
-        await axios.get(`/admin/custom-tasks/unDone?task=${taskId}`)
+        await axios.get(`/user/custom-tasks/unDone?task=${taskId}`)
             .then(response => {
+                console.log(response)
                 showSuccess(response);
                 dispatch(setCustomTasksStatus({ status: "idle" }));
             })
@@ -182,7 +183,7 @@ function AdminTaskPage() {
                                 <div className="signup" style={{ marginBottom: "5px", marginTop: "-20px" }}>
                                     <div className="edit-box">
                                         <form style={{ maxWidth: "100%" }}>
-                                            <div 
+                                            <div onClick={e => setIsEditing(false)}
                                                 style={{ marginRight: "auto", marginLeft: "auto", borderRadius: "200px", textAlign: "center", cursor: "pointer", color: "black", }}>
                                                 <h4 style={{ textAlign: "center", cursor: "pointer", color: "black", padding: "5px 10px" }}> بازگشت <span> &#8592; </span> </h4>
                                             </div>

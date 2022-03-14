@@ -12,29 +12,29 @@ function UserTaskBox() {
 
     const dispatch = useDispatch();
     const taskList = useSelector(selectCustomTasks);
-    const taskStatus = useSelector(state=>state.customTasks.status);
+    const taskStatus = useSelector(state => state.customTasks.status);
     const filter = useSelector(selectCustomTasksFilter);
     const [userList, setUserList] = useState(""); //TODO filter using users
     const [time, setTime] = useState("");
     const [category, setCategory] = useState("");
 
     useEffect(() => {
-        if(taskStatus==="idle"){
+        if (taskStatus === "idle") {
             dispatch(fetchCustomTasks(filter));
         }
-    }, [taskStatus,dispatch]);
+    }, [taskStatus, dispatch]);
 
     async function deleteTask(e, taskId) {
         e.preventDefault();
 
         await axios.delete(`/user/custom-tasks/delete?task=${taskId}`)
-        .then(response => {
-            showSuccess(response);
-            dispatch(setCustomTasksStatus({status:"idle"}))
-        }).catch(error => {
-            checklogin(error);
-            showError(error);
-        });
+            .then(response => {
+                showSuccess(response);
+                dispatch(setCustomTasksStatus({ status: "idle" }))
+            }).catch(error => {
+                checklogin(error);
+                showError(error);
+            });
     }
 
     function filterTask(event) {
@@ -50,7 +50,7 @@ function UserTaskBox() {
         // {
         //     setFilter(filter+`userList=${userList}&`)
         // }
-        dispatch(setCustomTasksFilter({filter:tempFilter}))
+        dispatch(setCustomTasksFilter({ filter: tempFilter }))
     }
 
     async function unDoneTask(e, taskId, task) {
@@ -64,7 +64,7 @@ function UserTaskBox() {
         })
             .then(response => {
                 showSuccess(response);
-                dispatch(setCustomTasksStatus({status:"idle"}));
+                dispatch(setCustomTasksStatus({ status: "idle" }));
             })
             .catch(error => {
                 checklogin(error);
@@ -77,7 +77,7 @@ function UserTaskBox() {
         await axios.get(`/user/custom-tasks/done?task=${taskId}`)
             .then(response => {
                 showSuccess(response);
-                dispatch(setCustomTasksStatus({status:"idle"}))
+                dispatch(setCustomTasksStatus({ status: "idle" }))
             }).catch(error => {
                 checklogin(error)
                 showError(error);
@@ -108,7 +108,7 @@ function UserTaskBox() {
                 {taskList &&
                     taskList.map(
                         (task, key) => (
-                            <Link to={`/home/custom-task/${task._id}`}>
+
                             <div>
 
                                 <div className="alonerow" style={task.done ? { opacity: "50%" } : { opacity: "100" }}>
@@ -116,7 +116,9 @@ function UserTaskBox() {
 
                                     <div className="task">
                                         <i className="fa fa-circle circle" style={{ color: '#707070' }} ariaHidden="true"></i>
-                                        <h3>{task.title}</h3>
+                                        <Link to={`/home/custom-task/${task._id}`}>
+                                            <h3>{task.title}</h3>
+                                        </Link>
                                         <i className="fa fa-times" style={{ background: '#ff2442' }} ariaHidden="true" onClick={e => {
                                             if (task.done === true) {
                                                 unDoneTask(e, task._id, task)
@@ -136,20 +138,25 @@ function UserTaskBox() {
 
 
 
-                                            <div className="date">
+                                            <div className="date" style={find_diff(task.finishDate) < 0 ? { backgroundColor: "rgb(255, 36, 66)" } : {}}>
                                                 <span>
                                                     {`از ${dateToJalali(task.startDate)} تا ${dateToJalali(task.finishDate)} `}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="time">
-                                        {find_diff(task.finishDate)}
-                                    </div>
+                                    {find_diff(task.finishDate) < 0 ?
+                                        <div className="time" style={{ backgroundColor: "rgb(255, 36, 66)" }}>
+                                            تمام
+                                        </div> :
+                                        <div className="time">
+                                            {find_diff(task.finishDate)}
+                                        </div>
+                                    }
 
                                 </div>
                             </div>
-                            </Link>
+
                         )
                     )}
 

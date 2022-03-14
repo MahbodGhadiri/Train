@@ -253,7 +253,7 @@ class UserController
 
   async unDoneCustomTask(req,res)
   {
-    const task = await userModel.findOneAndUpdate(
+    await userModel.findOneAndUpdate(
       {_id:req.user._id,"customTasks._id":{$eq : req.query.task}},
       {$set : {"customTasks.$.done":false}},
       {new: true}
