@@ -25,8 +25,8 @@ function TaskPage() {
 
     async function okTask(e, taskId) {
         e.preventDefault(); //? is this needed?
-
-        await axios.put(`/admin/tasks/done?task=${taskId}`)
+        console.log(taskId)
+        await axios.get(`/user/tasks/done?task=${taskId}`)
             .then(response => {
                 showSuccess(response);
                 dispatch(setTasksStatus({ status: "idle" }));
