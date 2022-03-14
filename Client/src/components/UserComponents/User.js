@@ -4,7 +4,7 @@ import UserAdminTaskBox from './UserAdminTaskBox';
 import UserPinBox from "./UserPinBox";
 import UserTaskBox from './UserTaskBox';
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserName, selectUserAbility , selectUserAvatarURL, fetchProfile } from '../../features/user/ProfileSlice';
+import { selectUserName, selectUserAbility, selectUserAvatarURL, fetchProfile } from '../../features/user/ProfileSlice';
 import { setCustomTasksStatus } from '../../features/task/customTasksSlice';
 import axios from 'axios';
 import $ from 'jquery';
@@ -19,18 +19,18 @@ function User() {
     const dispatch = useDispatch();
     const avatarURL = useSelector(selectUserAvatarURL);
     const talents = useSelector(selectUserAbility);
-    const profileStatus = useSelector(state=>state.profile.status);
+    const profileStatus = useSelector(state => state.profile.status);
     const [title, setTitle] = useState("");
     const [task, setTask] = useState("");
     const [days, setDays] = useState(null);
     const [subjectTag, setSubjectTag] = useState("");
     const name = useSelector(selectUserName);
 
-    useEffect(()=>{
-        if(profileStatus==="idle"){
+    useEffect(() => {
+        if (profileStatus === "idle") {
             dispatch(fetchProfile());
         }
-    },[profileStatus,dispatch])
+    }, [profileStatus, dispatch])
 
     const reset = () => {
         setTitle("");
@@ -39,10 +39,21 @@ function User() {
         setSubjectTag("");
     };
 
+    useEffect(() => {
+        // Alert Close
+        $('.alert-b i.fa-times').click(function (e) {
+            $('.alert-b').hide(100);
+        });
+        // Height Window
+        var hw = ($(window).height()) - 130;
+        $('.alonebox,.groupbox').css('height', hw + 'px');
+
+    }, []);
+
     const addTask = async (event) => {
         event.preventDefault();
 
-        const payload = { //TODO rename to payload
+        const payload = { 
             title: title,
             task: task,
             startDate: moment().format('YYYY-MM-D '),
@@ -50,11 +61,11 @@ function User() {
             subjectTag: subjectTag
         };
 
-        await axios.post("/user/custom-tasks",payload)
+        await axios.post("/user/custom-tasks", payload)
             .then(response => {
                 showSuccess(response);
                 reset();
-                dispatch(setCustomTasksStatus({status:"idle"}))
+                dispatch(setCustomTasksStatus({ status: "idle" }))
             })
             .catch(error => {
                 showError(error);
@@ -62,79 +73,19 @@ function User() {
             })
     }
 
-    function openAdd(e){
-        e.preventDefault()
-        $('.skillsbox .fa-arrow-down').click(function (e) {
-            $(this).toggleClass('active');
-            if ($(this).hasClass('active')) {
-                $('.skillsbox ul').slideDown();
-                $(this).css('transform', 'rotate(180deg)');
-            } else {
-                $('.skillsbox ul').slideUp();
-                $(this).css('transform', 'rotate(0deg)');
-            }
-        });
-
-        $('.show-box .show-item i.fa-eye').click(function () {
-            $(this).toggleClass('active');
-            if ($(this).hasClass('active')) {
-
-                $(this).removeClass('fa-eye').addClass('fa-eye-slash');
-                $('#pro-pass').attr('type', 'text');
-            } else {
-                $(this).removeClass('fa-eye-slash').addClass('fa-eye');
-                $('#pro-pass').attr('type', 'password');
-            }
-        });
-
-
-
-        // Height Window
-        var hw = ($(window).height()) - 125;
-        $('.alonebox,.groupbox').css('height', hw + 'px');
+    function openAdd() {
+        
 
         // Post
-        $('.post-btn').click(function (e) {
+        $('.post-btn').click(function() {
             $('.post').show(200);
         });
         $('.post .fa-times').click(function (e) {
             $('.post').hide(200);
         });
 
-        // Alert Close
-        $('.alert-b i.fa-times').click(function (e) {
-            $('.alert-b').hide(100);
-        });
-
-        // AloneRow
-        $('.alonerow i.fa-arrow-down').on('click', function () {
-            $(this).closest('.task').find('.task-down').toggle(350);
-            $(this).toggleClass('active');
-            if ($(this).hasClass('active')) {
-                $(this).closest('.alonerow').find('.time').hide(200);
-            } else {
-                $(this).closest('.alonerow').find('.time').show(200);
-            }
-        });
-
-        // Height Window
-        var hw = ($(window).height()) - 130;
-        $('.alonebox,.groupbox').css('height', hw + 'px');
-
-        // Post
-        $('.post-btn').click(function (e) {
-            $('.post').show(200);
-        });
-        $('.post .fa-times').click(function (e) {
-            $('.post').hide(200);
-        });
-
-        // Alert Close
-        $('.alert-b i.fa-times').click(function (e) {
-            $('.alert-b').hide(100);
-        });
     }
-   
+
     return (
         <div dir="rtl">
             <div className="content">
@@ -148,19 +99,12 @@ function User() {
                     <div className="imgsbox">
                         <img src="/images/header_logo.png" alt="Train" />
                         <Link to="/home/avatar">
-                            {/* <div style={{
-                                    height: "350px", width: "200px", backgroundImage: "url(../avatars/boy1.png)", backgroundRepeat: "no-repeat",
-                                    backgroundSize: "contain", textAlign:"center", marginLeft:"500px"
-                                }} className="admin-img"> 
-                                </div>*/}
+
                             {avatarURL && avatarURL ? <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/${avatarURL}.png)`, marginBottom: "10px" }}></div>
                                 :
 
                                 <div className='showavatarbox admin-img' style={{ backgroundImage: `url(../avatars/boy1.png)`, marginBottom: "10px" }}></div>
                             }
-                            {/* <img src="./avatars/boy5.png" className="admin-img" alt="" 
-                                    style={{
-                                        height: "65%", width: "65%"}}/> */}
 
                         </Link>
                     </div>
@@ -179,7 +123,7 @@ function User() {
 
                 <UserPinBox />
 
-                <div className="post-btn" onClick={e => openAdd(e)}>
+                <div className="post-btn" onClick={openAdd()}>
                     <span>جدید</span>
                 </div>
 
