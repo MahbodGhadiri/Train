@@ -30,6 +30,9 @@ const customTasksSlice = createSlice({
             state.filter = action.payload.filter;
             state.status = "idle"
         },
+        setToBeEditedTask:(state, action) => {
+            state.toBeEditedTask = action.payload.toBeEditedTask;
+        }
     },
     // using extrareducers to create reducers for specific cases
     extraReducers(builder)  {
@@ -52,8 +55,9 @@ const customTasksSlice = createSlice({
     }
 })
 
-export const { setCustomTasksStatus, setCustomTasksFilter } = customTasksSlice.actions;
+export const { setCustomTasksStatus, setCustomTasksFilter, setToBeEditedTask } = customTasksSlice.actions;
 
 export const selectCustomTasks = (state) => state.customTasks.tasks;
 export const selectCustomTasksFilter = (state)=> state.customTasks.filter;
+export const selectToBeEditedTask = (state)=> state.customTasks.toBeEditedTask
 export default customTasksSlice.reducer;

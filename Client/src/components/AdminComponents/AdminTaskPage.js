@@ -9,8 +9,8 @@ import { checklogin } from "../CheckLogin";
 import { showSuccess, showError } from "../Toast_Functions";
 import axios from "axios";
 import {  setToBeEditedTask, setTasksStatus } from '../../features/task/adminTasksSlice'
-import moment from "moment-jalaali";
-function TaskPage() {
+
+function AdminTaskPage() {
     const dispatch = useDispatch();
     const tasks = useSelector(selectAdminTasks);
     const taskStatus = useSelector(state => state.adminTasks.status)
@@ -362,4 +362,4 @@ function TaskPage() {
 
 }
 
-export default TaskPage;
+export default AdminTaskPage;
