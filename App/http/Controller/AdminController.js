@@ -49,9 +49,11 @@ class AdminController
 
     async setTask(req,res)
     {
+        availableTags = ["گرافیک","برنامه نویسی","مدیریت","دیگر"];
         req.body.assignedBy={_id:req.user._id,name:req.user.name}
         const {error}=setTaskValidator(req.body); 
         if (error){ return res.status(400).send({message : error.message})};
+        if (!(availableTags.includes(req.body.subjectTag))) return res.status(400).send({message : `تگ وارد شده(${req.body.subjectTag}) قابل قبول نمی باشد.`})
         const finishDate = new Date(req.body.finishDate).getTime()
         const startDate = new Date(req.body.startDate).getTime()
         if(finishDate>startDate) //TODO  startDate > now

@@ -58,7 +58,7 @@ function User() {
             })
             .catch(error => {
                 showError(error);
-                checklogin();
+                checklogin(error);
             })
     }
 
